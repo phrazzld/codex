@@ -1,6 +1,3 @@
-# Detect the current host
-HOSTNAME="$(hostname)"
-
 # Core plugin definitions
 plugins=(
   asdf
