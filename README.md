@@ -12,7 +12,6 @@ This repository contains a unified configuration system for a single machine. It
   - Organized `.zshrc` with clean organization
   - Streamlined `.aliases` for common commands
   - Comprehensive `.env` file with environment variables
-  - Utility functions in `.fun` for daily development tasks
 
 - **AI Tools & Templates**
   - Claude Code custom slash commands for structured development workflows
@@ -42,7 +41,7 @@ This creates symbolic links from your home directory to the configuration files 
 ## Repository Structure
 
 - **Root**: Documentation and installation script
-- **`/dotfiles/`**: Configuration files (`.zshrc`, `.aliases`, `.env`, `.fun`)
+- **`/dotfiles/`**: Configuration files (`.zshrc`, `.aliases`, `.env`)
 - **`/claude-commands/`**: Structured workflow commands for Claude Code CLI
 - **`/docs/`**: Documentation on best practices and testing philosophy
 - **`/professional/`**: Professional documents like CV and resume

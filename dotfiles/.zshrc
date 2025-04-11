@@ -10,7 +10,6 @@ plugins=(
 
 # Source environment, functions, and aliases
 source $HOME/.env
-source $HOME/.fun
 source $HOME/.aliases
 
 # Load machine-specific configuration

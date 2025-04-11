@@ -7,7 +7,6 @@ This directory contains environment configuration files that adapt between diffe
 - **[.zshrc](.zshrc)** - Main shell configuration file with environment detection
 - **[.aliases](.aliases)** - Command aliases with environment-specific conditionals
 - **[.env](.env)** - Environment variables for development setup
-- **[.fun](.fun)** - Utility functions for daily development tasks
 
 ## Machine Configuration
 
