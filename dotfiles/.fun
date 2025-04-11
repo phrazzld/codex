@@ -80,62 +80,52 @@ function modified() {
   git status --porcelain | awk '{print $2}' | xargs $EDITOR
 }
 
-# Environment-specific functions
-case "$HOSTNAME" in
-  *"zoboomafoo"*)
-    # Work-specific (zoboomafoo) functions
+# Machine-specific functions
 
-    # LastPass functions
-    function pullpasses() {
-      if [ -n "$1" ]; then
-        lpass show $(lpass ls | grep -i "$1" | awk '{ print $3 }' | sed 's/.$//')
-      else
-        echo "Error: missing search term"
-      fi
-    }
+# LastPass functions
+function pullpasses() {
+  if [ -n "$1" ]; then
+    lpass show $(lpass ls | grep -i "$1" | awk '{ print $3 }' | sed 's/.$//')
+  else
+    echo "Error: missing search term"
+  fi
+}
 
-    function pullpass() {
-      if [ -n "$1" ]; then
-        pullpasses "$1" | grep -i "Password:" | awk '{ print $2 }' | head -1 | pbcopy
-      else
-        echo "Error: missing search term"
-      fi
-    }
+function pullpass() {
+  if [ -n "$1" ]; then
+    pullpasses "$1" | grep -i "Password:" | awk '{ print $2 }' | head -1 | pbcopy
+  else
+    echo "Error: missing search term"
+  fi
+}
 
-    # Encryption functions
-    function lock() {
-      TARFILE=$1
-      TARGET_DIR=$2
-      tar czf $TARFILE $TARGET_DIR
-      gpg -c $TARFILE
-      echo "Remember: remove $TARFILE and $TARGET_DIR"
-    }
+# Encryption functions
+function lock() {
+  TARFILE=$1
+  TARGET_DIR=$2
+  tar czf $TARFILE $TARGET_DIR
+  gpg -c $TARFILE
+  echo "Remember: remove $TARFILE and $TARGET_DIR"
+}
 
-    function unlock() {
-      TARFILE=$1
-      GPGFILE=$2
-      gpg --output $TARFILE $GPGFILE
-      tar xzf $TARFILE
-    }
+function unlock() {
+  TARFILE=$1
+  GPGFILE=$2
+  gpg --output $TARFILE $GPGFILE
+  tar xzf $TARFILE
+}
 
-    # PR review function
-    function review-pr() {
-      # check if we have enough arguments
-      if [ $# -lt 3 ]; then
-        echo "Usage: review-pr <user> <repo> <pr-number>"
-        return 1
-      fi
+# PR review function
+function review-pr() {
+  # check if we have enough arguments
+  if [ $# -lt 3 ]; then
+    echo "Usage: review-pr <user> <repo> <pr-number>"
+    return 1
+  fi
 
-      local user=$1
-      local repo=$2
-      local pr_number=$3
+  local user=$1
+  local repo=$2
+  local pr_number=$3
 
-      $HOME/development/code-review-assistant/code-review-assistant $user/$repo $pr_number --github-token $GITHUB_PERSONAL_ACCESS_TOKEN --openai-key $OPENAI_API_KEY
-    }
-    ;;
-
-  "serenity")
-    # Personal machine (serenity) functions
-    # Currently no exclusive serenity functions
-    ;;
-esac
+  $HOME/development/code-review-assistant/code-review-assistant $user/$repo $pr_number --github-token $GITHUB_PERSONAL_ACCESS_TOKEN --openai-key $OPENAI_API_KEY
+}

@@ -40,42 +40,21 @@ alias vn="nvim ~/.config/nvim/init.lua"
 alias xit="exit"
 alias vimv="$HOME/Development/vimv"
 
-# Environment-specific aliases
-case "$HOSTNAME" in
-  *"zoboomafoo"*)
-    # Work-specific (zoboomafoo) aliases
-    alias l="ls -lha"
-    alias dark="kitty +kitten themes --reload-in=all Rosé Pine Moon"
-    alias light="kitty +kitten themes --reload-in=all Rosé Pine Dawn"
-    alias dev="cd $DEVELOPMENT"
-    alias dev-chrome='open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security'
-    alias nerdfetch="$DEVELOPMENT/nerdfetch"
-    alias ponder="$DEVELOPMENT/ponder/target/release/ponder"
-    alias p='$DEVELOPMENT/ponder/target/release/ponder'
-    alias rubocopit="{ git diff --name-only; git diff --cached --name-only; } | sort -u | grep -v '^db/schema.rb$' | xargs rubocop -a"
-    alias t='tmux'
-    alias tl='tmux ls'
-    alias yt='yarn test'
-    alias meme="$HOME/Development/random-meme.sh"
-    alias brew="arch -x86_64 /usr/local/bin/brew"
-    alias xasdf="arch -x86_64 asdf"
-    alias vcc="v $HOME/Library/Application\ Support/Claude/claude_desktop_config.json"
-    alias gsl='git checkout stable && git pull'
-    ;;
-  "serenity")
-    # Personal machine (serenity) aliases
-    if command -v exa &>/dev/null; then
-      alias l="exa --long --all"
-      alias lt="exa --long --tree"
-      alias lta="exa --long --all --tree"
-    else
-      alias l="ls -lha"
-    fi
-    alias dark="kitty +kitten themes --reload-in=all Rosé Pine"
-    alias light="kitty +kitten themes --reload-in=all Rosé Pine Dawn"
-    alias p="ponder"
-    alias paths="echo $PATH | tr ':' '\n'"
-    alias rgc='rg --context'
-    alias scratch='nvim $HOME/Documents/rubberducks/scratch.md'
-    ;;
-esac
+# Machine-specific aliases
+alias l="ls -lha"
+alias dark="kitty +kitten themes --reload-in=all Rosé Pine Moon"
+alias light="kitty +kitten themes --reload-in=all Rosé Pine Dawn"
+alias dev="cd $DEVELOPMENT"
+alias dev-chrome='open -n -a /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --args --user-data-dir="/tmp/chrome_dev_test" --disable-web-security'
+alias nerdfetch="$DEVELOPMENT/nerdfetch"
+alias ponder="$DEVELOPMENT/ponder/target/release/ponder"
+alias p='$DEVELOPMENT/ponder/target/release/ponder'
+alias rubocopit="{ git diff --name-only; git diff --cached --name-only; } | sort -u | grep -v '^db/schema.rb$' | xargs rubocop -a"
+alias t='tmux'
+alias tl='tmux ls'
+alias yt='yarn test'
+alias meme="$HOME/Development/random-meme.sh"
+alias brew="arch -x86_64 /usr/local/bin/brew"
+alias xasdf="arch -x86_64 asdf"
+alias vcc="v $HOME/Library/Application\ Support/Claude/claude_desktop_config.json"
+alias gsl='git checkout stable && git pull'

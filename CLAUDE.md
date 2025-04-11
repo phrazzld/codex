@@ -22,18 +22,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/docs/`: Documentation on best practices and testing philosophy
 - `/professional/`: Professional documents like CV and resume
 
-## Environment Detection
-```bash
-case "$(hostname)" in
-  serenity) IS_SERENITY=1 ;;
-  zoboomafoo) IS_ZOBOOMAFOO=1 ;;
-esac
-```
+## Machine Configuration
+Configuration files are structured specifically for the zoboomafoo environment.
 
 ## Best Practices
 - Use single responsibility principle for scripts
 - Implement consistent error handling
 - Check dependencies before command execution
-- Maintain environment-specific configurations
+- Maintain well-organized configurations
 - Follow TDD when writing new scripts
 - Prioritize simplicity and readability over clever implementations

@@ -13,25 +13,8 @@ source $HOME/.env
 source $HOME/.fun
 source $HOME/.aliases
 
-# Environment-specific source files
-case "$HOSTNAME" in
-  *"zoboomafoo"*)
-    # Work-specific configuration files
-    source $HOME/.secrets
-    ;;
-  "serenity")
-    # Personal-specific configuration
-    # Display random quote on startup
-    random_quote
-
-    # Fallback to Oh-My-Zsh if starship is not available
-    if ! command -v starship &> /dev/null; then
-      export ZSH="$HOME/.oh-my-zsh"
-      ZSH_THEME="robbyrussell"
-      source $ZSH/oh-my-zsh.sh
-    fi
-    ;;
-esac
+# Load machine-specific configuration
+source $HOME/.secrets
 
 # History settings
 HISTFILE=~/.zsh_history

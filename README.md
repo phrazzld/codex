@@ -4,14 +4,14 @@ A comprehensive configuration repository with adaptive configurations, AI prompt
 
 ## Overview
 
-This repository contains a unified configuration system that intelligently adapts between personal (serenity) and work (zoboomafoo) environments through hostname detection. It serves as a single source of truth for shell configuration, AI prompts, and development workflows.
+This repository contains a unified configuration system for the zoboomafoo environment. It serves as a single source of truth for shell configuration, AI prompts, and development workflows.
 
 ## Features
 
-- **Environment-Aware Configuration**
-  - Unified `.zshrc` with dynamic environment detection
-  - Conditional `.aliases` that load appropriate commands per environment
-  - Shared `.env` file with common environment variables
+- **Structured Configuration**
+  - Organized `.zshrc` with clean organization
+  - Streamlined `.aliases` for common commands
+  - Comprehensive `.env` file with environment variables
   - Utility functions in `.fun` for daily development tasks
 
 - **AI Tools & Templates**
@@ -71,16 +71,9 @@ The repository includes a suite of slash commands for Claude Code that enable st
 - `/review` - Establish code review processes and documentation
 - `/ticket` - Convert plans into prioritized task tickets
 
-## Environment Detection
+## Machine Configuration
 
-Configuration files adapt to different environments using hostname detection:
-
-```bash
-case "$(hostname)" in
-  serenity) IS_SERENITY=1 ;;
-  zoboomafoo) IS_ZOBOOMAFOO=1 ;;
-esac
-```
+Configuration files are organized for the zoboomafoo environment with clean organization and robust utility functions.
 
 ## License
 
