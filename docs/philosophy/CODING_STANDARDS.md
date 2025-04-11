@@ -96,7 +96,7 @@ This document defines the concrete rules, conventions, and best practices for wr
 
 **Rationale:** Suppression mechanisms often hide genuine bugs, technical debt, or poor design choices. Bypassing these checks defeats their purpose and degrades code quality and safety over time. Fixing the root cause leads to more robust, maintainable, and understandable code. Supports *Maintainability* and *Explicit is Better than Implicit*.
 
-**Implementation:** Legitimate exceptions are extremely rare and require explicit justification via a code comment explaining *why* the suppression is necessary and safe. Significant or recurring patterns requiring suppression should be discussed and potentially documented in an ADR. Treat suppressions as code smells requiring scrutiny.
+**Implementation:** Legitimate exceptions are extremely rare and require explicit justification via a code comment explaining *why* the suppression is necessary and safe. Significant or recurring patterns requiring suppression should be discussed and documented where appropriate. Treat suppressions as code smells requiring scrutiny.
 
 ---
 

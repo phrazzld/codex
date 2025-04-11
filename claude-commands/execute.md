@@ -3,14 +3,14 @@
 ## 1. SELECT AND ASSESS TASK
 
 - **Goal:** Choose and assess the next appropriate task from `TODO.MD`.
-- **Actions:** 
+- **Actions:**
     - Scan `TODO.MD` for tasks marked `[ ]` (incomplete). Select the first task whose prerequisites (`Depends On:`) are already marked `[x]` (complete) or are 'None'.
     - Record the exact Task Title.
     - Mark the task as in-progress by changing `[ ]` to `[~]` in `TODO.MD`.
     - **Assess Complexity:** Analyze the task requirements, determining if it's:
         - **Simple:** Small change, single file, clear requirements, no architecture changes
         - **Complex:** Multiple files, complex logic, architectural considerations, or any uncertainty
-    - **Route Accordingly:** 
+    - **Route Accordingly:**
         - For **Simple** tasks, follow Section 2 (Fast Track)
         - For **Complex** tasks, follow Section 3 (Comprehensive Track)
 
@@ -77,22 +77,39 @@
         3. Straightforward testability with minimal mocking (`TESTING_STRATEGY.md`)
         4. Adherence to coding conventions (`CODING_STANDARDS.md`)
         5. Support for clear documentation (`DOCUMENTATION_APPROACH.md`)
-    - (Optional Cleanup): Remove `<sanitized-task-title>-TASK.md`.
+    - Remove `<sanitized-task-title>-TASK.md`.
 
-### 3.3. IMPLEMENT FUNCTIONALITY
+### 3.3. WRITE FAILING TESTS
 
-- **Goal:** Write the code to satisfy the task requirements according to the implementation plan.
+- **Goal:** Define expected behavior via tests, adhering strictly to the testing philosophy.
+- **Actions:**
+    - **Consult All Standards:** Review task requirements (`AC Ref:`, `<sanitized-task-title>-PLAN.md`) and adhere to all standards, with particular focus on testing:
+        - Ensure tests reflect the simplicity principle (`CORE_PRINCIPLES.md`)
+        - Test through public interfaces as defined in the architecture (`ARCHITECTURE_GUIDELINES.md`)
+        - Follow coding standards in test code too (`CODING_STANDARDS.md`)
+        - **Strictly adhere to testing principles, avoiding mocks of internal components** (`TESTING_STRATEGY.md`)
+        - Document test rationale where needed (`DOCUMENTATION_APPROACH.md`)
+    - **Write Happy Path Tests:** Write the minimum tests needed to verify the core *behavior* for the happy path, focusing on the public interface. **Prioritize tests that avoid mocking internal components.**
+    - **Write Critical Edge Case Tests:** Add tests for important error conditions or edge cases identified.
+    - **Verify Test Simplicity:** ***Think hard*** - "Are these tests simple? Do they avoid complex setup? Do they rely on mocking internal code? If yes, reconsider the test approach itself."
+    - Ensure tests currently fail (as appropriate for TDD/BDD style).
+- **Guidance:** Test *behavior*, not implementation. **Aggressively avoid unnecessary mocks.** If mocking seems unavoidable for internal logic, it's a signal to improve the design.
+
+### 3.4. IMPLEMENT FUNCTIONALITY
+
+- **Goal:** Write the minimal code needed to make tests pass (green).
 - **Actions:**
     - **Consult Standards:** Review `CONTRIBUTING.MD`, `CODING_STANDARDS.md`, `ARCHITECTURE_GUIDELINES.md`, etc.
-    - **Write Code:** Implement the functionality based on `<sanitized-task-title>-PLAN.md`.
+    - **Write Code:** Implement the functionality based on `<sanitized-task-title>-PLAN.md` that satisfies the failing tests.
+    - **Focus on Passing Tests:** Initially implement just enough code to make tests pass, deferring optimization.
     - **Adhere Strictly:** Follow project standards and the chosen plan.
-- **Guidance:** Focus on clean, readable code that directly addresses requirements.
+- **Guidance:** Focus on making tests pass first, then improve the implementation in the refactoring phase.
 
-### 3.4. TESTABILITY REVIEW & REFACTOR (Inline)
+### 3.5. REFACTOR FOR STANDARDS COMPLIANCE
 
-- **Goal:** Review the newly written code against all standards documents *before* writing tests, with special attention to testability.
+- **Goal:** Improve code quality while maintaining passing tests.
 - **Actions:**
-    - **Review Code:** Analyze the code files just modified for Step 5.
+    - **Review Code:** Analyze the code files just implemented to ensure they pass tests.
     - **Assess Standards Compliance:** ***Think hard*** and evaluate against all standards:
         - **Core Principles:** "Does this implementation embrace simplicity? Does it have clear responsibilities? Is it explicit rather than implicit?" (`CORE_PRINCIPLES.md`)
         - **Architecture:** "Is there clean separation between core logic and infrastructure? Are dependencies pointing inward?" (`ARCHITECTURE_GUIDELINES.md`)
@@ -105,32 +122,17 @@
         - For code quality issues: Apply coding conventions, use types more effectively
         - For testability issues: Reduce coupling, extract pure functions, improve interfaces
         - For documentation issues: Clarify design decisions with appropriate comments
-    - **Perform Refactor (if needed):** Apply the identified minimal refactoring changes.
+    - **Perform Refactor:** Apply the identified refactoring changes while ensuring tests continue to pass.
     - **Document (if refactored):** Briefly note any refactoring performed in `<sanitized-task-title>-PLAN.md` or as code comments, specifying which standard(s) the refactoring helps satisfy.
 
-### 3.5. WRITE FAILING TESTS
+### 3.6. VERIFY ALL TESTS PASS
 
-- **Goal:** Define expected behavior via tests, adhering strictly to the testing philosophy.
+- **Goal:** Ensure all tests pass with the refactored implementation.
 - **Actions:**
-    - **Consult All Standards:** Review task requirements (`AC Ref:`, `<sanitized-task-title>-PLAN.md`) and adhere to all standards, with particular focus on testing:
-        - Ensure tests reflect the simplicity principle (`CORE_PRINCIPLES.md`)
-        - Test through public interfaces as defined in the architecture (`ARCHITECTURE_GUIDELINES.md`)
-        - Follow coding standards in test code too (`CODING_STANDARDS.md`)
-        - **Strictly adhere to testing principles, avoiding mocks of internal components** (`TESTING_STRATEGY.md`)
-        - Document test rationale where needed (`DOCUMENTATION_APPROACH.md`)
-    - **Write Happy Path Tests:** Write the minimum tests needed to verify the core *behavior* for the happy path, focusing on the public interface. **Prioritize tests that avoid mocking internal components.**
-    - **Write Critical Edge Case Tests:** Add tests for important error conditions or edge cases identified.
-    - **Verify Test Simplicity:** ***Think hard*** - "Are these tests simple? Do they avoid complex setup? Do they rely on mocking internal code? If yes, revisit Step 6 or the test approach itself."
-    - Ensure tests currently fail (as appropriate for TDD/BDD style).
-- **Guidance:** Test *behavior*, not implementation. **Aggressively avoid unnecessary mocks.** If mocking seems unavoidable for internal logic, it's a failure signal.
-
-### 3.6. RUN IMPLEMENTATION & TESTS
-
-- **Goal:** Make the implementation code pass the newly written tests.
-- **Actions:**
-    - Run the code and tests.
-    - Debug and modify the *implementation code* (from Step 4/5) until all tests written in Step 6 pass.
-    - **Do NOT modify tests to make them pass unless the test itself was flawed.**
+    - Run the code and all tests.
+    - Verify that all tests pass, including the original failing tests and any additional tests added.
+    - If any tests fail after refactoring, fix the implementation while maintaining standards compliance.
+    - **Do NOT modify tests to make them pass unless the test itself was fundamentally flawed.**
 
 ### 3.7. FINALIZE & COMMIT
 
@@ -138,7 +140,4 @@
 - **Actions:**
     - **Run Checks & Fix:** Execute linting, building, and the **full test suite**. Fix *any* code issues causing failures.
     - **Update Task Status:** Change the task status in `TODO.MD` from `[~]` (in progress) to `[x]` (complete).
-    - **Commit Changes:**
-        - Stage *all* relevant changed/new files (`<sanitized-task-title>-PLAN.md`, implementation code, test code, refactored code). Review diff (`git diff --staged`).
-        - Use Conventional Commits (`type(scope): subject`). Include brief description of any inline testability refactors in the commit body if applicable. Reference the task.
-        - Execute `git commit`. Handle hooks/errors. Report success or failure.
+    - **Add, Commit, and Push Changes**

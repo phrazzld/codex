@@ -80,23 +80,21 @@ This document outlines our philosophy and practices for project documentation. O
 
 ---
 
-## 5. Architecture Decision Records (ADRs): Capturing Design Rationale
+## 5. Design Decision Documentation: Capturing Rationale
 
-**Approach:** **ADRs are mandatory for recording significant architectural or design decisions.** A "significant" decision typically affects structure, cross-cutting concerns, dependencies, interfaces, major technology choices, or involves non-trivial trade-offs. ADRs capture the *context*, the *decision*, and its *consequences*. **This practice is vital even for solo developers** to preserve rationale over time.
+**Approach:** It's useful to document significant design decisions, particularly those that affect structure, cross-cutting concerns, dependencies, interfaces, or major technology choices. These documents help capture the *context*, the *decision*, and its *consequences*, preserving rationale over time.
 
 **Format & Storage:**
-* Use simple, numbered Markdown files (e.g., `001-use-gorm-for-database-access.md`) stored in a dedicated `/docs/adrs/` directory within the repository.
-* Use a consistent template (see `ADR_TEMPLATE.md` - must be created/provided separately).
+* Use simple Markdown files stored in a relevant documentation directory within the repository.
+* Focus on capturing just the essential information needed to understand the decision.
 
-**Key Template Sections:**
+**Key Sections to Consider:**
 * **Title:** Short, descriptive summary of the decision.
-* **Status:** (e.g., Proposed, Accepted, Rejected, Deprecated, Superseded by ADR-XXX).
-* **Context:** What problem or situation prompted this decision? What is the background?
+* **Context:** What problem or situation prompted this decision?
 * **Decision:** Clearly state the decision that was made.
-* **Consequences:** What are the results of this decision (positive and negative)? What are the trade-offs accepted? What new problems might arise? What future work is implied?
-* *(Optional) Alternatives Considered:* Briefly describe other options evaluated and why they were not chosen.
+* **Consequences:** What are the results of this decision, including any trade-offs?
 
-**Rationale:** ADRs provide an immutable log of *why* the system evolved the way it did. This historical context is invaluable for onboarding new team members, understanding constraints, avoiding redundant discussions, and making informed future decisions. Directly implements *Document Decisions, Not Mechanics*.
+**Rationale:** Documenting design decisions provides context about *why* the system evolved the way it did. This historical context can be helpful for understanding constraints and making informed future decisions. Implements *Document Decisions, Not Mechanics*.
 
 ---
 

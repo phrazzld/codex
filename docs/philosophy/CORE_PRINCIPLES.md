@@ -66,8 +66,8 @@ This document outlines the fundamental beliefs and guiding principles that shape
 
 ## 7. Document Decisions, Not Mechanics: Explain the *Why*
 
-**Principle:** Strive for code that is largely self-documenting through clear naming, logical structure, and effective use of the type system – this covers the *how*. Reserve comments and external documentation primarily for explaining the *why*: the rationale behind a non-obvious design choice, the context surrounding complex logic, critical constraints, or the trade-offs considered. Capture significant architectural or design decisions and their reasoning in Architecture Decision Records (ADRs).
+**Principle:** Strive for code that is largely self-documenting through clear naming, logical structure, and effective use of the type system – this covers the *how*. Reserve comments and external documentation primarily for explaining the *why*: the rationale behind a non-obvious design choice, the context surrounding complex logic, critical constraints, or the trade-offs considered.
 
 **Rationale:** The mechanics of code change frequently, causing comments detailing the "how" to become quickly outdated and misleading. The *reasoning* behind a design, however, provides enduring value for maintainers trying to understand the system's evolution and constraints. Self-documenting code reduces the burden of keeping separate documentation synchronized.
 
-**Implications:** We prioritize writing clean, expressive code. Comments should add value by explaining intent or context. ADRs become a crucial part of the project's history, tracking the evolution of its design and the justifications for pivotal choices.
+**Implications:** We prioritize writing clean, expressive code. Comments should add value by explaining intent or context. When important, document key design decisions to track the evolution of the project's design and justifications for significant choices.
