@@ -47,19 +47,27 @@ This creates symbolic links from your home directory to the configuration files 
 - **`/docs/`**: Documentation on best practices and testing philosophy
 - **`/professional/`**: Professional documents like CV and resume
 
-## Claude Code Commands
+## Development Tools and Commands
+
+### CLI Tools
+
+- **`architect`** - Local CLI tool for generating technical plans and architectural guidance
+
+### Claude Code Commands
 
 The repository includes a suite of slash commands for Claude Code that enable structured software development workflows:
 
-- `/architect` - Generate technical plans for features or problems
 - `/audit` - Create security audit documentation for codebases
+- `/breathe` - Promote reflection and mindfulness during development
 - `/consult` - Document problems and request architectural assistance
 - `/debug` - Structured approach to diagnosing and fixing bugs
 - `/execute` - Implement tasks from TODO lists with best practices
+- `/hit` - Quick access to specific functionality
 - `/plan` - Create detailed technical plans for backlog items
 - `/prime` - Gather context from key repository files
 - `/push` - Quality assurance steps before committing code
 - `/refactor` - Create structured plans for improving code quality
+- `/resolve` - Troubleshoot and fix specific issues
 - `/review` - Establish code review processes and documentation
 - `/ticket` - Convert plans into prioritized task tickets
 

@@ -17,14 +17,13 @@ source $HOME/.aliases
 case "$HOSTNAME" in
   *"zoboomafoo"*)
     # Work-specific configuration files
-    source $HOME/.memre
     source $HOME/.secrets
     ;;
   "serenity")
     # Personal-specific configuration
     # Display random quote on startup
     random_quote
-    
+
     # Fallback to Oh-My-Zsh if starship is not available
     if ! command -v starship &> /dev/null; then
       export ZSH="$HOME/.oh-my-zsh"
@@ -78,12 +77,12 @@ fi
 export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 
 # Google Cloud SDK (if available)
-if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then 
+if [ -f "$HOME/google-cloud-sdk/path.zsh.inc" ]; then
   source "$HOME/google-cloud-sdk/path.zsh.inc"
 fi
 
 # Google Cloud SDK completions (if available)
-if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then 
+if [ -f "$HOME/google-cloud-sdk/completion.zsh.inc" ]; then
   source "$HOME/google-cloud-sdk/completion.zsh.inc"
 fi
 
