@@ -11,7 +11,7 @@ This directory contains environment configuration files that adapt between diffe
 
 ## Machine Configuration
 
-These configuration files are structured for the zoboomafoo environment with a focus on clear organization and practical utility.
+These configuration files are structured with a focus on clear organization and practical utility.
 
 ## Installation
 

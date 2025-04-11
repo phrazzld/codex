@@ -23,7 +23,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - `/professional/`: Professional documents like CV and resume
 
 ## Machine Configuration
-Configuration files are structured specifically for the zoboomafoo environment.
+Configuration files are structured for a single machine environment.
 
 ## Best Practices
 - Use single responsibility principle for scripts

@@ -1,7 +1,7 @@
 # Detect the current host
 HOSTNAME="$(hostname)"
 
-# Core plugin definitions (zoboomafoo style)
+# Core plugin definitions
 plugins=(
   asdf
   zsh-autosuggestions

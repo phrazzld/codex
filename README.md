@@ -4,7 +4,7 @@ A comprehensive configuration repository with adaptive configurations, AI prompt
 
 ## Overview
 
-This repository contains a unified configuration system for the zoboomafoo environment. It serves as a single source of truth for shell configuration, AI prompts, and development workflows.
+This repository contains a unified configuration system for a single machine. It serves as a single source of truth for shell configuration, AI prompts, and development workflows.
 
 ## Features
 
@@ -73,7 +73,7 @@ The repository includes a suite of slash commands for Claude Code that enable st
 
 ## Machine Configuration
 
-Configuration files are organized for the zoboomafoo environment with clean organization and robust utility functions.
+Configuration files are organized with clean structure and robust utility functions.
 
 ## License
 
