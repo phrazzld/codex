@@ -1,11 +1,57 @@
 # EXECUTE
-## 1. SELECT TASK
-- **Goal:** Choose the next appropriate task to work on from `TODO.MD`.
-- **Action:** Scan `TODO.MD` for tasks marked `[ ]` (incomplete). Select the first task found whose prerequisites listed in its `Depends On:` field are already marked `[x]` (complete) or are 'None'. Record the exact Task Title.
-- **Mark In-Progress:** After selecting a task, update it in `TODO.MD` by changing `[ ]` to `[~]` to indicate it's in progress.
 
-## 2. PREPARE TASK PROMPT (for Implementation Plan)
-- **Goal:** Create a dedicated prompt file for `architect` to generate implementation approaches.
+## 1. SELECT AND ASSESS TASK
+
+- **Goal:** Choose and assess the next appropriate task from `TODO.MD`.
+- **Actions:** 
+    - Scan `TODO.MD` for tasks marked `[ ]` (incomplete). Select the first task whose prerequisites (`Depends On:`) are already marked `[x]` (complete) or are 'None'.
+    - Record the exact Task Title.
+    - Mark the task as in-progress by changing `[ ]` to `[~]` in `TODO.MD`.
+    - **Assess Complexity:** Analyze the task requirements, determining if it's:
+        - **Simple:** Small change, single file, clear requirements, no architecture changes
+        - **Complex:** Multiple files, complex logic, architectural considerations, or any uncertainty
+    - **Route Accordingly:** 
+        - For **Simple** tasks, follow Section 2 (Fast Track)
+        - For **Complex** tasks, follow Section 3 (Comprehensive Track)
+
+## 2. FAST TRACK (SIMPLE TASKS)
+
+### 2.1. CREATE MINIMAL PLAN
+
+- **Goal:** Document a straightforward implementation approach.
+- **Actions:**
+    - **Analyze:** Review the task details from `TODO.MD`.
+    - **Document:** Create `<sanitized-task-title>-PLAN.md` with:
+        - Task title
+        - Brief implementation approach (1-2 sentences)
+
+### 2.2. WRITE MINIMAL TESTS (IF APPLICABLE)
+
+- **Goal:** Define happy path tests only.
+- **Actions:**
+    - Write minimal tests for the core happy path
+    - Skip if task isn't directly testable
+
+### 2.3. IMPLEMENT FUNCTIONALITY
+
+- **Goal:** Write clean, simple code to satisfy requirements.
+- **Actions:**
+    - Consult project standards documents as needed
+    - Implement the functionality directly
+
+### 2.4. FINALIZE & COMMIT
+
+- **Goal:** Ensure work passes checks and is recorded.
+- **Actions:**
+    - Run checks (linting, tests) and fix any issues
+    - Update task status in `TODO.MD` to `[x]` (complete)
+    - Commit with conventional commit format
+
+## 3. COMPREHENSIVE TRACK (COMPLEX TASKS)
+
+### 3.1. PREPARE TASK PROMPT
+
+- **Goal:** Create a detailed prompt for implementation planning.
 - **Actions:**
     - **Filename:** Sanitize Task Title -> `<sanitized-task-title>-TASK.md`.
     - **Analyze:** Re-read task details (Action, AC Ref, Depends On) from `TODO.MD` and the relevant section in `PLAN.MD`.
@@ -15,7 +61,8 @@
         - Keep all the original instructions from the base prompt.
         - Ensure the prompt maintains the focus on standards alignment.
 
-## 3. GENERATE IMPLEMENTATION PLAN WITH ARCHITECT
+### 3.2. GENERATE IMPLEMENTATION PLAN WITH ARCHITECT
+
 - **Goal:** Use `architect` to generate an implementation plan based on the task prompt and project context.
 - **Actions:**
     - **Find Task Context:**
@@ -32,7 +79,8 @@
         5. Support for clear documentation (`DOCUMENTATION_APPROACH.md`)
     - (Optional Cleanup): Remove `<sanitized-task-title>-TASK.md`.
 
-## 4. IMPLEMENT FUNCTIONALITY
+### 3.3. IMPLEMENT FUNCTIONALITY
+
 - **Goal:** Write the code to satisfy the task requirements according to the implementation plan.
 - **Actions:**
     - **Consult Standards:** Review `CONTRIBUTING.MD`, `CODING_STANDARDS.md`, `ARCHITECTURE_GUIDELINES.md`, etc.
@@ -40,7 +88,8 @@
     - **Adhere Strictly:** Follow project standards and the chosen plan.
 - **Guidance:** Focus on clean, readable code that directly addresses requirements.
 
-## 5. TESTABILITY REVIEW & REFACTOR (Inline)
+### 3.4. TESTABILITY REVIEW & REFACTOR (Inline)
+
 - **Goal:** Review the newly written code against all standards documents *before* writing tests, with special attention to testability.
 - **Actions:**
     - **Review Code:** Analyze the code files just modified for Step 5.
@@ -59,7 +108,8 @@
     - **Perform Refactor (if needed):** Apply the identified minimal refactoring changes.
     - **Document (if refactored):** Briefly note any refactoring performed in `<sanitized-task-title>-PLAN.md` or as code comments, specifying which standard(s) the refactoring helps satisfy.
 
-## 6. WRITE FAILING TESTS
+### 3.5. WRITE FAILING TESTS
+
 - **Goal:** Define expected behavior via tests, adhering strictly to the testing philosophy.
 - **Actions:**
     - **Consult All Standards:** Review task requirements (`AC Ref:`, `<sanitized-task-title>-PLAN.md`) and adhere to all standards, with particular focus on testing:
@@ -74,14 +124,16 @@
     - Ensure tests currently fail (as appropriate for TDD/BDD style).
 - **Guidance:** Test *behavior*, not implementation. **Aggressively avoid unnecessary mocks.** If mocking seems unavoidable for internal logic, it's a failure signal.
 
-## 7. RUN IMPLEMENTATION & TESTS
+### 3.6. RUN IMPLEMENTATION & TESTS
+
 - **Goal:** Make the implementation code pass the newly written tests.
 - **Actions:**
     - Run the code and tests.
     - Debug and modify the *implementation code* (from Step 4/5) until all tests written in Step 6 pass.
     - **Do NOT modify tests to make them pass unless the test itself was flawed.**
 
-## 8. FINALIZE & COMMIT
+### 3.7. FINALIZE & COMMIT
+
 - **Goal:** Ensure work is complete, passes all checks, and is recorded.
 - **Actions:**
     - **Run Checks & Fix:** Execute linting, building, and the **full test suite**. Fix *any* code issues causing failures.
