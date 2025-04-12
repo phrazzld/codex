@@ -141,4 +141,5 @@
 - **Actions:**
     - **Run Checks & Fix:** Execute linting, building, and the **full test suite**. Fix *any* code issues causing failures.
     - **Update Task Status:** Change the task status in `TODO.MD` from `[~]` (in progress) to `[x]` (complete).
+    - **Remove Task-Specific Reference Files:** Delete <sanitized-task-title>-PLAN.md
     - **Add, Commit, and Push Changes**

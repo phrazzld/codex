@@ -38,10 +38,10 @@
 - **Actions:**
     - Use architect to generate a comprehensive security plan based on findings:
         ```bash
-        architect --instructions SECURITY_AUDIT.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-security-files]
+        architect --instructions SECURITY_AUDIT.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-security-files]
         ```
-        - **Review and Synthesize:** 
-            1. Review all files in the architect_output directory (typically gemini-2.5-pro-exp-03-25.md and gemini-2.0-flash.md)
+        - **Review and Synthesize:**
+            1. Review all files in the architect_output directory
             2. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `SECURITY_PLAN.md`
     - Review the remediation plan in `SECURITY_PLAN.MD`. Verify it includes:
         - A clear executive summary
@@ -49,14 +49,3 @@
         - Severity ratings (Low/Medium/High)
         - Specific remediation steps for each finding
         - Verification procedures to confirm fixes
-
-## 5. Finalize and Commit
-- **Goal:** Save the completed audit documentation to version control.
-- **Actions:**
-    - Ensure both `SECURITY_AUDIT.MD` (containing the detailed logs) and `SECURITY_PLAN.MD` (containing the remediation plan) are saved with the latest information.
-    - Stage both files (`git add SECURITY_AUDIT.MD SECURITY_PLAN.MD`).
-    - Review the staged changes (`git diff --staged`).
-    - Commit using the **Conventional Commits** format:
-        - `chore(security): Conduct security audit and generate remediation plan`
-        - Include a brief summary in the commit body if desired (e.g., "Audit identified X high, Y medium, Z low severity preliminary findings. See SECURITY_PLAN.md for details.").
-    - Report "Security audit and plan committed successfully."

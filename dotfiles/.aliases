@@ -51,3 +51,24 @@ alias yt='yarn test'
 alias meme="$HOME/Development/random-meme.sh"
 alias vcc="v $HOME/Library/Application\ Support/Claude/claude_desktop_config.json"
 alias gsl='git checkout stable && git pull'
+
+# Search with ripgrep and open results in Neovim
+# Usage: vrgi search_term - case insensitive search
+vrgi() {
+  local results=$(rg -il "$@")
+  if [[ -n "$results" ]]; then
+    echo "$results" | xargs nvim
+  else
+    echo "No files found containing: $@"
+  fi
+}
+
+# Usage: vrg search_term - case sensitive search
+vrg() {
+  local results=$(rg -l "$@")
+  if [[ -n "$results" ]]; then
+    echo "$results" | xargs nvim
+  else
+    echo "No files found containing: $@"
+  fi
+}

@@ -16,10 +16,10 @@
         1. Find the top ten most relevant files for task-specific context.
     - **Run Architect:**
         ```bash
-        architect --instructions ticket-task.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-files]
+        architect --instructions ticket-task.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-files]
         ```
-        - **Review and Synthesize:** 
-            1. Review all files in the architect_output directory (typically gemini-2.5-pro-exp-03-25.md and gemini-2.0-flash.md)
+        - **Review and Synthesize:**
+            1. Review all files in the architect_output directory
             2. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `TODO.md`
     - **Handle Errors:** If `architect` fails:
         - Report the specific error message.
@@ -34,4 +34,4 @@
 - **Actions:**
     - **Completeness Check:** Confirm that every Feature and Acceptance Criterion from `PLAN.md` is addressed by at least one task or is noted in the Clarifications section.
     - **Dependency Check:** Review the `Depends On:` fields to ensure the listed dependencies make logical sense and that there are no circular dependencies.
-    - (Optional Cleanup): Remove the temporary `ticket-task.md` file.
+    - Remove the temporary `ticket-task.md` file.

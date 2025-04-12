@@ -5,6 +5,11 @@ plugins=(
   zsh-syntax-highlighting
 )
 
+# Add Homebrew's zsh site-functions to fpath (for Apple Silicon)
+if [[ -d /opt/homebrew/share/zsh/site-functions ]]; then
+  fpath=(/opt/homebrew/share/zsh/site-functions $fpath)
+fi
+
 # Source environment, functions, and aliases
 source $HOME/.env
 source $HOME/.aliases

@@ -1,9 +1,7 @@
 # BREATHE
 
-**(Invoked because current progress may be suboptimal or divergent)**
-
 ## 1. PAUSE & RESET
-- **Action:** Immediately halt the current execution step or thought process. Clear any short-term assumptions about the immediate next action.
+- **Action:** Clear any short-term assumptions about the immediate next action.
 
 ## 2. RE-GROUND IN CONTEXT
 - **Goal:** Re-establish verifiable context for the current task.
@@ -13,7 +11,7 @@
     - Re-read relevant section(s) and AC Ref in `TODO.MD`.
     - **Review our standards documents relevant to the current issue:**
       - `CORE_PRINCIPLES.md` for fundamental design principles
-      - `ARCHITECTURE_GUIDELINES.md` for structural patterns 
+      - `ARCHITECTURE_GUIDELINES.md` for structural patterns
       - `CODING_STANDARDS.md` for implementation practices
       - `TESTING_STRATEGY.md` for testing approaches
       - `DOCUMENTATION_APPROACH.md` for documentation practices
@@ -21,7 +19,7 @@
 
 ## 3. CRITICAL SELF-ASSESSMENT
 - **Goal:** Evaluate the *current state* of your work against the grounded context.
-- **Actions:** 
+- **Actions:**
     - Create a file called `breathe-assessment.md`.
     - Copy the content from `prompts/breathe.md` to the file.
     - Add the current task context at the top:
@@ -34,8 +32,8 @@
         ```bash
         architect --instructions breathe-assessment.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-files-to-task]
         ```
-        - **Review and Synthesize:** 
-            1. Review all files in the architect_output directory (typically gemini-2.5-pro-exp-03-25.md and gemini-2.0-flash.md)
+        - **Review and Synthesize:**
+            1. Review all files in the architect_output directory
             2. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `BREATHE_RESULT.md`
     - Review the `BREATHE_RESULT.md` file.
 
@@ -52,7 +50,7 @@
         - Non-compliance with any of our standards
         - Design flaws revealed through implementation
         - A demonstrably better alternative exists
-        
+
         Then:
         - State: "Assessment complete. Course correction recommended."
         - **Summarize Problem:** Explain *why*, referencing the specific standard being violated (e.g., "Current approach violates simplicity principle in CORE_PRINCIPLES.md by introducing unnecessary abstraction," "Implementation mixes concerns contrary to ARCHITECTURE_GUIDELINES.md," "Current approach requires excessive mocking violating TESTING_STRATEGY.md," "Code doesn't follow type usage recommendations in CODING_STANDARDS.md").
