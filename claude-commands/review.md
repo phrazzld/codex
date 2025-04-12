@@ -18,7 +18,9 @@ Run git diff against the master branch (or relevant base branch) and append the 
 
 # 3. Ask architect to run the code review.
 - Find the top ten most relevant files for additional context
-- Run architect --instructions diff.md --output CODE_REVIEW.md docs/philosophy/ [top-ten-relevant-files]
+- Run architect --instructions diff.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [top-ten-relevant-files]
+- Review all files in the architect_output directory (typically gemini-2.5-pro-exp-03-25.md and gemini-2.0-flash.md)
+- ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `CODE_REVIEW.md`
 - If you encounter an error, write the full log output -- including the error -- to a logfile. Then try again.
 
 # 4. Review the Code Review (CODE_REVIEW.MD)

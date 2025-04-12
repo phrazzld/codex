@@ -68,7 +68,9 @@
     - **Find Task Context:**
         1. Find the top ten most relevant files for task-specific context
     - **Run Architect:**
-        1. Run `architect --instructions <sanitized-task-title>-TASK.md --output <sanitized-task-title>-PLAN.md docs/philosophy/ [top-ten-relevant-files]`
+        1. Run `architect --instructions <sanitized-task-title>-TASK.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [top-ten-relevant-files]`
+        2. After architect finishes, review all files in the architect_output directory (typically gemini-2.5-pro-exp-03-25.md and gemini-2.0-flash.md).
+        3. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `<sanitized-task-title>-PLAN.md`
     - If you encounter an error, write it to a persistent logfile and try again.
     - Report success/failure. Stop on unresolvable errors.
     - **Review Plan:** Verify the implementation plan aligns with our standards hierarchy:
@@ -123,7 +125,6 @@
         - For testability issues: Reduce coupling, extract pure functions, improve interfaces
         - For documentation issues: Clarify design decisions with appropriate comments
     - **Perform Refactor:** Apply the identified refactoring changes while ensuring tests continue to pass.
-    - **Document (if refactored):** Briefly note any refactoring performed in `<sanitized-task-title>-PLAN.md` or as code comments, specifying which standard(s) the refactoring helps satisfy.
 
 ### 3.6. VERIFY ALL TESTS PASS
 

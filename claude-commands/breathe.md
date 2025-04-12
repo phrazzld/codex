@@ -32,8 +32,11 @@
         ```
     - Run the assessment through architect:
         ```bash
-        architect --instructions breathe-assessment.md --output BREATHE_RESULT.md docs/philosophy/ [relevant-files-to-task]
+        architect --instructions breathe-assessment.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-files-to-task]
         ```
+        - **Review and Synthesize:** 
+            1. Review all files in the architect_output directory (typically gemini-2.5-pro-exp-03-25.md and gemini-2.0-flash.md)
+            2. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `BREATHE_RESULT.md`
     - Review the `BREATHE_RESULT.md` file.
 
 ## 4. REPORT FINDINGS & RECOMMENDATION

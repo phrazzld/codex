@@ -51,8 +51,11 @@
         - Adding current bug analysis state at the top (bug description, current hypotheses, test results)
     - Run architect with the debug request:
         ```bash
-        architect --instructions DEBUG-REQUEST.md --output DEBUG-ANALYSIS.md docs/philosophy/ [relevant-files-to-bug]
+        architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-files-to-bug]
         ```
+        - **Review and Synthesize:** 
+            1. Review all files in the architect_output directory (typically gemini-2.5-pro-exp-03-25.md and gemini-2.0-flash.md)
+            2. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `DEBUG-ANALYSIS.md`
     - Review architect's analysis in `DEBUG-ANALYSIS.md` and:
         - Update the status of tested hypotheses in the `Hypotheses:` section of `BUGFIXPLAN.md`.
         - If the root cause is not yet clear:

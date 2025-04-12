@@ -37,8 +37,11 @@
     - **Run Architect:** 
         1. Run the following command:
         ```bash
-        architect --instructions TASK-PROMPT.md --output PLAN.md docs/philosophy/ [top-ten-relevant-files]
+        architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [top-ten-relevant-files]
         ```
+        - **Review and Synthesize:** 
+            1. Review all files in the architect_output directory (typically gemini-2.5-pro-exp-03-25.md and gemini-2.0-flash.md)
+            2. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `PLAN.md`
     - **Handle Errors:** If `architect` fails:
         - Report the specific error message.
         - Write the error to a persistent log file.
