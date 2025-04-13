@@ -1,9 +1,8 @@
 # CONSULT
-## 1. SELECT TASK AND FORMULATE CONSULTATION REQUEST
-- **Goal:** Select a task and clearly articulate the problem or need for guidance in a dedicated file.
+## 1. FORMULATE CONSULTATION REQUEST FOR CURRENT TASK
+- **Goal:** Clearly articulate the problem or need for guidance on the current task you're struggling with.
 - **Actions:**
-    - **Select Task:** If not already working on a task, scan `TODO.MD` for tasks marked `[ ]` (incomplete). Select the first task found whose prerequisites listed in its `Depends On:` field are already marked `[x]` (complete) or are 'None'. Record the exact Task Title.
-    - **Mark In-Progress:** After selecting a task, update it in `TODO.MD` by changing `[ ]` to `[~]` to indicate it's in progress.
+    - **Current Task Focus:** This command addresses the task you are actively working on and having difficulties with. Do not select a new task.
     - Create a new file named `CONSULT-REQUEST.md`.
     - ***Think hard*** and populate this file with:
         - **`Goal:`** Original objective (Reference task/plan).
