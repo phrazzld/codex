@@ -37,7 +37,7 @@
     - **Run Architect:**
         1. Run the following command:
         ```bash
-        architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [top-ten-relevant-files]
+        architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
         ```
         - **Review and Synthesize:**
             1. Review all files in the architect_output directory

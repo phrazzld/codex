@@ -20,7 +20,7 @@
         - Adding current bug analysis state at the top (bug description, reproduction steps, etc.)
     - Run architect with the debug request:
         ```bash
-        architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-files-to-bug]
+        architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [relevant-files-to-bug]
         ```
     - Review all files in the architect_output directory and create `DEBUG-ANALYSIS.md` that combines insights from all outputs
     - Add `BUGFIXPLAN.md` to Git tracking (`git add BUGFIXPLAN.md`).
@@ -53,7 +53,7 @@
     - Update the `DEBUG-REQUEST.md` with new test results and insights.
     - Run architect again with the updated request:
         ```bash
-        architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-files-to-bug]
+        architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [relevant-files-to-bug]
         ```
     - Update `DEBUG-ANALYSIS.md` with new insights from architect outputs.
 
@@ -77,7 +77,7 @@
     - Update `DEBUG-REQUEST.md` with the proposed fix design.
     - Run architect with the fix proposal:
         ```bash
-        architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-files-to-bug]
+        architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [relevant-files-to-bug]
         ```
     - Review architect's feedback in the outputs and update `DEBUG-ANALYSIS.md`.
     - Refine the fix approach based on architect's insights if needed.

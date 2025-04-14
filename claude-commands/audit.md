@@ -38,7 +38,7 @@
 - **Actions:**
     - Use architect to generate a comprehensive security plan based on findings:
         ```bash
-        architect --instructions SECURITY_AUDIT.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/philosophy/ [relevant-security-files]
+        architect --instructions SECURITY_AUDIT.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [relevant-security-files]
         ```
         - **Review and Synthesize:**
             1. Review all files in the architect_output directory
