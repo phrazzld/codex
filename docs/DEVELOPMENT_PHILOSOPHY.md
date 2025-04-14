@@ -215,7 +215,7 @@ This section defines the concrete rules, conventions, and best practices for wri
 
 ## 7. Mandatory Linting: Catch Problems Proactively
 
-**Standard:** All code committed to the repository *must* pass analysis by the designated standard linter(s) using a strict, shared configuration.
+**Standard:** All code committed to the repository *must* pass analysis by the designated standard linter(s) using a strict, shared configuration. Pre-commit hooks must **never** be bypassed with `--no-verify`.
 
 **Rationale:** Linters act as automated code reviewers, identifying potential bugs, anti-patterns, stylistic inconsistencies, performance issues, and deviations from best practices *before* they are manually reviewed or merged. This improves overall code quality, consistency, and *Maintainability*. Supports *Automation*.
 
@@ -223,6 +223,7 @@ This section defines the concrete rules, conventions, and best practices for wri
 * **TypeScript:** **ESLint** is mandatory, configured with relevant plugins (e.g., `@typescript-eslint/eslint-plugin`, framework-specific plugins, accessibility plugins). A shared `.eslintrc.js` (or similar) configuration file must be checked into the repository.
 * **Go:** **`golangci-lint`** is mandatory. A shared `.golangci.yml` configuration file specifying the enabled linters and their settings must be checked into the repository. Aim for a comprehensive and strict set of enabled linters.
 * Integrate linting into pre-commit hooks and CI pipeline checks, treating violations as build failures.
+* **IMPORTANT:** It is *strictly forbidden* to bypass pre-commit hooks with `git commit --no-verify`. Address issues properly rather than circumventing checks.
 
 ## 8. Address Violations, Don't Suppress: Fix the Root Cause
 
