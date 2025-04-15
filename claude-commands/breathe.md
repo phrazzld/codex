@@ -9,19 +9,14 @@
     - Identify the **exact** Task Title you are currently working on from `TODO.MD`.
     - Locate and carefully re-read the corresponding `<task-title>-PLAN.md` file.
     - Re-read relevant section(s) and AC Ref in `TODO.MD`.
-    - **Review our standards documents relevant to the current issue:**
-      - `docs/DEVELOPMENT_PHILOSOPHY.md#core-principles` for fundamental design principles
-      - `docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines` for structural patterns
-      - `docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards` for implementation practices
-      - `docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy` for testing approaches
-      - `docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach` for documentation practices
+    - **Review our `DEVELOPMENT_PHILOSOPHY.md` file and relate to the current issue:**
     - If necessary, briefly review the original `PLAN.MD` section.
 
 ## 3. CRITICAL SELF-ASSESSMENT
 - **Goal:** Evaluate the *current state* of your work against the grounded context.
 - **Actions:**
     - Create a file called `breathe-assessment.md`.
-    - Copy the content from `prompts/breathe.md` to the file.
+    - Copy the content from `$DEVELOPMENT/codex/docs/prompts/breathe.md` to the file.
     - Add the current task context at the top:
         ```markdown
         ## Task Context
@@ -53,7 +48,7 @@
 
         Then:
         - State: "Assessment complete. Course correction recommended."
-        - **Summarize Problem:** Explain *why*, referencing the specific standard being violated (e.g., "Current approach violates simplicity principle in docs/DEVELOPMENT_PHILOSOPHY.md#core-principles by introducing unnecessary abstraction," "Implementation mixes concerns contrary to docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines," "Current approach requires excessive mocking violating docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy," "Code doesn't follow type usage recommendations in docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards").
+        - **Summarize Problem:** Explain *why*, referencing the specific `DEVELOPMENT_PHILOSOPHY.md` standard / principle being violated.
         - **Propose New Approach:** Outline the proposed fix or alternative (e.g., "Propose refactoring component X for better testability before proceeding," "Suggest switching to alternative approach Q."). Consider invoking `propose-testable-refactor` or `consult` if appropriate.
         - State: "Awaiting confirmation to proceed."
         - (Do **not** proceed until confirmation).

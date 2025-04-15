@@ -73,24 +73,14 @@
         3. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `<sanitized-task-title>-PLAN.md`
     - If you encounter an error, write it to a persistent logfile and try again.
     - Report success/failure. Stop on unresolvable errors.
-    - **Review Plan:** Verify the implementation plan aligns with our standards hierarchy:
-        1. Simplicity and clarity over cleverness (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)
-        2. Clean separation of concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)
-        3. Straightforward testability with minimal mocking (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)
-        4. Adherence to coding conventions (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
-        5. Support for clear documentation (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)
+    - **Review Plan:** Verify the implementation plan aligns with our development philosophy (ie `DEVELOPMENT_PHILOSOPHY.md`)
     - Remove `<sanitized-task-title>-TASK.md`.
 
 ### 3.3. WRITE FAILING TESTS
 
 - **Goal:** Define expected behavior via tests, adhering strictly to the testing philosophy.
 - **Actions:**
-    - **Consult All Standards:** Review task requirements (`AC Ref:`, `<sanitized-task-title>-PLAN.md`) and adhere to all standards, with particular focus on testing:
-        - Ensure tests reflect the simplicity principle (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)
-        - Test through public interfaces as defined in the architecture (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)
-        - Follow coding standards in test code too (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
-        - **Strictly adhere to testing principles, avoiding mocks of internal components** (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)
-        - Document test rationale where needed (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)
+    - **Consult All Standards:** Review task requirements (`AC Ref:`, `<sanitized-task-title>-PLAN.md`) and adhere to all standards in our `DEVELOPMENT_PHILOSOPHY.md` document.
     - **Write Happy Path Tests:** Write the minimum tests needed to verify the core *behavior* for the happy path, focusing on the public interface. **Prioritize tests that avoid mocking internal components.**
     - **Write Critical Edge Case Tests:** Add tests for important error conditions or edge cases identified.
     - **Verify Test Simplicity:** ***Think hard*** - "Are these tests simple? Do they avoid complex setup? Do they rely on mocking internal code? If yes, reconsider the test approach itself."
@@ -101,7 +91,7 @@
 
 - **Goal:** Write the minimal code needed to make tests pass (green).
 - **Actions:**
-    - **Consult Standards:** Review `CONTRIBUTING.MD`, `CODING_STANDARDS.md`, `ARCHITECTURE_GUIDELINES.md`, etc.
+    - **Consult Standards:** Review `DEVELOPMENT_PHILOSOPHY.md`
     - **Write Code:** Implement the functionality based on `<sanitized-task-title>-PLAN.md` that satisfies the failing tests.
     - **Focus on Passing Tests:** Initially implement just enough code to make tests pass, deferring optimization.
     - **Adhere Strictly:** Follow project standards and the chosen plan.
@@ -112,12 +102,7 @@
 - **Goal:** Improve code quality while maintaining passing tests.
 - **Actions:**
     - **Review Code:** Analyze the code files just implemented to ensure they pass tests.
-    - **Assess Standards Compliance:** ***Think hard*** and evaluate against all standards:
-        - **Core Principles:** "Does this implementation embrace simplicity? Does it have clear responsibilities? Is it explicit rather than implicit?" (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)
-        - **Architecture:** "Is there clean separation between core logic and infrastructure? Are dependencies pointing inward?" (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)
-        - **Code Quality:** "Does it follow our coding conventions? Does it leverage types effectively? Does it prefer immutability?" (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
-        - **Testability:** "Can this code be tested simply? Does it require complex setup or extensive mocking of internal components?" (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)
-        - **Documentation:** "Are design decisions clear? Would comments explain the 'why' not just the 'what'?" (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)
+    - **Assess Standards Compliance:** ***Think hard*** and evaluate against our `DEVELOPMENT_PHILOSOPHY.md` document.
     - **Identify Refactors:** If any standard is not met, identify the **minimal necessary refactoring** to address the issues:
         - For simplicity issues: Extract responsibilities, reduce complexity
         - For architectural issues: Improve separation of concerns, realign dependencies

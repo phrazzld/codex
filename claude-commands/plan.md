@@ -22,7 +22,7 @@
 
 ## 3. PREPARE TASK FILE
 - Create a file named `TASK-PROMPT.md`.
-- Copy the content from `prompts/plan.md` as the base for your task prompt.
+- Copy the content from `$DEVELOPMENT/codex/docs/prompts/plan.md` as the base for your task prompt.
 - Add the following to the top of the file, before the existing content:
     ```markdown
     ## Task Description
@@ -53,12 +53,7 @@
     - Read the generated `PLAN.MD`.
     - **Verify Content:** Ensure the plan contains detailed steps, approaches, considerations (especially testability evaluations), and potential challenges.
     - **Verify Scope:** Ensure the plan represents a single atomic unit of functionality that can be implemented in one pull request.
-    - **Verify Standards Alignment:** Confirm the plan aligns with our standards hierarchy:
-      1. First, prioritizes simplicity and clarity (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)
-      2. Second, ensures strong separation of concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)
-      3. Third, maximizes testability with minimal mocking (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)
-      4. Fourth, follows idiomatic coding patterns (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
-      5. Fifth, supports clear documentation of design decisions (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)
+    - **Verify Standards Alignment:** Confirm the plan aligns with our development philosophy (ie check the `DEVELOPMENT_PHILOSOPHY.md` document):
     - (Optional Cleanup): Remove the temporary `TASK-PROMPT.md` file.
 
 ## 6. CHECKOUT BRANCH

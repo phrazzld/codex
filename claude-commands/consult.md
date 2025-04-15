@@ -6,12 +6,7 @@
     - Create a new file named `CONSULT-REQUEST.md`.
     - ***Think hard*** and populate this file with:
         - **`Goal:`** Original objective (Reference task/plan).
-        - **`Problem/Blocker:`** Specific issue. Relate it to our standards documents if applicable:
-          - **Design issues:** Explain how it violates principles in `docs/DEVELOPMENT_PHILOSOPHY.md#core-principles` (e.g., "Creates unnecessary complexity," "Violates modularity")
-          - **Architecture issues:** Describe conflicts with `docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines` (e.g., "Mixes concerns," "Creates circular dependencies")
-          - **Code quality issues:** Note violations of `docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards` (e.g., "Uses unsafe type assertions," "Creates mutable shared state")
-          - **Testing issues:** Explain conflicts with `docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy` (e.g., "Requires extensive mocking of internal components," "Cannot test behavior without fragile implementation coupling")
-          - **Documentation issues:** Indicate problems related to `docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach` (e.g., "Cannot document rationale clearly," "Creates unintuitive interfaces")
+        - **`Problem/Blocker:`** Specific issue. Relate it to our `DEVELOPMENT_PHILOSOPHY.md` document where able.
         - **`Context/History:`** Steps taken, attempts made (Reference `*-PLAN.md`, `BUGFIXPLAN.md`, etc.).
         - **`Key Files/Code Sections:`** Specific code areas involved.
         - **`Error Messages (if any):`** Relevant output.
@@ -36,13 +31,7 @@
 - **Goal:** Understand and review the implementation plan from architect.
 - **Actions:**
     - Read the architect-generated plan in `CONSULTANT-PLAN.md`.
-    - **Verify Standards Alignment:** Confirm the plan aligns with our complete standards framework:
-      - Promotes simplicity and minimizes complexity (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)
-      - Maintains strong separation of concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)
-      - Follows established coding conventions (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
-      - Enables straightforward testing with minimal mocking (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)
-      - Supports clear documentation of rationale (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)
-
+    - **Verify Standards Alignment:** Confirm the plan aligns with our `DEVELOPMENT_PHILOSOPHY.md`.
 ## 4. Execute Plan
 - **Goal:** Execute the plan to resolve the original issue.
 - **Actions:**

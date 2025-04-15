@@ -5,7 +5,7 @@
 - **Goal:** Create a dedicated prompt file for `architect` to generate task tickets.
 - **Actions:**
     - Create a new file called `ticket-task.md`.
-    - Copy the content from `docs/prompts/ticket.md` into `ticket-task.md`.
+    - Copy the content from `$DEVELOPMENT/codex/docs/prompts/ticket.md` into `ticket-task.md`.
     - Read the full content of `PLAN.md` and append it to `ticket-task.md` under a section titled "## Implementation Plan".
 
 ## 2. Generate Task Breakdown with Architect

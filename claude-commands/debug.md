@@ -16,7 +16,7 @@
         - `Fix Description:` (Initially empty)
         - `Status:` Investigating
     - Create a debug request file `DEBUG-REQUEST.md` by:
-        - Copying the content from `prompts/debug.md` as the base template
+        - Copying the content from `$DEVELOPMENT/codex/docs/prompts/debug.md` as the base template
         - Adding current bug analysis state at the top (bug description, reproduction steps, etc.)
     - Run architect with the debug request:
         ```bash

@@ -8,7 +8,7 @@
 - **Actions:**
     - Identify your current task and goals
     - Review key files and requirements related to your task
-    - Revisit relevant standards in `docs/philosophy/` if applicable
+    - Revisit our `DEVELOPMENT_PHILOSOPHY.md` file
 
 ## 3. SELF-ASSESSMENT
 - **Goal:** Honestly evaluate your current approach without external tools.
