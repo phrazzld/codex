@@ -32,12 +32,10 @@
 ## 4. GENERATE PLAN WITH ARCHITECT
 - **Goal:** Use `architect` to generate potential implementation plans based on the properly scoped task description and project context.
 - **Actions:**
-    - **Find Task Context:**
-        1. Find the top ten most relevant files for task-specific context
     - **Run Architect:**
         1. Run the following command:
         ```bash
-        architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
+        architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash ./
         ```
         - **Review and Synthesize:**
             1. Review all files in the architect_output directory
@@ -56,11 +54,11 @@
     - **Verify Content:** Ensure the plan contains detailed steps, approaches, considerations (especially testability evaluations), and potential challenges.
     - **Verify Scope:** Ensure the plan represents a single atomic unit of functionality that can be implemented in one pull request.
     - **Verify Standards Alignment:** Confirm the plan aligns with our standards hierarchy:
-      1. First, prioritizes simplicity and clarity (`CORE_PRINCIPLES.md`)
-      2. Second, ensures strong separation of concerns (`ARCHITECTURE_GUIDELINES.md`)
-      3. Third, maximizes testability with minimal mocking (`TESTING_STRATEGY.md`)
-      4. Fourth, follows idiomatic coding patterns (`CODING_STANDARDS.md`)
-      5. Fifth, supports clear documentation of design decisions (`DOCUMENTATION_APPROACH.md`)
+      1. First, prioritizes simplicity and clarity (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)
+      2. Second, ensures strong separation of concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)
+      3. Third, maximizes testability with minimal mocking (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)
+      4. Fourth, follows idiomatic coding patterns (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
+      5. Fifth, supports clear documentation of design decisions (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)
     - (Optional Cleanup): Remove the temporary `TASK-PROMPT.md` file.
 
 ## 6. CHECKOUT BRANCH

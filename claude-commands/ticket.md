@@ -12,11 +12,9 @@
 
 - **Goal:** Use `architect` to generate a detailed, actionable list of tasks required to implement the plan.
 - **Actions:**
-    - **Find Relevant Context:**
-        1. Find the top ten most relevant files for task-specific context.
     - **Run Architect:**
         ```bash
-        architect --instructions ticket-task.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [relevant-files]
+        architect --instructions ticket-task.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash ./
         ```
         - **Review and Synthesize:**
             1. Review all files in the architect_output directory

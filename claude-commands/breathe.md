@@ -10,11 +10,11 @@
     - Locate and carefully re-read the corresponding `<task-title>-PLAN.md` file.
     - Re-read relevant section(s) and AC Ref in `TODO.MD`.
     - **Review our standards documents relevant to the current issue:**
-      - `CORE_PRINCIPLES.md` for fundamental design principles
-      - `ARCHITECTURE_GUIDELINES.md` for structural patterns
-      - `CODING_STANDARDS.md` for implementation practices
-      - `TESTING_STRATEGY.md` for testing approaches
-      - `DOCUMENTATION_APPROACH.md` for documentation practices
+      - `docs/DEVELOPMENT_PHILOSOPHY.md#core-principles` for fundamental design principles
+      - `docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines` for structural patterns
+      - `docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards` for implementation practices
+      - `docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy` for testing approaches
+      - `docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach` for documentation practices
     - If necessary, briefly review the original `PLAN.MD` section.
 
 ## 3. CRITICAL SELF-ASSESSMENT
@@ -53,7 +53,7 @@
 
         Then:
         - State: "Assessment complete. Course correction recommended."
-        - **Summarize Problem:** Explain *why*, referencing the specific standard being violated (e.g., "Current approach violates simplicity principle in CORE_PRINCIPLES.md by introducing unnecessary abstraction," "Implementation mixes concerns contrary to ARCHITECTURE_GUIDELINES.md," "Current approach requires excessive mocking violating TESTING_STRATEGY.md," "Code doesn't follow type usage recommendations in CODING_STANDARDS.md").
+        - **Summarize Problem:** Explain *why*, referencing the specific standard being violated (e.g., "Current approach violates simplicity principle in docs/DEVELOPMENT_PHILOSOPHY.md#core-principles by introducing unnecessary abstraction," "Implementation mixes concerns contrary to docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines," "Current approach requires excessive mocking violating docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy," "Code doesn't follow type usage recommendations in docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards").
         - **Propose New Approach:** Outline the proposed fix or alternative (e.g., "Propose refactoring component X for better testability before proceeding," "Suggest switching to alternative approach Q."). Consider invoking `propose-testable-refactor` or `consult` if appropriate.
         - State: "Awaiting confirmation to proceed."
         - (Do **not** proceed until confirmation).
