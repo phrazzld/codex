@@ -19,7 +19,7 @@
 
 - **Goal:** Determine a systematic, cautious approach to resolving each conflicted file while preserving intended functionality from both sources.
 - **Actions:**
-    - **Review Standards:** Locate and review project documentation for coding standards (`CODING_STANDARDS.md`, `CORE_PRINCIPLES.md`) to ensure your resolution adheres to project conventions.
+    - **Review Standards:** Locate and review project documentation for coding standards (`DEVELOPMENT_PHILOSOPHY.md`) to ensure your resolution adheres to project conventions.
     - **Identify Dependencies:** Determine if conflicts span multiple files that must be resolved as a cohesive unit.
     - **Prioritize Approach:** Explicitly decide on the appropriate resolution approach for each file:
         - **Keep Ours:** When our changes should clearly take precedence

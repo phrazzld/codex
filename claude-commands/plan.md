@@ -22,7 +22,7 @@
 
 ## 3. PREPARE TASK FILE
 - Create a file named `TASK-PROMPT.md`.
-- Copy the content from `prompts/plan.md` as the base for your task prompt.
+- Copy the content from `$DEVELOPMENT/codex/docs/prompts/plan.md` as the base for your task prompt.
 - Add the following to the top of the file, before the existing content:
     ```markdown
     ## Task Description
@@ -32,12 +32,10 @@
 ## 4. GENERATE PLAN WITH ARCHITECT
 - **Goal:** Use `architect` to generate potential implementation plans based on the properly scoped task description and project context.
 - **Actions:**
-    - **Find Task Context:**
-        1. Find the top ten most relevant files for task-specific context
     - **Run Architect:**
         1. Run the following command:
         ```bash
-        architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
+        architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash ./
         ```
         - **Review and Synthesize:**
             1. Review all files in the architect_output directory
@@ -55,12 +53,7 @@
     - Read the generated `PLAN.MD`.
     - **Verify Content:** Ensure the plan contains detailed steps, approaches, considerations (especially testability evaluations), and potential challenges.
     - **Verify Scope:** Ensure the plan represents a single atomic unit of functionality that can be implemented in one pull request.
-    - **Verify Standards Alignment:** Confirm the plan aligns with our standards hierarchy:
-      1. First, prioritizes simplicity and clarity (`CORE_PRINCIPLES.md`)
-      2. Second, ensures strong separation of concerns (`ARCHITECTURE_GUIDELINES.md`)
-      3. Third, maximizes testability with minimal mocking (`TESTING_STRATEGY.md`)
-      4. Fourth, follows idiomatic coding patterns (`CODING_STANDARDS.md`)
-      5. Fifth, supports clear documentation of design decisions (`DOCUMENTATION_APPROACH.md`)
+    - **Verify Standards Alignment:** Confirm the plan aligns with our development philosophy (ie check the `DEVELOPMENT_PHILOSOPHY.md` document):
     - (Optional Cleanup): Remove the temporary `TASK-PROMPT.md` file.
 
 ## 6. CHECKOUT BRANCH

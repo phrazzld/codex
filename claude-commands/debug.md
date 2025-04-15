@@ -16,14 +16,13 @@
         - `Fix Description:` (Initially empty)
         - `Status:` Investigating
     - Create a debug request file `DEBUG-REQUEST.md` by:
-        - Copying the content from `prompts/debug.md` as the base template
+        - Copying the content from `$DEVELOPMENT/codex/docs/prompts/debug.md` as the base template
         - Adding current bug analysis state at the top (bug description, reproduction steps, etc.)
     - Run architect with the debug request:
         ```bash
         architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [relevant-files-to-bug]
         ```
     - Review all files in the architect_output directory and create `DEBUG-ANALYSIS.md` that combines insights from all outputs
-    - Add `BUGFIXPLAN.md` to Git tracking (`git add BUGFIXPLAN.md`).
 
 ## 2. Formulate Initial Hypotheses
 - **Goal:** Generate plausible explanations for the bug based on available information.
@@ -87,17 +86,6 @@
         - Execute the original `Reproduction Steps:` from `BUG.MD`/`BUGFIXPLAN.md`. Confirm the `Actual Behavior:` now matches the `Expected Behavior:`.
         - Run all relevant automated tests (unit, integration). Ensure they pass. If the fix required test changes, ensure they are logical and also committed.
     - If verification fails, update `BUGFIXPLAN.md`, revert the fix attempt, and return to Step 4 to re-evaluate the root cause or fix approach.
-
-## 6. Finalize and Commit
-- **Goal:** Commit the validated fix and updated documentation.
-- **Actions:**
-    - Update the `Status:` in `BUGFIXPLAN.md` to `Resolved`.
-    - Stage all changed code files, test files (if any), and the updated `BUGFIXPLAN.md` (`git add`).
-    - Review the final diff (`git diff --staged`).
-    - Commit using the **Conventional Commits** format:
-        - Message: `fix: [Concise description of the fix, e.g., resolve issue causing incorrect calculation]`
-        - Body: Include a reference to the bug report/plan (e.g., `Fixes issue described in BUGFIXPLAN.md (or reference BUG.md/ticket # if applicable). Root cause identified as [...].`)
-    - Report "Fix committed successfully."
 
 ## (Escape Clause) Handle Blockers
 - **Action:** If at any point (especially during Step 3/4/5) you are unable to make progress, cannot identify a root cause after multiple iterations, or cannot implement/verify a fix:

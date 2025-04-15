@@ -13,11 +13,11 @@ Perform a critical self-assessment based on the provided Task Plan, Work State, 
 3. **Progress:** Is tangible progress being made, or are you stuck/looping?
 
 4. **Compliance Check:** Does the current direction and implementation *fully* comply with:
-   * Simplicity and modularity (`CORE_PRINCIPLES.md`)?
-   * Architectural patterns and separation of concerns (`ARCHITECTURE_GUIDELINES.md`)?
-   * Coding conventions (`CODING_STANDARDS.md`)?
-   * Testing principles (minimal mocking, testability) (`TESTING_STRATEGY.md`)?
-   * Documentation approaches (`DOCUMENTATION_APPROACH.md`)?
+   * Simplicity and modularity (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)?
+   * Architectural patterns and separation of concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)?
+   * Coding conventions (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)?
+   * Testing principles (minimal mocking, testability) (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)?
+   * Documentation approaches (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)?
 
 5. **Standards-Based Evaluation (Detail):**
    * **Simplicity:** Overly complex? Clear responsibilities?
@@ -38,6 +38,6 @@ Based on your assessment above:
 * **If *any* issues identified (deviation, inefficiency, lack of progress, non-compliance, better alternative):**
     Respond with:
     "Assessment complete. Course correction recommended."
-    **Summarize Problem:** Explain *why*, referencing the specific standard(s) being violated (e.g., "Violates simplicity in CORE_PRINCIPLES.md...", "Mixes concerns per ARCHITECTURE_GUIDELINES.md...", "Requires excessive mocking per TESTING_STRATEGY.md...").
+    **Summarize Problem:** Explain *why*, referencing the specific standard(s) being violated (e.g., "Violates simplicity in docs/DEVELOPMENT_PHILOSOPHY.md#core-principles...", "Mixes concerns per docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines...", "Requires excessive mocking per docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy...").
     **Propose New Approach:** Outline the specific correction needed (e.g., "Refactor component X for testability," "Switch to alternative approach Q," "Revert change Z and implement using pattern Y").
     "Awaiting confirmation to proceed."
