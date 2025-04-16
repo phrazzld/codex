@@ -13,7 +13,7 @@
 
 ## 3. Prepare Task File
 - Create `TASK-PROMPT.md`.
-- Copy content from `$DEVELOPMENT/codex/docs/prompts/plan.md`.
+- Copy content from `docs/prompts/plan.md`.
 - Add `## Task Description\n[Scoped task description]` at the top.
 
 ## 4. Generate Plan with Architect

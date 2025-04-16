@@ -2,7 +2,7 @@
 
 ## 1. Create Ticket Task File
 - Create `ticket-task.md`.
-- Copy content from `$DEVELOPMENT/codex/docs/prompts/ticket.md`.
+- Copy content from `docs/prompts/ticket.md`.
 - Append full content of `PLAN.md` under `## Implementation Plan`.
 
 ## 2. Generate Task Breakdown

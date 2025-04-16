@@ -9,7 +9,7 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 
 ## 2. Prepare Prompt File
 - Create `IDEATE-PROMPT.md`.
-- Copy content from `$DEVELOPMENT/codex/docs/prompts/ideate.md`.
+- Copy content from `docs/prompts/ideate.md`.
 - Add current backlog content as context:
   ```
   ## Current Backlog

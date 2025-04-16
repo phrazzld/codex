@@ -2,7 +2,7 @@
 
 ## 1. Create task.md
 - Create `task.md`.
-- Copy content from `$DEVELOPMENT/codex/docs/prompts/refactor.md`.
+- Copy content from `docs/prompts/refactor.md`.
 
 ## 2. Run architect
 - Run:

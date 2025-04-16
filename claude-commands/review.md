@@ -2,7 +2,7 @@
 
 ## 1. Create diff.md
 - Create `diff.md`.
-- Copy content from `$DEVELOPMENT/codex/docs/prompts/review.md`.
+- Copy content from `docs/prompts/review.md`.
 - Add `## Diff` section at the end.
 
 ## 2. Generate Diff

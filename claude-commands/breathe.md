@@ -12,7 +12,7 @@
 
 ## 3. Critical Self-Assessment
 - Create `breathe-assessment.md`.
-- Copy content from `$DEVELOPMENT/codex/docs/prompts/breathe.md`.
+- Copy content from `docs/prompts/breathe.md`.
 - Add context: `## Task Context\n- **Task:** [Current task title]\n- **Work State:** [Summary of progress/challenges]`
 - Run architect:
     ```bash
