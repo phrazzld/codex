@@ -16,7 +16,7 @@
 - **3.1 Prep Prompt:** Create `<sanitized-task-title>-TASK.md` (copy `prompts/execute.md`, add Task ID/details).
 - **3.2 Gen Plan:**
     - Find top 10 relevant context files.
-    - Run architect: `architect --instructions <sanitized-task-title>-TASK.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]`
+    - Run architect: `architect --instructions <sanitized-task-title>-TASK.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash --model gemini-2.5-pro-preview-03-25 DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]`
     - Review outputs & ***Think hard*** to synthesize into `<sanitized-task-title>-PLAN.md`.
     - Handle errors (log, retry). Stop if unresolvable.
     - Review plan against `DEVELOPMENT_PHILOSOPHY.md`. Remove TASK file.

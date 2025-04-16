@@ -25,7 +25,7 @@
 - **Actions:**
     - Generate plan using architect:
         ```bash
-        architect --instructions SECURITY_AUDIT.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash ./
+        architect --instructions SECURITY_AUDIT.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash --model gemini-2.5-pro-preview-03-25 ./
         ```
     - **Review & Synthesize:**
         1. Review all `architect_output` files.

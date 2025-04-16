@@ -16,7 +16,7 @@
 - Add context: `## Task Context\n- **Task:** [Current task title]\n- **Work State:** [Summary of progress/challenges]`
 - Run architect:
     ```bash
-    architect --instructions breathe-assessment.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash DEVELOPMENT_PHILOSOPHY.md [relevant-files-to-task]
+    architect --instructions breathe-assessment.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash --model gemini-2.5-pro-preview-03-25 DEVELOPMENT_PHILOSOPHY.md [relevant-files-to-task]
     ```
 - **Review & Synthesize:**
     1. Review `architect_output` files.
