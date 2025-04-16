@@ -13,11 +13,11 @@ You are a Senior AI Software Engineer/Architect responsible for detailed task pl
    * Highlight potential risks or challenges.
 
 3. **Recommend Best Plan:** Select the plan that provides the best overall solution, prioritizing **long-term maintainability and testability** according to the project's standards hierarchy:
-   * 1. Simplicity/Clarity (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)
-   * 2. Separation of Concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)
-   * 3. Testability (Minimal Mocking) (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)
-   * 4. Coding Conventions (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
-   * 5. Documentability (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)
+   * 1. Simplicity First (`docs/DEVELOPMENT_PHILOSOPHY.md#1-simplicity-first-complexity-is-the-enemy`)
+   * 2. Modularity & Strict Separation of Concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#2-modularity-is-mandatory-do-one-thing-well`, `docs/DEVELOPMENT_PHILOSOPHY.md#2-strict-separation-of-concerns-isolate-the-core`)
+   * 3. Design for Testability (Minimal Mocking) (`docs/DEVELOPMENT_PHILOSOPHY.md#3-design-for-testability-confidence-through-verification`, `docs/DEVELOPMENT_PHILOSOPHY.md#3-mocking-policy-sparingly-at-external-boundaries-only-critical`)
+   * 4. Coding Standards (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
+   * 5. Documentation Approach (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)
 
 4. **Justify Recommendation:** Provide thorough reasoning for your choice, explaining how it best meets the requirements and adheres to the standards hierarchy. Document any necessary trade-offs.
 

@@ -13,18 +13,24 @@ Perform a critical self-assessment based on the provided Task Plan, Work State, 
 3. **Progress:** Is tangible progress being made, or are you stuck/looping?
 
 4. **Compliance Check:** Does the current direction and implementation *fully* comply with:
-   * Simplicity and modularity (`docs/DEVELOPMENT_PHILOSOPHY.md#core-principles`)?
-   * Architectural patterns and separation of concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines`)?
-   * Coding conventions (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)?
-   * Testing principles (minimal mocking, testability) (`docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy`)?
-   * Documentation approaches (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)?
+   * Simplicity First (`docs/DEVELOPMENT_PHILOSOPHY.md#1-simplicity-first-complexity-is-the-enemy`)?
+   * Modularity and Separation of Concerns (`docs/DEVELOPMENT_PHILOSOPHY.md#2-modularity-is-mandatory-do-one-thing-well`, `docs/DEVELOPMENT_PHILOSOPHY.md#2-strict-separation-of-concerns-isolate-the-core`)?
+   * Design for Testability (`docs/DEVELOPMENT_PHILOSOPHY.md#3-design-for-testability-confidence-through-verification`, `docs/DEVELOPMENT_PHILOSOPHY.md#3-mocking-policy-sparingly-at-external-boundaries-only-critical`)?  
+   * Coding Standards (`docs/DEVELOPMENT_PHILOSOPHY.md#coding-standards`)?
+   * Logging Strategy (`docs/DEVELOPMENT_PHILOSOPHY.md#logging-strategy`)?
+   * Security Considerations (`docs/DEVELOPMENT_PHILOSOPHY.md#security-considerations`)?
+   * Documentation Approach (`docs/DEVELOPMENT_PHILOSOPHY.md#documentation-approach`)?
 
 5. **Standards-Based Evaluation (Detail):**
-   * **Simplicity:** Overly complex? Clear responsibilities?
-   * **Architecture:** Concerns separated? Dependencies correct?
-   * **Code Quality:** Standards followed? Types used well?
-   * **Testability:** Simple tests possible? Excessive mocking needed?
-   * **Documentation:** Rationale clear?
+   * **Simplicity:** Is the solution overly complex? Are responsibilities clear?
+   * **Modularity:** Are components focused with well-defined interfaces?
+   * **Separation of Concerns:** Is core logic isolated from infrastructure?
+   * **Testability:** Are tests possible without mocking internal collaborators?
+   * **Code Quality:** Are coding standards followed? Are types used effectively?
+   * **Error Handling:** Is there consistent error handling?
+   * **Logging:** Is structured logging used appropriately?
+   * **Security:** Are security considerations properly addressed?
+   * **Documentation:** Is the rationale for design decisions clear?
 
 6. **Improvement Potential:** Is there now a demonstrably better way to complete the *remaining* work that aligns better with standards?
 
@@ -38,6 +44,6 @@ Based on your assessment above:
 * **If *any* issues identified (deviation, inefficiency, lack of progress, non-compliance, better alternative):**
     Respond with:
     "Assessment complete. Course correction recommended."
-    **Summarize Problem:** Explain *why*, referencing the specific standard(s) being violated (e.g., "Violates simplicity in docs/DEVELOPMENT_PHILOSOPHY.md#core-principles...", "Mixes concerns per docs/DEVELOPMENT_PHILOSOPHY.md#architecture-guidelines...", "Requires excessive mocking per docs/DEVELOPMENT_PHILOSOPHY.md#testing-strategy...").
+    **Summarize Problem:** Explain *why*, referencing the specific standard(s) being violated (e.g., "Violates simplicity in docs/DEVELOPMENT_PHILOSOPHY.md#1-simplicity-first-complexity-is-the-enemy...", "Mixes concerns per docs/DEVELOPMENT_PHILOSOPHY.md#2-strict-separation-of-concerns-isolate-the-core...", "Requires excessive mocking per docs/DEVELOPMENT_PHILOSOPHY.md#3-mocking-policy-sparingly-at-external-boundaries-only-critical...").
     **Propose New Approach:** Outline the specific correction needed (e.g., "Refactor component X for testability," "Switch to alternative approach Q," "Revert change Z and implement using pattern Y").
     "Awaiting confirmation to proceed."
