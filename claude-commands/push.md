@@ -1,13 +1,14 @@
 # PUSH
 
-## 1. Run Final Checks
-- **Lint:** Run linter across the project. **Fix all issues.**
-- **Build:** Build the project. **Resolve all errors.**
-- **Test:** Run the full test suite. **Address all failures.**
-- *(Proceed only if all checks pass cleanly)*
+## 1. Final Checks
+- Run linter. Fix all issues.
+- Run build. Resolve all errors.
+- Run full test suite. Address all failures.
+- *(Proceed only if all pass)*
 
-## 2. Push to Remote
-- **Fetch:** Get latest updates from the remote repository (e.g., `origin`).
-- **Verify Sync:** Ensure the current local branch is **not behind** its remote counterpart. **Stop** if behind – manual synchronization is required.
-- **Push:** Push the current branch's commits to the remote.
-- **Report:** Confirm success or report specific push errors, then **stop**.
+## 2. Push
+- `git fetch origin` (or relevant remote).
+- Verify local branch not behind remote. **Stop** if behind (manual sync needed).
+- `git push origin HEAD` (or relevant branch).
+- Report success or specific push errors. **Stop**.
+

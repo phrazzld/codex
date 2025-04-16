@@ -1,54 +1,37 @@
 # BREATHE
 
-## 1. PAUSE & RESET
-- **Action:** Clear any short-term assumptions about the immediate next action.
+## 1. Pause & Reset
+- Clear immediate assumptions.
 
-## 2. RE-GROUND IN CONTEXT
-- **Goal:** Re-establish verifiable context for the current task.
-- **Actions:**
-    - Identify the **exact** Task Title you are currently working on from `TODO.MD`.
-    - Locate and carefully re-read the corresponding `<task-title>-PLAN.md` file.
-    - Re-read relevant section(s) and AC Ref in `TODO.MD`.
-    - **Review our `DEVELOPMENT_PHILOSOPHY.md` file and relate to the current issue:**
-    - If necessary, briefly review the original `PLAN.MD` section.
+## 2. Re-Ground Context
+- Identify current Task Title from `TODO.MD`.
+- Re-read corresponding `<task-title>-PLAN.md`.
+- Re-read relevant `TODO.MD` section/AC Ref.
+- Review `DEVELOPMENT_PHILOSOPHY.md` principles related to current issue.
+- Briefly review original `PLAN.MD` section if needed.
 
-## 3. CRITICAL SELF-ASSESSMENT
-- **Goal:** Evaluate the *current state* of your work against the grounded context.
-- **Actions:**
-    - Create a file called `breathe-assessment.md`.
-    - Copy the content from `$DEVELOPMENT/codex/docs/prompts/breathe.md` to the file.
-    - Add the current task context at the top:
-        ```markdown
-        ## Task Context
-        - **Task:** [Current task title]
-        - **Work State:** [Brief summary of current progress, approaches tried, and ongoing challenges]
-        ```
-    - Run the assessment through architect:
-        ```bash
-        architect --instructions breathe-assessment.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash docs/DEVELOPMENT_PHILOSOPHY.md [relevant-files-to-task]
-        ```
-        - **Review and Synthesize:**
-            1. Review all files in the architect_output directory
-            2. ***Think hard*** about the different model outputs and create a single synthesized file that combines the best elements and insights from all outputs: `BREATHE_RESULT.md`
-    - Review the `BREATHE_RESULT.md` file.
+## 3. Critical Self-Assessment
+- Create `breathe-assessment.md`.
+- Copy content from `$DEVELOPMENT/codex/docs/prompts/breathe.md`.
+- Add context: `## Task Context\n- **Task:** [Current task title]\n- **Work State:** [Summary of progress/challenges]`
+- Run architect:
+    ```bash
+    architect --instructions breathe-assessment.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash DEVELOPMENT_PHILOSOPHY.md [relevant-files-to-task]
+    ```
+- **Review & Synthesize:**
+    1. Review `architect_output` files.
+    2. ***Think hard*** & synthesize into `BREATHE_RESULT.md`.
+- Review `BREATHE_RESULT.md`.
 
-## 4. REPORT FINDINGS & RECOMMENDATION
-- **Goal:** Communicate the assessment results clearly and propose the next step.
-- **Actions:** Based *only* on the answers from Step 3:
-    - **Scenario A: Stay the Course.** If the work is aligned with plan, progressing efficiently, and compliant with all our standards:
-        - State: "Assessment complete. Current approach remains valid and aligned with all standards. Resuming task."
-        - (Proceed to resume).
-    - **Scenario B: Course Correction Needed.** If there are issues with any of the following:
-        - Deviation from plan
-        - Inefficiency or complexity
-        - Lack of progress
-        - Non-compliance with any of our standards
-        - Design flaws revealed through implementation
-        - A demonstrably better alternative exists
+## 4. Report Findings & Recommendation
+- Based *only* on Step 3 results:
+    - **Scenario A: Stay Course.** If aligned, efficient, progressing, compliant:
+        - Report: "Assessment complete. Approach valid. Resuming task."
+        - (Proceed).
+    - **Scenario B: Course Correction.** If issues (deviation, inefficiency, stuck, non-compliance, design flaws, better alternative):
+        - Report: "Assessment complete. Course correction recommended."
+        - Summarize Problem (reference specific `DEVELOPMENT_PHILOSOPHY.md` violation).
+        - Propose New Approach (e.g., "Propose refactor X," "Suggest alternative Q"). Consider `/consult`.
+        - Report: "Awaiting confirmation."
+        - (Wait for confirmation).
 
-        Then:
-        - State: "Assessment complete. Course correction recommended."
-        - **Summarize Problem:** Explain *why*, referencing the specific `DEVELOPMENT_PHILOSOPHY.md` standard / principle being violated.
-        - **Propose New Approach:** Outline the proposed fix or alternative (e.g., "Propose refactoring component X for better testability before proceeding," "Suggest switching to alternative approach Q."). Consider invoking `propose-testable-refactor` or `consult` if appropriate.
-        - State: "Awaiting confirmation to proceed."
-        - (Do **not** proceed until confirmation).
