@@ -5,3 +5,4 @@
 !*/.tmux.conf
 .tool-versions
 .DS_Store
+architect_output/
