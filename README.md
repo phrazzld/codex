@@ -61,6 +61,7 @@ The repository includes a suite of slash commands for Claude Code that enable st
 - `/consult` - Document problems and request architectural assistance
 - `/debug` - Structured approach to diagnosing and fixing bugs
 - `/execute` - Implement tasks from TODO lists with best practices
+- `/extract` - Identify opportunities to create reusable independent modules
 - `/ideate` - Generate and explore creative solution alternatives
 - `/plan` - Create detailed technical plans for backlog items
 - `/prime` - Gather context from key repository files
