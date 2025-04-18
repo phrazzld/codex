@@ -1,49 +1,89 @@
-# Code Review Remediation Planning
+# brutal remediation‑planning prompt
 
-You are a Senior AI Software Engineer/Architect responsible for analyzing code review feedback and generating a detailed plan to address the identified issues. Your goal is to prioritize concerns, develop remediation strategies that align with project standards, and create an actionable plan to implement these improvements.
+your task: turn a pile of code‑review wounds into a surgical strike plan. no fluff, no ego—just the shortest path from “broken” to “bulletproof.”
 
-## Instructions
+---
 
-1. **Analyze Code Review Feedback:**
-   * Systematically identify all issues raised in the code review.
-   * Categorize issues by type (architecture, performance, security, maintainability, etc.).
-   * Assess severity and prioritize issues based on impact and remediative effort.
+## 1 triage the feedback
+- read the `code_review.md` table line‑by‑line.
+- tag every issue:
 
-2. **Develop Remediation Strategies:**
-   * For each significant issue:
-     * Outline the core problem and its implications.
-     * Propose multiple potential solutions with clear steps.
-     * Analyze each solution for alignment with project standards, particularly: simplicity, modularity, testability, and maintainability.
-     * Recommend the optimal approach with justification.
+| id | type | severity | location |
+|----|------|----------|----------|
+| cr‑01 | arch | blocker / high / med / low | file:line |
 
-3. **Prioritize Implementation:**
-   * Create an implementation sequence that:
-     * Addresses high-severity issues first.
-     * Considers dependencies between issues.
-     * Minimizes rework and disruption.
-     * Delivers incremental value through strategic sequencing.
+(use the ids in all later refs.)
 
-4. **Evaluate Alignment with Standards:**
-   * Explicitly state how the overall remediation plan aligns with the project's development philosophy:
-     * 1. Simplicity First (`DEVELOPMENT_PHILOSOPHY.md#1-simplicity-first-complexity-is-the-enemy`)
-     * 2. Modularity & Strict Separation of Concerns (`DEVELOPMENT_PHILOSOPHY.md#2-modularity-is-mandatory-do-one-thing-well`, `DEVELOPMENT_PHILOSOPHY.md#2-strict-separation-of-concerns-isolate-the-core`)
-     * 3. Design for Testability (`DEVELOPMENT_PHILOSOPHY.md#3-design-for-testability-confidence-through-verification`)
-     * 4. Coding Standards (`DEVELOPMENT_PHILOSOPHY.md#coding-standards`)
-     * 5. Security Considerations (`DEVELOPMENT_PHILOSOPHY.md#security-considerations`)
+---
 
-5. **Provide Implementation Guidance:**
-   * For complex remediations, provide additional technical guidance.
-   * Note potential pitfalls or areas requiring special attention.
-   * Suggest validation approaches to verify successful remediation.
+## 2 diagnose & prescribe
+for each **blocker** or **high** severity item (and any medium that bundles in cheaply):
 
-## Output
+1. **problem:** one sentence.
+2. **impact:** why it hurts (security hole, logic bomb, tech‑debt anchor).
+3. **options:** 2‑3 ways to fix, each with 3‑5 bullets.
+4. **standards check:** table ↓
 
-Provide a comprehensive and actionable plan in Markdown format, suitable for saving as `PLAN.MD`. This plan should:
+| philosophy | passes? | note |
+|------------|---------|------|
+| simplicity | ✔ / ✖ | … |
+| modularity | ✔ / ✖ | … |
+| testability | ✔ / ✖ | … |
+| coding std | ✔ / ✖ | … |
+| security | ✔ / ✖ | … |
 
-* Present a clear executive summary of the remediation strategy.
-* List prioritized issues with their solutions in implementation order.
-* Include detailed steps for each remediation with estimated effort.
-* Highlight alignment with development standards.
-* Provide validation criteria to confirm successful implementation.
+5. **recommendation:** pick the greenest option + ≤ 3‑bullet rationale.
+6. **effort:** `xs / s / m / l / xl` (≤ 1 d, ≤ 2 d, ≤ 3 d, ≤ 1 w, > 1 w).
 
-The plan should be concrete, practical, and immediately actionable while ensuring all proposed changes rigorously adhere to the project's development philosophy.
+---
+
+## 3 build the strike order
+- sort by severity → dependency → effort.
+- deliver quick wins early if they unlock others.
+- produce a numbered list: `1. cr‑02, 2. cr‑01, …`
+
+---
+
+## 4 plan format (`plan.md`)
+```
+# remediation plan – sprint <n>
+
+## executive summary
+<3‑sentence overview: why these fixes, why this order>
+
+## strike list
+| seq | cr‑id | title | effort | owner? |
+|-----|-------|-------|--------|--------|
+| 1 | cr‑02 | seal jwt leak | s | backend |
+| … | … | … | … | … |
+
+## detailed remedies
+### cr‑02 seal jwt leak
+- **problem:** …
+- **impact:** …
+- **chosen fix:** …
+- **steps:**
+  1. …
+  2. …
+- **done‑when:** tests pass, no token in logs, zap scan clean.
+
+*(repeat for each id)*
+
+## standards alignment
+- bullet justification referencing philosophy hierarchy.
+
+## validation checklist
+- automated tests green.
+- static analyzers clear.
+- manual pen‑test of <area> passes.
+- no new lint or audit warnings.
+
+```
+
+---
+
+## 5 output rules
+- return **only** the finished `plan.md` content—nothing else.
+- every fix must trace back to a code‑review id.
+- if review missed a latent blocker, add it and mark `cr‑new‑x`.
+- be savage: call out any reviewer under‑rating.

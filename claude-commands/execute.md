@@ -1,28 +1,77 @@
-# EXECUTE
+# claude‑command.md – ruthless execute loop
 
-## 1. Select & Assess Task
-- Scan `TODO.MD` for `[ ]` tasks whose `Depends On:` Task IDs are `[x]`. Select first match.
-- Record Task ID & Title. Mark task `[~]` in `TODO.MD`.
-- Assess Complexity: Simple (small, clear, single file) vs. Complex (multi-file, complex logic, uncertainty).
-- Route: Simple -> Section 2 (Fast Track), Complex -> Section 3 (Comprehensive).
+your only goal: grab the next unblocked ticket, finish it, commit. no ceremony.
 
-## 2. FAST TRACK (Simple Tasks)
-- **2.1 Plan:** Create `<sanitized-task-title>-PLAN.md` (Task ID/Title, brief approach).
-- **2.2 Test (Optional):** Write minimal happy path tests only.
-- **2.3 Implement:** Write code directly per standards.
-- **2.4 Finalize:** Run checks (lint, test), fix issues. Update task `[x]` in `TODO.MD`. Commit.
+---
 
-## 3. COMPREHENSIVE TRACK (Complex Tasks)
-- **3.1 Prep Prompt:** Create `<sanitized-task-title>-TASK.md` (copy `prompts/execute.md`, add Task ID/details).
-- **3.2 Gen Plan:**
-    - Find top 10 relevant context files.
-    - Run architect: `architect --instructions <sanitized-task-title>-TASK.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash --model gemini-2.5-pro-preview-03-25 DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]`
-    - Review outputs & ***Think hard*** to synthesize into `<sanitized-task-title>-PLAN.md`.
-    - Handle errors (log, retry). Stop if unresolvable.
-    - Review plan against `DEVELOPMENT_PHILOSOPHY.md`. Remove TASK file.
-- **3.3 Write Tests:** Write failing tests (happy path, critical edge cases) per `DEVELOPMENT_PHILOSOPHY.md` (minimal mocking, test behavior). Ensure tests fail initially.
-- **3.4 Implement:** Write minimal code per plan to make tests pass. Adhere to standards.
-- **3.5 Refactor:** Ensure tests pass. ***Think hard*** & evaluate code against `DEVELOPMENT_PHILOSOPHY.md`. Apply minimal refactoring needed for compliance (simplicity, architecture, quality, testability, docs). Keep tests passing.
-- **3.6 Verify Tests:** Run all tests. Ensure pass. Fix implementation if needed (don't modify tests unless flawed).
-- **3.7 Finalize:** Run all checks (lint, build, full test suite), fix failures. Update task `[x]` in `TODO.MD`. Remove PLAN file. Add, Commit, Push.
+## 0 prep
+- open `todo.md`, `development_philosophy.md`, full codebase.
+- ticket state markers: `[ ]` untouched · `[~]` in‑progress · `[x]` done.
 
+---
+
+## 1 pick a ticket
+1. scan `todo.md` top → bottom.
+2. select the first `[ ]` ticket whose `depends‑on:` list is empty or all `[x]`.
+3. flip its box to `[~]` and note **id** + **title**.
+
+---
+
+## 2 classify
+- **simple** → single‑file change, clear logic, no design calls.
+- **complex** → multi‑file, tricky logic, risk ≥ high, or any ambiguity.
+
+---
+
+## 3 simple path
+1. create `<task‑id>-plan.md`. think about the best approach, and document it.
+2. *(optional)* write minimal happy‑path test.
+3. implement per **development_philosophy.md**.
+4. run formatter, linter, tests; fix everything.
+5. mark ticket `[x]`, commit, push, delete plan file.
+
+---
+
+## 4 complex path
+1. create `<task‑id>-task.md` containing:
+   - task id + title
+   - original ticket text
+   - full **implementation approach analysis prompt** (see separate file)
+
+2. **generate approaches & plan**
+   - run the exact architect command:
+
+     ```
+     architect --instructions <sanitized-task-title>-TASK.md \
+               --output-dir architect_output \
+               --model gemini-2.5-pro-preview-03-25 \
+               --model o4-mini \
+               --model gpt-4.1 \
+               DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
+     ```
+
+   - read outputs, **think hard**, keep the strongest ideas only.
+   - synthesize the chosen path into `<task‑id>-plan.md`; delete the `*-task.md`.
+
+3. **tests first**
+   - write failing tests covering happy path + critical edges.
+   - mock **only** true externals.
+
+4. **code**
+   - implement just enough to make tests pass, staying inside philosophy guard‑rails.
+
+5. **refactor**
+   - tighten names, remove cruft, enforce simplicity—tests must stay green.
+
+6. **verify & finalize**
+   - full test suite, linter, build must all pass.
+   - mark ticket `[x]`, commit, push, delete plan file.
+
+---
+
+## 5 execution rules
+- no ticket remains `[~]` > 24 h—split or re‑queue.
+- dependency graph must stay acyclic.
+- every commit passes CI; failing commits are outlawed.
+
+***brutal clarity or bust.***

@@ -7,7 +7,7 @@
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
 - Run architect for initial analysis:
     ```bash
-    architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash DEVELOPMENT_PHILOSOPHY.md --model gemini-2.5-pro-preview-03-25 ./
+    architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model o4-mini --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md --model gemini-2.5-pro-preview-03-25 ./
     ```
 - Synthesize results into `DEBUG-ANALYSIS.md`.
 
@@ -25,7 +25,7 @@
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run architect for task generation:
     ```bash
-    architect --instructions DEBUG-TASKGEN-REQUEST.md --output-dir architect_output_tasks --model gemini-2.5-pro-exp-03-25 --model gemini-2.5-pro-preview-03-25 --model gemini-2.0-flash DEVELOPMENT_PHILOSOPHY.md BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    architect --instructions DEBUG-TASKGEN-REQUEST.md --output-dir architect_output_tasks --model o4-mini --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
 - **Synthesize & Insert Tasks:**
     - Review generated tasks.

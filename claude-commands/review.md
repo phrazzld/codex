@@ -11,7 +11,7 @@
 ## 3. Run Architect Review
 - Run:
     ```bash
-    architect --instructions diff.md --output-dir architect_output --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash --model gemini-2.5-pro-preview-03-25 ./
+    architect --instructions diff.md --output-dir architect_output --model o4-mini --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 ./
     ```
 - **Review & Synthesize:**
     1. Review `architect_output` files.

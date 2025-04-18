@@ -8,7 +8,7 @@
 ## 2. Invoke Architect for Plan
 - Run architect:
     ```bash
-    architect --instructions CONSULT-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash DEVELOPMENT_PHILOSOPHY.md ./
+    architect --instructions CONSULT-REQUEST.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md ./
     ```
 - **Review & Synthesize Plan:**
     1. Review `architect_output` files.
@@ -24,7 +24,7 @@
     - Final task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run architect for task generation:
     ```bash
-    architect --instructions CONSULT-TASKGEN-REQUEST.md --output-dir architect_output_tasks --model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-exp-03-25 --model gemini-2.0-flash DEVELOPMENT_PHILOSOPHY.md CONSULTANT-PLAN.md
+    architect --instructions CONSULT-TASKGEN-REQUEST.md --output-dir architect_output_tasks --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md CONSULTANT-PLAN.md
     ```
 - **Synthesize & Insert Tasks:**
     - Review generated tasks.
