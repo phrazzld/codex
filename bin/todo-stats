@@ -1,0 +1,48 @@
+#!/bin/bash
+
+# Simple script to report TODO file statistics
+
+# --- Configuration ---
+# Add more potential filenames here if needed
+declare -a todo_filenames=("TODO.md" "todo.md" "TODO" "todo")
+todo_file=""
+
+# --- Find the TODO file ---
+for filename in "${todo_filenames[@]}"; do
+  if [[ -f "$filename" ]]; then
+    todo_file="$filename"
+    break # Stop looking once found
+  fi
+done
+
+# --- Check if found and Analyze ---
+if [[ -z "$todo_file" ]]; then
+  echo "Error: No TODO file found in the current directory."
+  echo "Looked for: ${todo_filenames[*]}"
+  exit 1
+fi
+
+echo "Analyzing TODO file: $todo_file"
+
+# --- Count Tasks ---
+# Use grep -c to count matching lines efficiently
+# Match lines starting with optional whitespace, then '- [x]' for completed
+completed_tasks=$(grep -c '^[[:space:]]*- \[x\]' "$todo_file")
+
+# Match lines starting with optional whitespace, then '- [ ]' for incomplete
+incomplete_tasks=$(grep -c '^[[:space:]]*- \[ \]' "$todo_file")
+
+# Calculate total (completed + incomplete)
+total_tasks=$((completed_tasks + incomplete_tasks))
+
+# Remaining tasks are the incomplete ones
+remaining_tasks=$incomplete_tasks
+
+# --- Output Results ---
+echo "-------------------------"
+echo "Total tasks:      $total_tasks"
+echo "Completed tasks:  $completed_tasks"
+echo "Remaining tasks:  $remaining_tasks"
+echo "-------------------------"
+
+exit 0
