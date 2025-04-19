@@ -2,33 +2,40 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
-## Commands
-- `zsh -c "source ~/.zshrc"` - Reload shell configuration
-- `./install.sh` - Install configuration files by creating symlinks
-- `shellcheck filename.sh` - Validate shell scripts
+## Build, Test, Lint Commands
 
-## Code Style Guidelines
-- **Shell**: POSIX-compatible syntax with `if [[ -n "$var" ]]; then` style conditionals
-- **Error Handling**: Check file existence (`-f`), command availability, and use descriptive error messages
-- **Functions**: Document with inline comments and use descriptive names
-- **Formatting**: 2-space indentation for YAML/JSON; consistent structure in config files
-- **Git**: Use conventional commits (`feat:`, `fix:`, `docs:`, `style:`, `refactor:`)
-- **Types**: Prefer strong typing when applicable (TypeScript strict mode)
+* Project is primarily a collection of prompt templates and configuration files
+* No specific build process required
+* No testing commands defined
+* No linting commands defined
 
-## Repository Structure
-- Root: Documentation and installation script
-- `/dotfiles/`: Configuration files (.zshrc, .aliases, .env)
-- `/claude-commands/`: Custom Claude Code slash commands
-- `/docs/`: Documentation on best practices and testing philosophy
-- `/professional/`: Professional documents like CV and resume
+## Style Guidelines
 
-## Machine Configuration
-Configuration files are structured for a single machine environment.
+* Follow core principles from `DEVELOPMENT_PHILOSOPHY.md`
+* Prefer simplicity and maintainability over complexity
+* Ensure commit messages follow Conventional Commits specification
+* Document "why" not "how" in comments
+* Adhere to strict configuration for any code added to the repository:
+  * TypeScript: strict typing with no `any`, use immutable patterns, Prettier formatting
+  * Go: strict linting with golangci-lint, gofmt formatting
 
-## Best Practices
-- Use single responsibility principle for scripts
-- Implement consistent error handling
-- Check dependencies before command execution
-- Maintain well-organized configurations
-- Follow TDD when writing new scripts
-- Prioritize simplicity and readability over clever implementations
+## Project Structure
+
+* Organize by feature/domain not technical type
+* Use `/claude-commands/` for custom Claude CLI slash commands
+* Use `/docs/` for all documentation, organized by purpose
+* Keep file and function sizes reasonable
+
+## Error Handling & Quality Gates
+
+* Never suppress errors/warnings - fix root causes
+* Never hardcode secrets - use environment variables
+* All code must pass pre-commit hooks and CI checks
+* Ensure consistent, explicit error handling
+* Follow Test-Driven Development when applicable
+
+## Architect Tool
+
+* Use `architect` CLI for deeper analysis when needed
+* Run with: `architect --instructions temp_instructions.txt <relevant_paths...>`
+* API keys are pre-configured locally

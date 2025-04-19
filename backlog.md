@@ -1,7 +1,5 @@
 # backlog
 
-- iterate on development philosophy
-  - more clear github actions / precommit hooks / test coverage / etc
 - define precommit that sends diff and dev philosophy to flash?
 - extract hardcoded architect invocations from claude command files so when we change them we don't have to manually change them in every file
 - it would be nice if there were a way to have claude code automatically log its activity every so often, and then automatically trigger certain actions if the last x lines / last y time blocks of activity are redundant or looped or obviously stuck eg hit /consult if it has been ten minutes and gone nowhere

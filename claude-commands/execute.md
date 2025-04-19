@@ -1,45 +1,45 @@
-# claude‑command.md – ruthless execute loop
+# Claude‑Command.md – Ruthless Execute Loop
 
-your only goal: grab the next unblocked ticket, finish it, commit. no ceremony.
-
----
-
-## 0 prep
-- open `todo.md`, `development_philosophy.md`, full codebase.
-- ticket state markers: `[ ]` untouched · `[~]` in‑progress · `[x]` done.
+Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
 
 ---
 
-## 1 pick a ticket
-1. scan `todo.md` top → bottom.
-2. select the first `[ ]` ticket whose `depends‑on:` list is empty or all `[x]`.
-3. flip its box to `[~]` and note **id** + **title**.
+## 0 Prep
+- Open `todo.md`, `development_philosophy.md`, full codebase.
+- Ticket state markers: `[ ]` untouched · `[~]` in‑progress · `[x]` done.
 
 ---
 
-## 2 classify
-- **simple** → single‑file change, clear logic, no design calls.
-- **complex** → multi‑file, tricky logic, risk ≥ high, or any ambiguity.
+## 1 Pick a Ticket
+1. Scan `todo.md` top → bottom.
+2. Select the first `[ ]` ticket whose `depends‑on:` list is empty or all `[x]`.
+3. Flip its box to `[~]` and note **ID** + **Title**.
 
 ---
 
-## 3 simple path
-1. create `<task‑id>-plan.md`. think about the best approach, and document it.
-2. *(optional)* write minimal happy‑path test.
-3. implement per **development_philosophy.md**.
-4. run formatter, linter, tests; fix everything.
-5. mark ticket `[x]`, commit, push, delete plan file.
+## 2 Classify
+- **Simple** → single‑file change, clear logic, no design calls.
+- **Complex** → multi‑file, tricky logic, risk ≥ high, or any ambiguity.
 
 ---
 
-## 4 complex path
-1. create `<task‑id>-task.md` containing:
-   - task id + title
-   - original ticket text
-   - full **implementation approach analysis prompt** (see separate file)
+## 3 Simple Path
+1. Create `<task‑id>-plan.md`. Think about the best approach, and document it.
+2. *(optional)* Write minimal happy‑path test.
+3. Implement per **development_philosophy.md**.
+4. Run formatter, linter, tests; fix everything.
+5. Mark ticket `[x]`, commit, push, delete plan file.
 
-2. **generate approaches & plan**
-   - run the exact architect command:
+---
+
+## 4 Complex Path
+1. Create `<task‑id>-task.md` containing:
+   - Task ID + title
+   - Original ticket text
+   - Full **Implementation Approach Analysis prompt** (see separate file)
+
+2. **Generate Approaches & Plan**
+   - Run the exact architect command:
 
      ```
      architect --instructions <sanitized-task-title>-TASK.md \
@@ -51,28 +51,28 @@ your only goal: grab the next unblocked ticket, finish it, commit. no ceremony.
                DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
      ```
 
-   - read outputs, **think hard**, keep the strongest ideas only.
-   - synthesize the chosen path into `<task‑id>-plan.md`; delete the `*-task.md`.
+   - Read outputs, **think hard**, keep the strongest ideas only.
+   - Synthesize the chosen path into `<task‑id>-plan.md`; delete the `*-task.md`.
 
-3. **tests first**
-   - write failing tests covering happy path + critical edges.
-   - mock **only** true externals.
+3. **Tests First**
+   - Write failing tests covering happy path + critical edges.
+   - Mock **only** true externals.
 
-4. **code**
-   - implement just enough to make tests pass, staying inside philosophy guard‑rails.
+4. **Code**
+   - Implement just enough to make tests pass, staying inside philosophy guard‑rails.
 
-5. **refactor**
-   - tighten names, remove cruft, enforce simplicity—tests must stay green.
+5. **Refactor**
+   - Tighten names, remove cruft, enforce simplicity—tests must stay green.
 
-6. **verify & finalize**
-   - full test suite, linter, build must all pass.
-   - mark ticket `[x]`, commit, push, delete plan file.
+6. **Verify & Finalize**
+   - Full test suite, linter, build must all pass.
+   - Mark ticket `[x]`, commit, push, delete plan file.
 
 ---
 
-## 5 execution rules
-- no ticket remains `[~]` > 24 h—split or re‑queue.
-- dependency graph must stay acyclic.
-- every commit passes CI; failing commits are outlawed.
+## 5 Execution Rules
+- No ticket remains `[~]` > 24 h—split or re‑queue.
+- Dependency graph must stay acyclic.
+- Every commit passes CI; failing commits are outlawed.
 
-***brutal clarity or bust.***
+***Brutal clarity or bust.***

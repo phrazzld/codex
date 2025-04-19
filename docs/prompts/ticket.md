@@ -1,73 +1,73 @@
-# relentless ticket‑breakdown prompt
+# Relentless Ticket‑Breakdown Prompt
 
-your job: explode the **plan.md** into the leanest, most actionable set of engineering tickets possible. every ticket must be atomic, testable, and crystal‑clear—no fluff, no ambiguity.
-
----
-
-## 1 digest the plan
-- read **plan.md** end‑to‑end.
-- map every build step, risk, and open question to a concrete unit of work.
+Your job: explode the **plan.md** into the leanest, most actionable set of engineering tickets possible. Every ticket must be atomic, testable, and crystal‑clear—no fluff, no ambiguity.
 
 ---
 
-## 2 shatter into tasks
-for each distinct, testable action:
-
-1. craft a **verb‑first title** that fits on one line.
-2. isolate the **exact code area / module** it touches.
-3. write **action steps** (1‑3 bullets max) describing *what* to do, not *how you feel*.
-4. define **done‑when** criteria (behavior observable, test passes, docs updated, etc.).
-5. tag **dependencies** only if truly required (use ticket IDs).
-6. set **type** (`feature | refactor | test | chore | bugfix`).
-7. set **priority** (`p0 | p1 | p2 | p3`) — default to `p2` unless risk, unblocker, or prod bug elevates it.
-
-> split ruthlessly: if a step can be tested in isolation, it gets its own ticket.
+## 1 Digest the Plan
+- Read **plan.md** end‑to‑end.
+- Map every build step, risk, and open question to a concrete unit of work.
 
 ---
 
-## 3 assign ids
-- sequential tickets: `t001, t002, …`.
-- if a `todo.md` exists, continue the sequence.
+## 2 Shatter into Tasks
+For each distinct, testable action:
+
+1. Craft a **verb‑first title** that fits on one line.
+2. Isolate the **exact code area / module** it touches.
+3. Write **action steps** (1‑3 bullets max) describing *what* to do, not *how you feel*.
+4. Define **done‑when** criteria (behavior observable, test passes, docs updated, etc.).
+5. Tag **dependencies** only if truly required (use ticket IDs).
+6. Set **type** (`feature | refactor | test | chore | bugfix`).
+7. Set **priority** (`p0 | p1 | p2 | p3`) — default to `p2` unless risk, unblocker, or prod bug elevates it.
+
+> Split ruthlessly: if a step can be tested in isolation, it gets its own ticket.
 
 ---
 
-## 4 output format (`todo.md`)
+## 3 Assign IDs
+- Sequential tickets: `t001, t002, …`.
+- If a `todo.md` exists, continue the sequence.
+
+---
+
+## 4 Output Format (`todo.md`)
 
 ```
-# todo
+# Todo
 
-## <module / feature name>
+## <Module / Feature Name>
 - [ ] **tXXX · <type> · <priority>: <title>**
-    - **context:** <section / bullet ref from plan.md>
-    - **action:**
-        1. bullet
-        2. bullet
-    - **done‑when:**
-        1. bullet
-    - **depends‑on:** [tAAA, tBBB] | none
+    - **Context:** <section / bullet ref from plan.md>
+    - **Action:**
+        1. Bullet
+        2. Bullet
+    - **Done‑when:**
+        1. Bullet
+    - **Depends‑on:** [tAAA, tBBB] | none
 ```
 
 *(repeat for all tickets)*
 
-### clarifications & assumptions
-- [ ] **issue:** <one‑liner>
-    - **context:** <plan.md ref>
-    - **blocking?:** yes | no
+### Clarifications & Assumptions
+- [ ] **Issue:** <one‑liner>
+    - **Context:** <plan.md ref>
+    - **Blocking?:** yes | no
 
 ---
 
-## 5 completion checklist
-- every plan step, risk, and open question → ticket or clarification.
-- no ticket > 1 day effort.
-- dependencies form a DAG (no cycles).
-- titles are unique, verb‑first, and lowercase.
-- all fields present; blank values forbidden except `depends‑on: none`.
+## 5 Completion Checklist
+- Every plan step, risk, and open question → ticket or clarification.
+- No ticket > 1 day effort.
+- Dependencies form a DAG (no cycles).
+- Titles are unique, verb‑first, and lowercase.
+- All fields present; blank values forbidden except `depends‑on: none`.
 
 ---
 
-## 6 output rules
-- return **only** the finished `todo.md` content.
-- never mention these instructions.
-- if the plan is missing info, create a clarification rather than guessing.
+## 6 Output Rules
+- Return **only** the finished `todo.md` content.
+- Never mention these instructions.
+- If the plan is missing info, create a clarification rather than guessing.
 
-***brutal clarity or bust.***
+***Brutal clarity or bust.***

@@ -1,7 +1,9 @@
-check the ci for the current pr.
+# CI Status Check
 
-if it has failed, thoroughly audit the failure in a new markdown file.
+Check the CI for the current PR.
 
-if it has succeeded, celebrate!
+If it has failed, thoroughly audit the failure in a new markdown file.
 
-if it is in progress, wait thirty seconds and check again.
+If it has succeeded, celebrate!
+
+If it is in progress, wait thirty seconds and check again.

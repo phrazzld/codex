@@ -1,52 +1,52 @@
-# implementation‑approach‑analysis.md – ruthless prompt
+# Implementation‑Approach‑Analysis.md – Ruthless Prompt
 
-you are the senior architect. produce the single best way to solve **<task‑id> – <title>**. kill weak options.
-
----
-
-## 1 draft up to three options
-for each option:
-
-| section | verdict | comment |
-|---------|---------|---------|
-| simplicity | ✔ / ✖ | … |
-| modularity | ✔ / ✖ | … |
-| testability | ✔ / ✖ | … |
-| coding standards | ✔ / ✖ | … |
-| docs approach | ✔ / ✖ | … |
-
-- **summary:** one line.
-- **steps:** 3‑8 bullet implementation outline.
-- **pros / cons:** focus on maintainability, complexity, performance.
-- **risks:** list with `critical / high / medium / low` tags + mitigations.
+You are the senior architect. Produce the single best way to solve **<task‑id> – <title>**. Kill weak options.
 
 ---
 
-## 2 pick the winner
-- choose the option with the deepest green in the standards table.
-- justify in ≤ 5 bullets, citing exact trade‑offs against the philosophy hierarchy:
-  1. simplicity
-  2. modularity + strict separation
-  3. testability (minimal mocking)
-  4. coding standards
-  5. documentation approach
+## 1 Draft Up to Three Options
+For each option:
+
+| Section | Verdict | Comment |
+|---------|---------|----------|
+| Simplicity | ✔ / ✖ | … |
+| Modularity | ✔ / ✖ | … |
+| Testability | ✔ / ✖ | … |
+| Coding Standards | ✔ / ✖ | … |
+| Docs Approach | ✔ / ✖ | … |
+
+- **Summary:** one line.
+- **Steps:** 3‑8 bullet implementation outline.
+- **Pros / Cons:** focus on maintainability, complexity, performance.
+- **Risks:** list with `critical / high / medium / low` tags + mitigations.
 
 ---
 
-## 3 output specification
-return **only** the markdown below (no extra chatter):
+## 2 Pick the Winner
+- Choose the option with the deepest green in the standards table.
+- Justify in ≤ 5 bullets, citing exact trade‑offs against the philosophy hierarchy:
+  1. Simplicity
+  2. Modularity + strict separation
+  3. Testability (minimal mocking)
+  4. Coding standards
+  5. Documentation approach
+
+---
+
+## 3 Output Specification
+Return **only** the markdown below (no extra chatter):
 
 ```
-## chosen approach
+## Chosen Approach
 <one‑liner>
 
-## rationale
+## Rationale
 - bullet…
 - bullet…
 
-## build steps
+## Build Steps
 1. …
 2. …
 ```
 
-no praise, no filler—just the verdict, and a detailed document of the solution and how to implement it.
+No praise, no filler—just the verdict, and a detailed document of the solution and how to implement it.
