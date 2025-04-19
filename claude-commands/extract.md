@@ -8,7 +8,7 @@
 - Run:
     ```bash
     # Find relevant context files if needed
-    architect --instructions task.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 ./
+    architect --instructions task.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 ./
     ```
 - **Review & Synthesize:**
     1. Review `architect_output` files.

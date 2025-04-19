@@ -44,6 +44,7 @@ your only goal: grab the next unblocked ticket, finish it, commit. no ceremony.
      ```
      architect --instructions <sanitized-task-title>-TASK.md \
                --output-dir architect_output \
+               --model gemini-2.5-flash-preview-04-17 \
                --model gemini-2.5-pro-preview-03-25 \
                --model o4-mini \
                --model gpt-4.1 \

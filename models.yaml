@@ -1,0 +1,265 @@
+# Architect Models Configuration
+#
+# This file defines the LLM providers and models available to the architect tool.
+# It should be placed at ~/.config/architect/models.yaml
+#
+# You can customize this file to:
+# - Add new models as they become available
+# - Adjust token limits to match model updates
+# - Configure default parameters for each model
+# - Add custom API endpoints (for self-hosted models or proxies)
+#
+# CUSTOM MODEL CONFIGURATION GUIDE
+# --------------------------------
+# 1. Model Names & Recognition:
+#    - The system recognizes models primarily by the 'name' field
+#    - Models with similar prefixes (e.g., 'gpt-4', 'gpt-4-turbo') are considered related
+#    - When adding custom models, use a consistent naming scheme to help with recognition
+#
+# 2. Token Limits:
+#    - 'context_window' defines the maximum combined tokens for input + output
+#    - 'max_output_tokens' defines the maximum tokens allowed for generation
+#    - context_window MUST be >= max_output_tokens (system will validate this)
+#    - Values defined here override any hardcoded defaults in the system
+#
+# 3. Custom Models Best Practices:
+#    - Always specify both context_window and max_output_tokens for custom models
+#    - For new model versions, copy settings from similar models and adjust as needed
+#    - If working with API proxies or fine-tuned models, ensure the api_model_id matches what the provider expects
+
+# API Key Sources
+# --------------
+# Maps provider names to environment variable names containing API keys
+api_key_sources:
+  openai: "OPENAI_API_KEY"
+  gemini: "GEMINI_API_KEY"
+  openrouter: "OPENROUTER_API_KEY"
+
+# Providers
+# ---------
+# Defines available LLM service providers
+providers:
+  - name: openai
+    # Uncomment to use a custom API endpoint:
+    # base_url: "https://your-openai-proxy.example.com/v1"
+
+  - name: gemini
+    # Uncomment to use a custom API endpoint:
+    # base_url: "https://your-gemini-proxy.example.com/v1"
+
+  - name: openrouter
+    # Default API endpoint is https://openrouter.ai/api/v1
+    # Uncomment to use a custom API endpoint:
+    # base_url: "https://your-openrouter-proxy.example.com/api/v1"
+
+# Models
+# ------
+# Defines available LLM models with their capabilities and parameters
+models:
+  # OpenAI Models
+  # -------------
+
+  - name: gpt-4.1
+    provider: openai
+    api_model_id: gpt-4.1
+    context_window: 1000000
+    max_output_tokens: 200000
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 1.0
+      frequency_penalty:
+        type: float
+        default: 0.0
+      presence_penalty:
+        type: float
+        default: 0.0
+
+  - name: o4-mini
+    provider: openai
+    api_model_id: o4-mini
+    context_window: 200000
+    max_output_tokens: 200000
+    parameters:
+      temperature:
+        type: float
+        default: 1.0
+      top_p:
+        type: float
+        default: 1.0
+      frequency_penalty:
+        type: float
+        default: 0.0
+      presence_penalty:
+        type: float
+        default: 0.0
+      reasoning:
+        type: object
+        default:
+          effort: "high"
+
+  # Gemini Models
+  # -------------
+  - name: gemini-2.5-pro-preview-03-25
+    provider: gemini
+    api_model_id: gemini-2.5-pro-preview-03-25
+    context_window: 1000000
+    max_output_tokens: 65000
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 0.95
+      top_k:
+        type: int
+        default: 40
+
+  - name: gemini-2.5-flash-preview-04-17
+    provider: gemini
+    api_model_id: gemini-2.5-flash-preview-04-17
+    context_window: 1000000
+    max_output_tokens: 65000
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 0.95
+      top_k:
+        type: int
+        default: 40
+
+  # Custom Model Examples
+  # --------------------
+  # These examples show how to configure custom models or override defaults
+  # Uncomment and customize as needed
+
+  # Example 1: Custom OpenAI model with extended context window
+  # ---------------------------------------------------------
+  # This example shows how to configure your own custom model variant
+  # with extended context window settings
+  #
+  # - name: gpt-4-turbo-extended
+  #   provider: openai
+  #   api_model_id: gpt-4-turbo-2024-04-09  # Use the actual backend model ID
+  #   context_window: 180000  # Extended from standard 128k to 180k (if supported by your deployment)
+  #   max_output_tokens: 8192  # Increased output limit
+  #   parameters:
+  #     temperature:
+  #       type: float
+  #       default: 0.5  # Lower temperature for more deterministic outputs
+  #     top_p:
+  #       type: float
+  #       default: 0.9
+  #     frequency_penalty:
+  #       type: float
+  #       default: 0.1  # Slight penalty to reduce repetition
+
+  # Example 2: Fine-tuned model configuration
+  # ---------------------------------------
+  # For fine-tuned models, use your specific model ID from OpenAI
+  #
+  # - name: my-ft-code-assistant
+  #   provider: openai
+  #   api_model_id: ft:gpt-3.5-turbo:my-org:custom-code-assistant:1234  # Your actual fine-tuned model ID
+  #   context_window: 16385  # Match the base model's context size
+  #   max_output_tokens: 4096
+  #   parameters:
+  #     temperature:
+  #       type: float
+  #       default: 0.2  # Lower temperature often works better for fine-tuned models
+
+  # Example 3: Self-hosted model through proxy
+  # ---------------------------------------
+  # For self-hosted models behind an API-compatible proxy
+  #
+  # - name: local-llama
+  #   provider: openai  # Using the openai provider with a custom base_url in the provider section
+  #   api_model_id: llama-3-70b-instruct  # The model name expected by your proxy
+  #   context_window: 8192
+  #   max_output_tokens: 2048
+  #   parameters:
+  #     temperature:
+  #       type: float
+  #       default: 0.8
+  #     top_p:
+  #       type: float
+  #       default: 0.9
+
+  # OpenRouter Models
+  # ----------------
+  # OpenRouter provides a unified gateway to access models from various providers
+  # Model IDs use the format: provider/model-name
+
+  - name: openrouter/deepseek/deepseek-chat-v3-0324
+    provider: openrouter
+    api_model_id: deepseek/deepseek-chat-v3-0324
+    context_window: 65536  # 64k tokens
+    max_output_tokens: 8192
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 0.95
+
+  - name: openrouter/deepseek/deepseek-r1
+    provider: openrouter
+    api_model_id: deepseek/deepseek-r1
+    context_window: 131072  # 128k tokens
+    max_output_tokens: 33792
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 0.95
+
+  - name: openrouter/x-ai/grok-3-beta
+    provider: openrouter
+    api_model_id: x-ai/grok-3-beta
+    context_window: 131072  # 131k tokens
+    max_output_tokens: 131072
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 0.95
+
+# Installation and Configuration Instructions
+# --------------------------------------
+# To install this configuration file:
+#
+# 1. Create the configuration directory:
+#    mkdir -p ~/.config/architect
+#
+# 2. Copy this file to the configuration directory:
+#    cp config/models.yaml ~/.config/architect/models.yaml
+#
+# 3. Set your API keys as environment variables:
+#    export OPENAI_API_KEY="your-openai-api-key"
+#    export GEMINI_API_KEY="your-gemini-api-key"
+#    export OPENROUTER_API_KEY="your-openrouter-api-key"
+#
+# 4. (Optional) Add the exports to your shell profile for persistence
+#
+# 5. Customize model configurations:
+#    - Edit ~/.config/architect/models.yaml to add or modify models
+#    - Uncomment and customize the example model configurations as needed
+#    - Restart any running architect processes to apply changes
+#
+# 6. Verify your configuration:
+#    - Use the debug flag to verify your configuration is loaded correctly:
+#      architect --debug --instructions your-instructions.md your-files
+#    - Look for log messages confirming registry configuration was loaded
+#    - Check that the correct token limits are being used

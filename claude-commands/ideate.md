@@ -19,7 +19,7 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 ## 3. Generate Ideas with Architect
 - Run architect:
   ```bash
-  architect --instructions IDEATE-PROMPT.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 ./
+  architect --instructions IDEATE-PROMPT.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 ./
   ```
 - **Review & Synthesize:**
   1. Review `architect_output` files.
