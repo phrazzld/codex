@@ -4,14 +4,8 @@ Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
 
 ---
 
-## 0 Prep
-- Open `todo.md`, `development_philosophy.md`, full codebase.
-- Ticket state markers: `[ ]` untouched · `[~]` in‑progress · `[x]` done.
-
----
-
 ## 1 Pick a Ticket
-1. Scan `todo.md` top → bottom.
+1. Scan `TODO.md` top → bottom.
 2. Select the first `[ ]` ticket whose `depends‑on:` list is empty or all `[x]`.
 3. Flip its box to `[~]` and note **ID** + **Title**.
 
@@ -41,18 +35,11 @@ Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
 2. **Generate Approaches & Plan**
    - Run the exact architect command:
 
-     ```
-     architect --instructions <sanitized-task-title>-TASK.md \
-               --output-dir architect_output \
-               --model gemini-2.5-flash-preview-04-17 \
-               --model gemini-2.5-pro-preview-03-25 \
-               --model o4-mini \
-               --model gpt-4.1 \
-               DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
+     ```bash
+     architect --instructions <sanitized-task-title>-TASK.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model o4-mini DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
      ```
 
-   - Read outputs, **think hard**, keep the strongest ideas only.
-   - Synthesize the chosen path into `<task‑id>-plan.md`; delete the `*-task.md`.
+   - Synthesize the outputs into `<task‑id>-plan.md`; delete the `*-task.md`.
 
 3. **Tests First**
    - Write failing tests covering happy path + critical edges.

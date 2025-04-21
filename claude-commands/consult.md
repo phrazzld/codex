@@ -4,15 +4,18 @@
 - Identify struggling `Original Task ID: TXXX` from `TODO.md`.
 - Create `CONSULT-REQUEST.md`.
 - ***Think hard*** & populate with: `Original Task ID`, `Goal`, `Problem/Blocker` (Relate to `DEVELOPMENT_PHILOSOPHY.md`), `Context/History`, `Key Files`, `Errors`, `Desired Outcome`.
+- Identify the ten files most relevant to the problem you're struggling with.
 
 ## 2. Invoke Architect for Plan
+- Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
 - Run architect:
     ```bash
-    architect --instructions CONSULT-REQUEST.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md ./
+    architect --instructions CONSULT-REQUEST.md --output-dir consultation-report --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini DEVELOPMENT_PHILOSOPHY.md [ten most relevant files]
     ```
 - **Review & Synthesize Plan:**
     1. Review `architect_output` files.
     2. ***Think hard*** & synthesize into `CONSULTANT-PLAN.md`.
+    3. Ensure plan balances code quality with practicality and avoids unnecessary complexity.
 - Handle errors (log, retry once, stop). Report success/failure.
 
 ## 3. Generate Resolution Tasks in TODO.md
@@ -24,7 +27,7 @@
     - Final task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run architect for task generation:
     ```bash
-    architect --instructions CONSULT-TASKGEN-REQUEST.md --output-dir architect_output_tasks --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md CONSULTANT-PLAN.md
+    architect --instructions CONSULT-TASKGEN-REQUEST.md --output-dir architect_output_tasks --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini DEVELOPMENT_PHILOSOPHY.md CONSULTANT-PLAN.md
     ```
 - **Synthesize & Insert Tasks:**
     - Review generated tasks.

@@ -5,6 +5,7 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 
 ## 1. Prepare Context
 - Read `BACKLOG.md` to understand current tasks and direction.
+- Read `DEVELOPMENT_PHILOSOPHY.md` to understand the ideal general principles of the project's structure and implementation.
 - Analyze codebase structure to identify areas for enhancement.
 
 ## 2. Prepare Prompt File
@@ -19,7 +20,7 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 ## 3. Generate Ideas with Architect
 - Run architect:
   ```bash
-  architect --instructions IDEATE-PROMPT.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 ./
+  architect --instructions IDEATE-PROMPT.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
   ```
 - **Review & Synthesize:**
   1. Review `architect_output` files.
@@ -29,11 +30,15 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 ## 4. Review Ideas
 - Read `IDEAS.md`.
 - Evaluate generated ideas for:
+  - Adherence to or realization of development philosophy
   - Technical feasibility
   - Alignment with project goals
   - Innovation value
   - Implementation complexity
+  - Balance of quality and avoiding overengineering
+  - Focus on practical value delivery
 - Prioritize ideas based on impact vs. effort.
+- Ensure ideas maintain high quality standards while avoiding unnecessary complexity.
 
 ## 5. Update Backlog (Optional)
 - Add selected ideas to `BACKLOG.md`.

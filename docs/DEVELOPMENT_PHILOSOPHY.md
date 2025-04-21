@@ -28,6 +28,8 @@ This document defines **how we build software**. Its primary audience includes:
 
 The goal is to produce software that is simple, modular, testable, maintainable, secure, observable, and delivered efficiently through high levels of automation.
 
+**Guiding Ethos:** In all design and implementation decisions, keep the project's core purpose and goals at the forefront. Strive for the highest standards of maintainability, extensibility, readability, and ease of change to create a delightful software experience. Balance engineering excellence with practical delivery by avoiding overengineering and unnecessary complexity. Always favor the simplest solution that meets requirements while maintaining a clear path for future evolution.
+
 ---
 
 # Core Principles
@@ -36,9 +38,10 @@ These fundamental beliefs shape our approach to software. They guide decisions a
 
 ## 1. Simplicity First: Complexity is the Enemy
 
-* **Principle:** Always seek the simplest possible solution that correctly meets the requirements. Actively resist and eliminate unnecessary complexity.
-* **Rationale:** Simple code is easier to understand, debug, test, modify, and maintain. Complexity is the primary source of bugs, friction, and long-term costs. We rigorously apply YAGNI (You Ain't Gonna Need It).
-* **Anti-Patterns:** Over-engineering, premature abstraction, overly clever/obscure code, deep nesting (> 2-3 levels), excessively long functions/methods (signal to refactor), components violating the Single Responsibility Principle.
+* **Principle:** Always seek the simplest possible solution that correctly meets the requirements. Actively resist and eliminate unnecessary complexity. Keep the program's purpose in mind when making design decisions.
+* **Rationale:** Simple code is easier to understand, debug, test, modify, and maintain. Complexity is the primary source of bugs, friction, and long-term costs. We rigorously apply YAGNI (You Ain't Gonna Need It) while ensuring we're delivering high-quality, maintainable software.
+* **Anti-Patterns:** Over-engineering, designing for imagined future requirements, premature abstraction, overly clever/obscure code, deep nesting (> 2-3 levels), excessively long functions/methods (signal to refactor), components violating the Single Responsibility Principle.
+* **Balance:** Distinguish between essential complexity (required by the problem domain) and accidental complexity (introduced by our implementation). Ruthlessly eliminate the latter while thoughtfully managing the former.
 
 ## 2. Modularity is Mandatory: Do One Thing Well
 
@@ -75,6 +78,8 @@ These fundamental beliefs shape our approach to software. They guide decisions a
 # Architecture Guidelines
 
 These guidelines translate Core Principles into actionable structures for maintainable, adaptable, testable, and observable applications. Language-specific implementations are detailed in the appendices.
+
+**Balancing Quality and Pragmatism:** Keep the project's purpose and goals in mind when applying these guidelines. Strive for high-quality, maintainable architecture while avoiding overengineering. Apply these principles pragmatically, with appropriate depth for the scale and lifespan of your project.
 
 ## 1. Embrace the Unix Philosophy: Focused, Composable Units
 

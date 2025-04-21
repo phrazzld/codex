@@ -19,7 +19,7 @@
 ## 4. Generate Plan with Architect
 - Run architect:
     ```bash
-    architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model o4-mini --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 ./
+    architect --instructions TASK-PROMPT.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
     ```
 - **Review & Synthesize:**
     1. Review `architect_output` files.
@@ -29,6 +29,8 @@
 ## 5. Review Plan
 - Read `PLAN.MD`.
 - Verify content (steps, approaches, testability), scope (atomic unit), and alignment with `DEVELOPMENT_PHILOSOPHY.md`.
+- Evaluate if the plan maintains a good balance between high-quality maintainable code and avoiding overengineering.
+- Ensure the plan keeps the project's purpose in mind and prioritizes practical value delivery.
 - (Optional Cleanup): Remove `TASK-PROMPT.md`.
 
 ## 6. Checkout Branch

@@ -8,7 +8,7 @@
 ## 2. Generate Task Breakdown
 - Run architect:
     ```bash
-    architect --instructions ticket-task.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 ./
+    architect --instructions ticket-task.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model o4-mini DEVELOPMENT_PHILOSOPHY.md PLAN.md
     ```
 - **Review & Synthesize:**
     1. Review `architect_output` files.

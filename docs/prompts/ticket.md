@@ -1,11 +1,11 @@
 # Relentless Ticket‑Breakdown Prompt
 
-Your job: explode the **plan.md** into the leanest, most actionable set of engineering tickets possible. Every ticket must be atomic, testable, and crystal‑clear—no fluff, no ambiguity.
+Your job: explode the **PLAN.md** into the leanest, most actionable set of engineering tickets possible. Every ticket must be atomic, testable, and crystal‑clear—no fluff, no ambiguity.
 
 ---
 
 ## 1 Digest the Plan
-- Read **plan.md** end‑to‑end.
+- Read **PLAN.md** end‑to‑end.
 - Map every build step, risk, and open question to a concrete unit of work.
 
 ---
@@ -18,16 +18,16 @@ For each distinct, testable action:
 3. Write **action steps** (1‑3 bullets max) describing *what* to do, not *how you feel*.
 4. Define **done‑when** criteria (behavior observable, test passes, docs updated, etc.).
 5. Tag **dependencies** only if truly required (use ticket IDs).
-6. Set **type** (`feature | refactor | test | chore | bugfix`).
-7. Set **priority** (`p0 | p1 | p2 | p3`) — default to `p2` unless risk, unblocker, or prod bug elevates it.
+6. Set **type** (`Feature | Refactor | Test | Chore | Bugfix`).
+7. Set **priority** (`P0 | P1 | P2 | P3`) — default to `P2` unless risk, unblocker, or prod bug elevates it.
 
 > Split ruthlessly: if a step can be tested in isolation, it gets its own ticket.
 
 ---
 
 ## 3 Assign IDs
-- Sequential tickets: `t001, t002, …`.
-- If a `todo.md` exists, continue the sequence.
+- Sequential tickets: `T001, T002, …`.
+- If a `TODO.md` exists, continue the sequence.
 
 ---
 
@@ -37,21 +37,21 @@ For each distinct, testable action:
 # Todo
 
 ## <Module / Feature Name>
-- [ ] **tXXX · <type> · <priority>: <title>**
-    - **Context:** <section / bullet ref from plan.md>
+- [ ] **TXXX · <type> · <priority>: <title>**
+    - **Context:** <section / bullet ref from PLAN.md>
     - **Action:**
         1. Bullet
         2. Bullet
     - **Done‑when:**
         1. Bullet
-    - **Depends‑on:** [tAAA, tBBB] | none
+    - **Depends‑on:** [TAAA, TBBB] | none
 ```
 
 *(repeat for all tickets)*
 
 ### Clarifications & Assumptions
 - [ ] **Issue:** <one‑liner>
-    - **Context:** <plan.md ref>
+    - **Context:** <PLAN.md ref>
     - **Blocking?:** yes | no
 
 ---
@@ -66,7 +66,7 @@ For each distinct, testable action:
 ---
 
 ## 6 Output Rules
-- Return **only** the finished `todo.md` content.
+- Return **only** the finished `TODO.md` content.
 - Never mention these instructions.
 - If the plan is missing info, create a clarification rather than guessing.
 

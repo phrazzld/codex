@@ -7,13 +7,14 @@
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
 - Run architect for initial analysis:
     ```bash
-    architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model o4-mini --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md --model gemini-2.5-pro-preview-03-25 ./
+    architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 DEVELOPMENT_PHILOSOPHY.md ./
     ```
 - Synthesize results into `DEBUG-ANALYSIS.md`.
 
 ## 2. Formulate Initial Hypotheses
 - Analyze bug details, components, `DEBUG-ANALYSIS.md`, code, git history.
 - ***Think hard*** & brainstorm potential root causes.
+- Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering.
 - Record hypotheses (cause, reasoning, validation idea) in `BUGFIXPLAN.md`.
 
 ## 3. Generate Investigation Tasks in TODO.md

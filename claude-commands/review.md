@@ -11,7 +11,7 @@
 ## 3. Run Architect Review
 - Run:
     ```bash
-    architect --instructions diff.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model o4-mini --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 ./
+    architect --instructions diff.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 ./
     ```
 - **Review & Synthesize:**
     1. Review `architect_output` files.
@@ -21,4 +21,6 @@
 ## 4. Review the Review
 - Read `CODE_REVIEW.MD`.
 - Verify feedback covers all dimensions of `DEVELOPMENT_PHILOSOPHY.md`.
+- Ensure review addresses both quality and complexity - flagging both under-engineering (too simplistic, brittle) and over-engineering (unnecessary complexity, premature abstraction).
+- Validate that review keeps the program's purpose in mind and evaluates code against practical value delivery.
 
