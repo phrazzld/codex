@@ -7,6 +7,7 @@ Gather important context.
 - README.md
 - CLAUDE.md
 - DEVELOPMENT_PHILOSOPHY.md
+- glance.md
 
 ## RUN
 - `git ls-files`

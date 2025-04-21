@@ -1,11 +1,35 @@
 #!/bin/bash
 
-# Simple script to report TODO file statistics
+# Task Statistics Reporter
+# A clean, well-formatted report of TODO file tracking statistics
 
 # --- Configuration ---
 # Add more potential filenames here if needed
 declare -a todo_filenames=("TODO.md" "todo.md" "TODO" "todo")
 todo_file=""
+
+# --- Formatting Constants ---
+divider="────────────────────────────────────────────────"
+thin_divider="─────────────────────"
+header_format="\033[1m%s\033[0m"
+file_format="\033[36m%s\033[0m"
+stat_label="\033[37m%-16s\033[0m"
+stat_value="\033[1m%s\033[0m"
+highlight="\033[33m%s\033[0m"
+secondary="\033[34m%s\033[0m"
+success="\033[32m%s\033[0m"
+warning="\033[33m%s\033[0m"
+error="\033[31m%s\033[0m"
+
+# --- Task Type Symbols ---
+sym_total="∑"
+sym_completed="✓"
+sym_in_progress="~"
+sym_incomplete="○"
+sym_remaining="□"
+sym_current="→"
+sym_up_next="⇢"
+sym_indent="  "
 
 # --- Find the TODO file ---
 for filename in "${todo_filenames[@]}"; do
@@ -17,32 +41,112 @@ done
 
 # --- Check if found and Analyze ---
 if [[ -z "$todo_file" ]]; then
-  echo "Error: No TODO file found in the current directory."
-  echo "Looked for: ${todo_filenames[*]}"
+  printf "\n${error}" "Error: No TODO file found in the current directory."
+  printf "\n${secondary}" "Looked for: ${todo_filenames[*]}"
+  printf "\n\n"
   exit 1
 fi
 
-echo "Analyzing TODO file: $todo_file"
-
 # --- Count Tasks ---
-# Use grep -c to count matching lines efficiently
 # Match lines starting with optional whitespace, then '- [x]' for completed
 completed_tasks=$(grep -c '^[[:space:]]*- \[x\]' "$todo_file")
 
 # Match lines starting with optional whitespace, then '- [ ]' for incomplete
 incomplete_tasks=$(grep -c '^[[:space:]]*- \[ \]' "$todo_file")
 
-# Calculate total (completed + incomplete)
-total_tasks=$((completed_tasks + incomplete_tasks))
+# Match lines starting with optional whitespace, then '- [~]' for in progress
+in_progress_tasks=$(grep -c '^[[:space:]]*- \[~\]' "$todo_file")
 
-# Remaining tasks are the incomplete ones
-remaining_tasks=$incomplete_tasks
+# Calculate total and remaining tasks
+total_tasks=$((completed_tasks + incomplete_tasks + in_progress_tasks))
+remaining_tasks=$((incomplete_tasks + in_progress_tasks))
+
+# Calculate completion percentage
+if [[ $total_tasks -gt 0 ]]; then
+  completion_percentage=$((completed_tasks * 100 / total_tasks))
+else
+  completion_percentage=0
+fi
+
+# --- Get Current Task (first in-progress or incomplete) ---
+current_task=""
+if [[ $in_progress_tasks -gt 0 ]]; then
+  # First try to find an in-progress task
+  current_task=$(grep -m 1 '^[[:space:]]*- \[~\]' "$todo_file" | sed 's/^[[:space:]]*- \[~\] //')
+elif [[ $incomplete_tasks -gt 0 ]]; then
+  # If no in-progress tasks, look for first incomplete task
+  current_task=$(grep -m 1 '^[[:space:]]*- \[ \]' "$todo_file" | sed 's/^[[:space:]]*- \[ \] //')
+fi
+
+# --- Get Up-Next Task (first incomplete task after current) ---
+up_next_task=""
+if [[ $incomplete_tasks -gt 0 ]]; then
+  if [[ $in_progress_tasks -gt 0 ]]; then
+    # If current task is in-progress, find first incomplete task
+    up_next_task=$(grep -m 1 '^[[:space:]]*- \[ \]' "$todo_file" | sed 's/^[[:space:]]*- \[ \] //')
+  elif [[ $incomplete_tasks -gt 1 ]]; then
+    # If current task is already the first incomplete task, find the second one
+    up_next_task=$(grep '^[[:space:]]*- \[ \]' "$todo_file" | sed 's/^[[:space:]]*- \[ \] //' | sed -n '2p')
+  fi
+fi
+
+# --- Generate Progress Bar ---
+progress_bar_width=30
+completed_blocks=$((progress_bar_width * completion_percentage / 100))
+remaining_blocks=$((progress_bar_width - completed_blocks))
+
+progress_bar="["
+for ((i=0; i<completed_blocks; i++)); do
+  progress_bar+="■"
+done
+for ((i=0; i<remaining_blocks; i++)); do
+  progress_bar+="□"
+done
+progress_bar+="] ${completion_percentage}% complete"
 
 # --- Output Results ---
-echo "-------------------------"
-echo "Total tasks:      $total_tasks"
-echo "Completed tasks:  $completed_tasks"
-echo "Remaining tasks:  $remaining_tasks"
-echo "-------------------------"
+printf "\n${header_format}: ${file_format}\n" "Analyzing" "$todo_file"
+printf "${thin_divider}\n\n"
+
+# Format stats with symbols
+printf " ${stat_value} ${stat_label}: ${stat_value}\n" "$sym_total" "Total tasks" "$total_tasks"
+printf " ${success} ${stat_label}: ${success}\n" "$sym_completed" "Completed" "$completed_tasks"
+printf " ${highlight} ${stat_label}: ${highlight}\n" "$sym_in_progress" "In progress" "$in_progress_tasks" 
+printf " ${secondary} ${stat_label}: ${secondary}\n" "$sym_incomplete" "Incomplete" "$incomplete_tasks"
+printf " ${warning} ${stat_label}: ${warning}\n" "$sym_remaining" "Remaining" "$remaining_tasks"
+
+# --- Output Progress Bar ---
+printf "\n%s\n" "$progress_bar"
+printf "${thin_divider}\n"
+
+# Current task formatting with better layout
+if [[ -n "$current_task" ]]; then
+  if [[ $in_progress_tasks -gt 0 ]]; then
+    printf "\n${header_format}\n" "CURRENT TASK"
+    printf "${highlight}%s\n" "$current_task"
+  else
+    printf "\n${header_format}\n" "CURRENT TASK" 
+    printf "${secondary}%s\n" "$current_task"
+  fi
+else
+  printf "\n${header_format}\n" "CURRENT TASK"
+  printf "${success}%s\n" "None (all tasks completed)"
+fi
+
+# Up next task with improved formatting
+if [[ -n "$up_next_task" ]]; then
+  printf "\n${header_format}\n" "UP NEXT"
+  printf "${secondary}%s\n" "$up_next_task"
+else
+  if [[ $total_tasks -eq 0 ]]; then
+    printf "\n${header_format}\n" "UP NEXT"
+    printf "${secondary}%s\n" "No tasks defined yet"
+  else
+    printf "\n${header_format}\n" "UP NEXT"
+    printf "${success}%s\n" "None (no more tasks)"
+  fi
+fi
+
+printf "\n\n"
 
 exit 0
