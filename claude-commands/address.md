@@ -9,13 +9,13 @@
 - Copy content from `docs/prompts/address.md`.
 - Add code review context: `## Code Review Content\n[Content of CODE_REVIEW.md]` at the top.
 
-## 3. Generate Plan with Architect
-- Run architect:
+## 3. Generate Plan with Thinktank
+- Run thinktank:
     ```bash
-    architect --instructions ADDRESS-PROMPT.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+    thinktank --instructions ADDRESS-PROMPT.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
     ```
 - **Review & Synthesize:**
-    1. Review `architect_output` files.
+    1. Review `thinktank_output` files.
     2. ***Think hard*** & synthesize into `PLAN.md`.
 - Handle errors (report, log, retry once, stop). Report success.
 

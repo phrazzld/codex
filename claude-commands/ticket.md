@@ -6,12 +6,12 @@
 - Append full content of `PLAN.md` under `## Implementation Plan`.
 
 ## 2. Generate Task Breakdown
-- Run architect:
+- Run thinktank:
     ```bash
-    architect --instructions ticket-task.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model o4-mini DEVELOPMENT_PHILOSOPHY.md PLAN.md
+    thinktank --instructions ticket-task.md --output-dir thinktank_output --model gemini-2.5-pro-preview-03-25 --model o4-mini --model openrouter/x-ai/grok-3-mini-beta --model openrouter/deepseek/deepseek-r1 DEVELOPMENT_PHILOSOPHY.md PLAN.md
     ```
 - **Review & Synthesize:**
-    1. Review `architect_output` files.
+    1. Review `thinktank_output` files.
     2. ***Think hard*** & synthesize into `TODO.md`. Ensure unique sequential Task IDs (e.g., T001) and `Depends On:` uses these IDs.
 - Handle errors (log, retry once, stop). Report success.
 

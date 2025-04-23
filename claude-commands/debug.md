@@ -5,9 +5,9 @@
 - Identify related `Original Task ID: TXXX` from `TODO.md`. Note if none.
 - Create `BUGFIXPLAN.md` (Sections: Bug Desc, Repro, Expected, Actual, Components, Hypotheses, Test Log, Root Cause, Fix Desc, Status: Investigating).
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
-- Run architect for initial analysis:
+- Run thinktank for initial analysis:
     ```bash
-    architect --instructions DEBUG-REQUEST.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 DEVELOPMENT_PHILOSOPHY.md ./
+    thinktank --instructions DEBUG-REQUEST.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 DEVELOPMENT_PHILOSOPHY.md ./
     ```
 - Synthesize results into `DEBUG-ANALYSIS.md`.
 
@@ -24,9 +24,9 @@
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
-- Run architect for task generation:
+- Run thinktank for task generation:
     ```bash
-    architect --instructions DEBUG-TASKGEN-REQUEST.md --output-dir architect_output_tasks --model gemini-2.5-flash-preview-04-17 --model o4-mini --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    thinktank --instructions DEBUG-TASKGEN-REQUEST.md --output-dir thinktank_output_tasks --model gemini-2.5-flash-preview-04-17 --model o4-mini --model openrouter/x-ai/grok-3-mini-beta --model openrouter/deepseek/deepseek-r1 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
 - **Synthesize & Insert Tasks:**
     - Review generated tasks.

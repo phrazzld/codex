@@ -5,14 +5,14 @@
 - Copy content from `docs/prompts/extract.md`.
 - Add note: "Keep the program's purpose in mind and strive for the highest quality maintainable code while avoiding overengineering. Balance modularity with avoiding unnecessary complexity."
 
-## 2. Run architect
+## 2. Run thinktank
 - Run:
     ```bash
     # Find relevant context files if needed
-    architect --instructions task.md --output-dir architect_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+    thinktank --instructions task.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
     ```
 - **Review & Synthesize:**
-    1. Review `architect_output` files.
+    1. Review `thinktank_output` files.
     2. ***Think hard*** & synthesize into `EXTRACT_PLAN.md`.
     3. Ensure plan maintains a proper balance between modularity and simplicity.
 - Handle errors (log, retry).

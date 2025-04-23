@@ -1,7 +1,7 @@
-# Architect Models Configuration
+# Thinktank Models Configuration
 #
-# This file defines the LLM providers and models available to the architect tool.
-# It should be placed at ~/.config/architect/models.yaml
+# This file defines the LLM providers and models available to the thinktank tool.
+# It should be placed at ~/.config/thinktank/models.yaml
 #
 # You can customize this file to:
 # - Add new models as they become available
@@ -135,6 +135,22 @@ models:
         type: int
         default: 40
 
+  - name: gemini-2.0-flash
+    provider: gemini
+    api_model_id: gemini-2.0
+    context_window: 1000000
+    max_output_tokens: 65000
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 0.95
+      top_k:
+        type: int
+        default: 40
+
   # Custom Model Examples
   # --------------------
   # These examples show how to configure custom models or override defaults
@@ -200,7 +216,7 @@ models:
   - name: openrouter/deepseek/deepseek-chat-v3-0324
     provider: openrouter
     api_model_id: deepseek/deepseek-chat-v3-0324
-    context_window: 65536  # 64k tokens
+    context_window: 64000
     max_output_tokens: 8192
     parameters:
       temperature:
@@ -213,7 +229,7 @@ models:
   - name: openrouter/deepseek/deepseek-r1
     provider: openrouter
     api_model_id: deepseek/deepseek-r1
-    context_window: 131072  # 128k tokens
+    context_window: 163840
     max_output_tokens: 33792
     parameters:
       temperature:
@@ -226,7 +242,7 @@ models:
   - name: openrouter/x-ai/grok-3-beta
     provider: openrouter
     api_model_id: x-ai/grok-3-beta
-    context_window: 131072  # 131k tokens
+    context_window: 131072
     max_output_tokens: 131072
     parameters:
       temperature:
@@ -236,15 +252,32 @@ models:
         type: float
         default: 0.95
 
+  - name: openrouter/x-ai/grok-3-mini-beta
+    provider: openrouter
+    api_model_id: x-ai/grok-3-mini-beta
+    context_window: 131072
+    max_output_tokens: 131072
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 0.95
+      reasoning:
+        type: object
+        default:
+          effort: "high"
+
 # Installation and Configuration Instructions
 # --------------------------------------
 # To install this configuration file:
 #
 # 1. Create the configuration directory:
-#    mkdir -p ~/.config/architect
+#    mkdir -p ~/.config/thinktank
 #
 # 2. Copy this file to the configuration directory:
-#    cp config/models.yaml ~/.config/architect/models.yaml
+#    cp config/models.yaml ~/.config/thinktank/models.yaml
 #
 # 3. Set your API keys as environment variables:
 #    export OPENAI_API_KEY="your-openai-api-key"
@@ -254,12 +287,12 @@ models:
 # 4. (Optional) Add the exports to your shell profile for persistence
 #
 # 5. Customize model configurations:
-#    - Edit ~/.config/architect/models.yaml to add or modify models
+#    - Edit ~/.config/thinktank/models.yaml to add or modify models
 #    - Uncomment and customize the example model configurations as needed
-#    - Restart any running architect processes to apply changes
+#    - Restart any running thinktank processes to apply changes
 #
 # 6. Verify your configuration:
 #    - Use the debug flag to verify your configuration is loaded correctly:
-#      architect --debug --instructions your-instructions.md your-files
+#      thinktank --debug --instructions your-instructions.md your-files
 #    - Look for log messages confirming registry configuration was loaded
 #    - Check that the correct token limits are being used

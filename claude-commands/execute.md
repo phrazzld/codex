@@ -14,13 +14,13 @@ Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
 ## 2 Classify
 - **Simple** → single‑file change, clear logic, no design calls.
 - **Complex** → multi‑file, tricky logic, risk ≥ high, or any ambiguity.
+- **Think** about the details of this task, then classify it appropriately.
 
 ---
 
 ## 3 Simple Path
 1. Create `<task‑id>-plan.md`. Think about the best approach, and document it.
-2. *(optional)* Write minimal happy‑path test.
-3. Implement per **development_philosophy.md**.
+3. Implement per **DEVELOPMENT_PHILOSOPHY.md**.
 4. Run formatter, linter, tests; fix everything.
 5. Mark ticket `[x]`, commit, push, delete plan file.
 
@@ -33,10 +33,10 @@ Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
    - Full **Implementation Approach Analysis prompt** (see separate file)
 
 2. **Generate Approaches & Plan**
-   - Run the exact architect command:
+   - Run the exact thinktank command:
 
      ```bash
-     architect --instructions <sanitized-task-title>-TASK.md --output-dir architect_output --model gemini-2.5-pro-preview-03-25 --model o4-mini DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
+     thinktank --instructions <sanitized-task-title>-TASK.md --output-dir thinktank_output --model gemini-2.5-pro-preview-03-25 --model o4-mini --model openrouter/x-ai/grok-3-mini-beta --model openrouter/deepseek/deepseek-r1 DEVELOPMENT_PHILOSOPHY.md [top-ten-relevant-files]
      ```
 
    - Synthesize the outputs into `<task‑id>-plan.md`; delete the `*-task.md`.
@@ -58,8 +58,6 @@ Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
 ---
 
 ## 5 Execution Rules
-- No ticket remains `[~]` > 24 h—split or re‑queue.
 - Dependency graph must stay acyclic.
 - Every commit passes CI; failing commits are outlawed.
 
-***Brutal clarity or bust.***

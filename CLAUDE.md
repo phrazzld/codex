@@ -14,6 +14,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 * Follow core principles from `DEVELOPMENT_PHILOSOPHY.md`
 * Prefer simplicity and maintainability over complexity
 * Ensure commit messages follow Conventional Commits specification
+* NEVER sign your commit messages. Your commits should ALWAYS and ONLY contain meaningful detailed multiline conventional commits about the work done.
 * Document "why" not "how" in comments
 * Adhere to strict configuration for any code added to the repository:
   * TypeScript: strict typing with no `any`, use immutable patterns, Prettier formatting
@@ -34,8 +35,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 * Ensure consistent, explicit error handling
 * Follow Test-Driven Development when applicable
 
-## Architect Tool
+## Thinktank Tool
 
-* Use `architect` CLI for deeper analysis when needed
-* Run with: `architect --instructions temp_instructions.txt <relevant_paths...>`
+* Use `thinktank` CLI for deeper analysis when needed
+* Run with: `thinktank --instructions temp_instructions.txt <relevant_paths...>`
 * API keys are pre-configured locally

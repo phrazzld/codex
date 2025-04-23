@@ -1,6 +1,6 @@
 # Implementation‑Approach‑Analysis.md – Ruthless Prompt
 
-You are the senior architect. Produce the single best way to solve **<task‑id> – <title>**. Kill weak options.
+You are the senior thinktank. Produce the single best way to solve **<task‑id> – <title>**. Kill weak options.
 
 ---
 
