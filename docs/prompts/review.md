@@ -45,11 +45,30 @@ Keep the program's purpose in mind and balance high-quality, maintainable code w
 ## Deliverable
 
 1. Exhaustive issue list written in brutal, actionable prose.
-2. Markdown summary table:
+2. A punchy report format:
 
-| Description | Location | Fix / Improvement | Severity | Standard or Basis |
-|---|---|---|---|---|
-| … | file:line | … | blocker/high/medium/low | … |
+```
+## CRITICAL ISSUES
+
+### [Issue Title] - BLOCKER
+- **Location**: file:line
+- **Violation**: [violated standard]
+- **Impact**: [brief impact description]
+- **Fix**: [concise action plan]
+
+### [Issue Title] - HIGH
+...
+
+## SIGNIFICANT CONCERNS
+
+### [Issue Title] - MEDIUM
+...
+
+## MINOR IMPROVEMENTS
+
+### [Issue Title] - LOW
+...
+```
 
 Save the whole output as `code_review.md`.
 
