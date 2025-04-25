@@ -9,12 +9,13 @@
 - Run:
     ```bash
     # Find relevant context files if needed
-    thinktank --instructions task.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+    thinktank --instructions task.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
     ```
-- **Review & Synthesize:**
-    1. Review `thinktank_output` files.
-    2. ***Think hard*** & synthesize into `EXTRACT_PLAN.md`.
-    3. Ensure plan maintains a proper balance between modularity and simplicity.
+- Copy synthesis file to create plan:
+    ```bash
+    cp thinktank_output/o4-mini-synthesis.md EXTRACT_PLAN.md
+    ```
+- Review to ensure plan maintains a proper balance between modularity and simplicity.
 - Handle errors (log, retry).
 
 ## 3. Read Plan

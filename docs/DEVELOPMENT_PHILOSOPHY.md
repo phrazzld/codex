@@ -405,3 +405,4 @@ Language-specific standards, tooling configurations, and idiomatic patterns are 
 
 * `DEVELOPMENT_PHILOSOPHY_APPENDIX_GO.md`
 * `DEVELOPMENT_PHILOSOPHY_APPENDIX_TYPESCRIPT.md`
+* `DEVELOPMENT_PHILOSOPHY_APPENDIX_RUST.md`

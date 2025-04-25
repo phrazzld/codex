@@ -20,11 +20,12 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 ## 3. Generate Ideas with Thinktank
 - Run thinktank:
   ```bash
-  thinktank --instructions IDEATE-PROMPT.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+  thinktank --instructions IDEATE-PROMPT.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
   ```
-- **Review & Synthesize:**
-  1. Review `thinktank_output` files.
-  2. ***Think hard*** & synthesize into `IDEAS.md`.
+- Copy synthesis file to create ideas:
+  ```bash
+  cp thinktank_output/o4-mini-synthesis.md IDEAS.md
+  ```
 - Handle errors (report, log, retry once, stop). Report success.
 
 ## 4. Review Ideas

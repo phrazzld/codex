@@ -6,7 +6,7 @@ Gather important context.
 ## READ
 - README.md
 - CLAUDE.md
-- DEVELOPMENT_PHILOSOPHY.md
+- all development philosophy files
 - glance.md
 
 ## RUN

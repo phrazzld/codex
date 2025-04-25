@@ -5,11 +5,12 @@
 - Identify related `Original Task ID: TXXX` from `TODO.md`. Note if none.
 - Create `BUGFIXPLAN.md` (Sections: Bug Desc, Repro, Expected, Actual, Components, Hypotheses, Test Log, Root Cause, Fix Desc, Status: Investigating).
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
+- Identify relevant development philosophy files
 - Run thinktank for initial analysis:
     ```bash
-    thinktank --instructions DEBUG-REQUEST.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 DEVELOPMENT_PHILOSOPHY.md ./
+    thinktank --instructions DEBUG-REQUEST.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 [relevant development philosophy files] ./
     ```
-- Synthesize results into `DEBUG-ANALYSIS.md`.
+- Copy synthesis file: `cp thinktank_output/o4-mini-synthesis.md DEBUG-ANALYSIS.md`.
 
 ## 2. Formulate Initial Hypotheses
 - Analyze bug details, components, `DEBUG-ANALYSIS.md`, code, git history.
@@ -26,12 +27,10 @@
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run thinktank for task generation:
     ```bash
-    thinktank --instructions DEBUG-TASKGEN-REQUEST.md --output-dir thinktank_output_tasks --model gemini-2.5-flash-preview-04-17 --model o4-mini --model openrouter/x-ai/grok-3-mini-beta --model openrouter/deepseek/deepseek-r1 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 DEVELOPMENT_PHILOSOPHY.md BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    thinktank --instructions DEBUG-TASKGEN-REQUEST.md --output-dir thinktank_output_tasks --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model o4-mini --model openrouter/deepseek/deepseek-r1 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 [relevant development philosophy files] BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
-- **Synthesize & Insert Tasks:**
-    - Review generated tasks.
-    - ***Think hard*** & synthesize best breakdown.
-    - Insert new tasks into `TODO.md` (logically after `Original Task ID`).
+- Review synthesized tasks in `thinktank_output_tasks/o4-mini-synthesis.md`
+- Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and proper dependency references.
 - Remove `DEBUG-TASKGEN-REQUEST.md`.
 - Report: "Generated debug tasks [New Task IDs] in TODO.md related to original task [Original Task ID]. Proceed via /execute."
 - **Stop** `/debug`.

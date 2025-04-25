@@ -9,12 +9,13 @@
 - Run:
     ```bash
     # Find relevant context files if needed
-    thinktank --instructions task.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 ./
+    thinktank --instructions task.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 ./
     ```
-- **Review & Synthesize:**
-    1. Review `thinktank_output` files.
-    2. ***Think hard*** & synthesize into `REFACTOR_PLAN.md`.
-    3. Ensure plan balances code quality with pragmatic implementation.
+- Copy synthesis file to create plan:
+    ```bash
+    cp thinktank_output/o4-mini-synthesis.md REFACTOR_PLAN.md
+    ```
+- Review to ensure plan balances code quality with pragmatic implementation.
 - Handle errors (log, retry).
 
 ## 3. Read Plan

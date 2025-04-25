@@ -20,3 +20,5 @@
 4.  **Logging & Context:** Use standard structured (JSON) logging. Ensure `correlation_id` is generated, propagated, and included in all logs. Consult `glance.md` files for directory context.
 5.  **Planning:** Outline non-trivial tasks ("think" or checklist) before coding.
 6.  **Currency Check:** Your knowledge cutoff prevents you from knowing what is current. ALWAYS do a web search before assuming that a dependency needs to be downgraded, or anything similar.
+
+* thinktank is a cli available to you on this system. it enables you to invoke the assistance from a council of intelligent advisors on any subject. run `thinktank --help` to learn more.

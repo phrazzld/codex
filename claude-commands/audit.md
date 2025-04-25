@@ -25,10 +25,11 @@
 - **Actions:**
     - Generate plan using thinktank:
         ```bash
-        thinktank --instructions SECURITY_AUDIT.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+        thinktank --instructions SECURITY_AUDIT.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
         ```
-    - **Review & Synthesize:**
-        1. Review all `thinktank_output` files.
-        2. ***Think hard*** & synthesize into a single `SECURITY_PLAN.md`.
+    - Copy synthesis file to create security plan:
+        ```bash
+        cp thinktank_output/o4-mini-synthesis.md SECURITY_PLAN.md
+        ```
     - Verify `SECURITY_PLAN.MD` includes: Summary, Detailed Findings (location, evidence, impact, severity), Specific Remediation Steps, Verification Procedures.
 

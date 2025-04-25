@@ -6,13 +6,15 @@
 - Append full content of `PLAN.md` under `## Implementation Plan`.
 
 ## 2. Generate Task Breakdown
+- Find relevant development philosophy files
 - Run thinktank:
     ```bash
-    thinktank --instructions ticket-task.md --output-dir thinktank_output --model gemini-2.5-pro-preview-03-25 --model o4-mini --model openrouter/x-ai/grok-3-mini-beta --model openrouter/deepseek/deepseek-r1 DEVELOPMENT_PHILOSOPHY.md PLAN.md
+    thinktank --instructions ticket-task.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-pro-preview-03-25 --model o4-mini --model openrouter/deepseek/deepseek-r1 PLAN.md [relevant development philosophy files]
     ```
-- **Review & Synthesize:**
-    1. Review `thinktank_output` files.
-    2. ***Think hard*** & synthesize into `TODO.md`. Ensure unique sequential Task IDs (e.g., T001) and `Depends On:` uses these IDs.
+- Copy synthesis file to create TODO.md:
+    ```bash
+    cp thinktank_output/o4-mini-synthesis.md TODO.md
+    ```
 - Handle errors (log, retry once, stop). Report success.
 
 ## 3. Review Tasks

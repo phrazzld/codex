@@ -19,11 +19,12 @@
 ## 4. Generate Plan with Thinktank
 - Run thinktank:
     ```bash
-    thinktank --instructions TASK-PROMPT.md --output-dir thinktank_output --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+    thinktank --instructions TASK-PROMPT.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
     ```
-- **Review & Synthesize:**
-    1. Review `thinktank_output` files.
-    2. ***Think hard*** & synthesize into `PLAN.md`.
+- Copy synthesis file to create plan:
+    ```bash
+    cp thinktank_output/o4-mini-synthesis.md PLAN.md
+    ```
 - Handle errors (report, log, retry once, stop). Report success.
 
 ## 5. Review Plan
