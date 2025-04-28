@@ -32,9 +32,9 @@
 - Final `git status`.
 - `git commit` (use detailed message for complex merges).
 - `git push` (if appropriate).
-- Cleanup temporary branches (optional).
+- Cleanup temporary branches
 
-## 6. Post-Merge Validation (Optional)
+## 6. Post-Merge Validation
 - Run comprehensive tests.
 - Request code review for complex resolutions.
 - Document complex merge strategies if needed.

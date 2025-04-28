@@ -37,10 +37,10 @@ Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
    - Run the exact thinktank command:
 
      ```bash
-     thinktank --instructions <sanitized-task-title>-TASK.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-pro-preview-03-25 --model o4-mini --model openrouter/deepseek/deepseek-r1 [relevant development philosophy files] [top-ten-other-relevant-files]
+     thinktank --instructions <sanitized-task-title>-TASK.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model o4-mini [relevant development philosophy files] [top-ten-other-relevant-files]
      ```
 
-   - Copy synthesis file: `cp thinktank_output/o4-mini-synthesis.md <task‑id>-plan.md`; delete the `*-task.md`.
+   - Copy synthesis file: `cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md <task‑id>-plan.md`; delete the `*-task.md`.
 
 3. **Tests First**
    - Write failing tests covering happy path + critical edges.

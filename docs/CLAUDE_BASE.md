@@ -22,3 +22,4 @@
 6.  **Currency Check:** Your knowledge cutoff prevents you from knowing what is current. ALWAYS do a web search before assuming that a dependency needs to be downgraded, or anything similar.
 
 * thinktank is a cli available to you on this system. it enables you to invoke the assistance from a council of intelligent advisors on any subject. run `thinktank --help` to learn more.
+* When running the `thinktank` cli, always maximize the timeout parameter

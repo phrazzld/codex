@@ -20,11 +20,11 @@ Create an organized, expanded, and prioritized backlog based on comprehensive co
 ## 3. Generate Enhanced Backlog with Thinktank
 - Run thinktank with multiple models for diverse perspectives:
   ```bash
-  thinktank --instructions GROOM-PROMPT.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-pro-preview-03-25 --model o4-mini --model openrouter/deepseek/deepseek-r1 --model gpt-4.1 BACKLOG.md $(find . -name "glance.md")
+  thinktank --instructions GROOM-PROMPT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 BACKLOG.md $(find . -name "glance.md")
   ```
 - Copy synthesis file to create new backlog:
   ```bash
-  cp thinktank_output/o4-mini-synthesis.md BACKLOG.md
+  cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md BACKLOG.md
   ```
 - Review to ensure backlog maintains balance between:
   - Innovation and practicality
@@ -42,7 +42,7 @@ Create an organized, expanded, and prioritized backlog based on comprehensive co
   - Developer experience
   - Business value
 - Ensure items are specific, actionable, and aligned with development philosophy.
-- (Optional Cleanup): Remove `GROOM-PROMPT.md` and `thinktank_output/`.
+- Remove `GROOM-PROMPT.md` and `thinktank_output/`.
 
 ## 5. Commit Updated Backlog
 - Create commit with enhanced `BACKLOG.md`.

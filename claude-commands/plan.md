@@ -19,11 +19,11 @@
 ## 4. Generate Plan with Thinktank
 - Run thinktank:
     ```bash
-    thinktank --instructions TASK-PROMPT.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+    thinktank --instructions TASK-PROMPT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
     ```
 - Copy synthesis file to create plan:
     ```bash
-    cp thinktank_output/o4-mini-synthesis.md PLAN.md
+    cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md PLAN.md
     ```
 - Handle errors (report, log, retry once, stop). Report success.
 
@@ -32,7 +32,7 @@
 - Verify content (steps, approaches, testability), scope (atomic unit), and alignment with `DEVELOPMENT_PHILOSOPHY.md`.
 - Evaluate if the plan maintains a good balance between high-quality maintainable code and avoiding overengineering.
 - Ensure the plan keeps the project's purpose in mind and prioritizes practical value delivery.
-- (Optional Cleanup): Remove `TASK-PROMPT.md`.
+- Remove `TASK-PROMPT.md`.
 
 ## 6. Checkout Branch
 - Check out a branch for completing all of the work in the generated `PLAN.md`.

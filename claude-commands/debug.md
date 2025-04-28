@@ -8,9 +8,9 @@
 - Identify relevant development philosophy files
 - Run thinktank for initial analysis:
     ```bash
-    thinktank --instructions DEBUG-REQUEST.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 [relevant development philosophy files] ./
+    thinktank --instructions DEBUG-REQUEST.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 [relevant development philosophy files] ./
     ```
-- Copy synthesis file: `cp thinktank_output/o4-mini-synthesis.md DEBUG-ANALYSIS.md`.
+- Copy synthesis file: `cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md DEBUG-ANALYSIS.md`.
 
 ## 2. Formulate Initial Hypotheses
 - Analyze bug details, components, `DEBUG-ANALYSIS.md`, code, git history.
@@ -27,7 +27,7 @@
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run thinktank for task generation:
     ```bash
-    thinktank --instructions DEBUG-TASKGEN-REQUEST.md --output-dir thinktank_output_tasks --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model o4-mini --model openrouter/deepseek/deepseek-r1 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 [relevant development philosophy files] BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    thinktank --instructions DEBUG-TASKGEN-REQUEST.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model o4-mini --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 [relevant development philosophy files] BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
 - Review synthesized tasks in `thinktank_output_tasks/o4-mini-synthesis.md`
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and proper dependency references.

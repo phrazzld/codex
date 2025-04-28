@@ -11,11 +11,11 @@
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
 - Run thinktank:
     ```bash
-    thinktank --instructions CONSULT-REQUEST.md --output-dir consultation-report --synthesis-model o4-mini --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini --model openrouter/deepseek/deepseek-r1 [development philosophy files] [ten most relevant files]
+    thinktank --instructions CONSULT-REQUEST.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini [development philosophy files] [ten most relevant files]
     ```
 - Copy synthesis file to final destination:
     ```bash
-    cp consultation-report/o4-mini-synthesis.md CONSULTANT-PLAN.md
+    cp consultation-report/gemini-2.5-pro-preview-03-25-synthesis.md CONSULTANT-PLAN.md
     ```
 - Handle errors (log, retry once, stop). Report success/failure.
 
@@ -28,7 +28,7 @@
     - Final task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run thinktank for task generation with synthesis model:
     ```bash
-    thinktank --instructions CONSULT-TASKGEN-REQUEST.md --output-dir thinktank_output_tasks --synthesis-model o4-mini --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini --model openrouter/deepseek/deepseek-r1 [development philosophy files] CONSULTANT-PLAN.md
+    thinktank --instructions CONSULT-TASKGEN-REQUEST.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini [development philosophy files] CONSULTANT-PLAN.md
     ```
 - Review synthesized tasks in `thinktank_output_tasks/o4-mini-synthesis.md`
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and ensuring proper dependency references.

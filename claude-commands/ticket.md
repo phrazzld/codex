@@ -9,17 +9,17 @@
 - Find relevant development philosophy files
 - Run thinktank:
     ```bash
-    thinktank --instructions ticket-task.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-pro-preview-03-25 --model o4-mini --model openrouter/deepseek/deepseek-r1 PLAN.md [relevant development philosophy files]
+    thinktank --instructions ticket-task.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model o4-mini PLAN.md [relevant development philosophy files]
     ```
-- Copy synthesis file to create TODO.md:
-    ```bash
-    cp thinktank_output/o4-mini-synthesis.md TODO.md
-    ```
-- Handle errors (log, retry once, stop). Report success.
+- Copy synthesis file to create TODO.md
 
 ## 3. Review Tasks
 - Verify `TODO.md`:
     - Completeness (all features/ACs covered or clarified).
     - Correct Task ID usage and dependency mapping (no cycles).
-- Remove `ticket-task.md`.
+    - Appropriate inclusion of verification steps for UI/UX changes and user-facing features.
+
+## 4. Clean Up
+- Remove `ticket-task.md`
+- Remove `thinktank_output/`
 

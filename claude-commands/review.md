@@ -15,11 +15,11 @@
     - `PLAN.md` and `TODO.md`
 - Run:
     ```bash
-    thinktank --instructions diff.md --output-dir thinktank_output --synthesis-model o4-mini --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model openrouter/deepseek/deepseek-r1 [at least 10 relevant reference files]
+    thinktank --instructions diff.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 --model o4-mini [at least 10 relevant reference files]
     ```
 - Copy synthesis file to create code review:
     ```bash
-    cp thinktank_output/o4-mini-synthesis.md CODE_REVIEW.md
+    cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md CODE_REVIEW.md
     ```
 - Handle errors (log, retry).
 
