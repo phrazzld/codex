@@ -37,7 +37,7 @@ Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
    - Run the exact thinktank command:
 
      ```bash
-     thinktank --instructions <sanitized-task-title>-TASK.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model o4-mini [relevant development philosophy files] [top-ten-other-relevant-files]
+     thinktank --instructions <sanitized-task-title>-TASK.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini [relevant development philosophy files] [top-ten-other-relevant-files]
      ```
 
    - Copy synthesis file: `cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md <task‑id>-plan.md`; delete the `*-task.md`.

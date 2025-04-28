@@ -20,7 +20,7 @@ Create an organized, expanded, and prioritized backlog based on comprehensive co
 ## 3. Generate Enhanced Backlog with Thinktank
 - Run thinktank with multiple models for diverse perspectives:
   ```bash
-  thinktank --instructions GROOM-PROMPT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 BACKLOG.md $(find . -name "glance.md")
+  thinktank --instructions GROOM-PROMPT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini --model gpt-4.1 BACKLOG.md $(find . -name "glance.md")
   ```
 - Copy synthesis file to create new backlog:
   ```bash

@@ -9,7 +9,7 @@
 - Find relevant development philosophy files
 - Run thinktank:
     ```bash
-    thinktank --instructions ticket-task.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model o4-mini PLAN.md [relevant development philosophy files]
+    thinktank --instructions ticket-task.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model o4-mini PLAN.md [relevant development philosophy files]
     ```
 - Copy synthesis file to create TODO.md
 

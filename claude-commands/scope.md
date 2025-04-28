@@ -42,7 +42,7 @@ Analyze and right-size PLAN.md, breaking it into manageable pieces if needed to 
 ### 3. Generate Scope Analysis with Thinktank
 - Run thinktank:
   ```bash
-  thinktank --instructions SCOPE-ANALYSIS.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini PLAN.md [relevant development philosophy files]
+  thinktank --instructions SCOPE-ANALYSIS.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini PLAN.md [relevant development philosophy files]
   ```
 - Copy synthesis file to create analysis:
   ```bash
@@ -74,7 +74,7 @@ Analyze and right-size PLAN.md, breaking it into manageable pieces if needed to 
     ```
   - Run thinktank for splitting:
     ```bash
-    thinktank --instructions SCOPE-SPLIT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini PLAN.md SCOPE-RESULT.md
+    thinktank --instructions SCOPE-SPLIT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini PLAN.md SCOPE-RESULT.md
     ```
   - Parse thinktank output to extract plan files
   - Write each plan to PLAN-{n}.md files
