@@ -159,7 +159,7 @@
 - sisyphus
 - prime material
 - powder
-- jynx
+- jinx
 - polymorph
 - mirari
 - weatherlight
@@ -170,4 +170,9 @@
 - sunburst
 - misty step
 - necronomicon
+- rule 30
+- move 37
+- xxi
+- vi
+- <roman numerals>
 
