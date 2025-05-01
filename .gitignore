@@ -7,3 +7,6 @@
 .DS_Store
 architect_output/
 **/glance.md
+.glance-output.md
+
+**/.claude/settings.local.json
