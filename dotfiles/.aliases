@@ -5,7 +5,7 @@ HOSTNAME="$(hostname)"
 
 # Universal aliases
 alias agent='eval "$(ssh-agent -s)"; ssh-add ~/.ssh/id_rsa'
-alias clear="clear && exec zsh"
+alias clear="clear && source ~/.zshrc && exec zsh"
 alias compress='tar czf'
 alias decompress='tar xzf'
 alias f='fzf --bind "enter:execute(nvim {})"'
@@ -69,14 +69,14 @@ gstreak() {
   local today=$(date +%Y-%m-%d)
   local days=${2:-30}
   local start_date=$(date -v-${days}d +%Y-%m-%d)
-  
+
   echo "🔥 Commit Streak for $author (last $days days)"
   echo "────────────────────"
-  
+
   for i in $(seq 0 $days); do
     local check_date=$(date -v-${i}d +%Y-%m-%d)
     local count=$(git log --author="$author" --format=oneline --after="$check_date 00:00" --before="$check_date 23:59" | wc -l | xargs)
-    
+
     if [ $count -eq 0 ]; then
       local marker="⚪"
     elif [ $count -lt 3 ]; then
@@ -86,7 +86,7 @@ gstreak() {
     else
       local marker="🔴"
     fi
-    
+
     echo "$marker $check_date: $count commits"
   done
   echo "────────────────────"

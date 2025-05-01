@@ -17,8 +17,8 @@ find_philosophy_files() {
   # Get current directory's absolute path
   local current_dir="$(pwd)"
   
-  # Use find to locate all development philosophy files
-  find "$current_dir" -type f -name "DEVELOPMENT_PHILOSOPHY*.md" | sort
+  # Use find with -L option to follow symbolic links
+  find -L "$current_dir" -type f -name "DEVELOPMENT_PHILOSOPHY*.md" | sort
 }
 
 # Usage examples:
