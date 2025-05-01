@@ -9,9 +9,9 @@
 
 ## 2. Invoke Thinktank for Plan
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
-- Run thinktank:
+- Run thinktank-wrapper:
     ```bash
-    thinktank --instructions CONSULT-REQUEST.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_philosophy_files) $(find_glance_files) [ten most relevant files]
+    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions CONSULT-REQUEST.md [ten most relevant files]
     ```
 - Copy synthesis file to `CONSULTANT-PLAN.md`
 - Handle errors (log, retry once, stop). Report success/failure.
@@ -23,9 +23,9 @@
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
-- Run thinktank for task generation with synthesis model:
+- Run thinktank-wrapper for task generation:
     ```bash
-    thinktank --instructions CONSULT-TASKGEN-REQUEST.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_philosophy_files) $(find_glance_files) CONSULTANT-PLAN.md
+    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions CONSULT-TASKGEN-REQUEST.md CONSULTANT-PLAN.md
     ```
 - Review tasks in synthesis file
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and ensuring proper dependency references.

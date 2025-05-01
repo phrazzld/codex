@@ -37,9 +37,9 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
   ```
 
 ### 3. Generate Scope Analysis with Thinktank
-- Run thinktank:
+- Run thinktank-wrapper:
   ```bash
-  thinktank --instructions SCOPE-ANALYSIS.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" PLAN.md TODO.md $(find_philosophy_files) $(find_glance_files)
+  thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions SCOPE-ANALYSIS.md PLAN.md TODO.md
   ```
 - Copy synthesis file to create `SCOPE-RESULT.md`
 
@@ -64,9 +64,9 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
     1. Create separate plan files (TODO-1.md, TODO-2.md, etc.)
     2. Each todo file must be independently implementable
     ```
-  - Run thinktank for splitting:
+  - Run thinktank-wrapper for splitting:
     ```bash
-    thinktank --instructions SCOPE-SPLIT.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" PLAN.md TODO.md SCOPE-RESULT.md $(find_philosophy_files) $(find_glance_files)
+    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions SCOPE-SPLIT.md PLAN.md TODO.md SCOPE-RESULT.md
     ```
   - Parse thinktank output to extract todo files
   - Write each plan to `TODO-{n}.md` files

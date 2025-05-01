@@ -6,9 +6,9 @@
 - Create `BUGFIXPLAN.md` (Sections: Bug Desc, Repro, Expected, Actual, Components, Hypotheses, Test Log, Root Cause, Fix Desc, Status: Investigating).
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
 - Identify relevant development philosophy files
-- Run thinktank for initial analysis:
+- Run thinktank-wrapper for initial analysis:
     ```bash
-    thinktank --instructions DEBUG-REQUEST.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_philosophy_files) $(find_glance_files) ./
+    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions DEBUG-REQUEST.md ./
     ```
 - Copy synthesis file to `DEBUG-ANALYSIS.md`
 
@@ -25,9 +25,9 @@
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
-- Run thinktank for task generation:
+- Run thinktank-wrapper for task generation:
     ```bash
-    thinktank --instructions DEBUG-TASKGEN-REQUEST.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_philosophy_files) $(find_glance_files) BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions DEBUG-TASKGEN-REQUEST.md BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
 - Review tasks from synthesis file
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and proper dependency references.

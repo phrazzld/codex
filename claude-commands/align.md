@@ -14,9 +14,9 @@ $(cat "docs/prompts/align.md")
 EOL
 
 ## RUN
-# Execute analysis with thinktank
+# Execute analysis with thinktank-wrapper
 ```bash
-thinktank --instructions ALIGN-PROMPT.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files) ./
+thinktank-wrapper --model-set high_context --include-glance --include-philosophy --instructions ALIGN-PROMPT.md ./
 ```
 
 # Create alignment plan

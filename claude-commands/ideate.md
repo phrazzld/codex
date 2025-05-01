@@ -18,9 +18,9 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
   ```
 
 ## 3. Generate Ideas with Thinktank
-- Run thinktank:
+- Run thinktank-wrapper:
   ```bash
-  thinktank --instructions IDEATE-PROMPT.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files)
+  thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions IDEATE-PROMPT.md
   ```
 - Copy synthesis file to create `IDEAS.md`
 - Remove `IDEATE-PROMPT.md`

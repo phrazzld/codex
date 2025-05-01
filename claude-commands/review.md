@@ -11,7 +11,7 @@
 ## 3. Run Thinktank Review
 - Run:
     ```bash
-    thinktank --instructions diff.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_philosophy_files) $(find_glance_files) ./
+    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions diff.md ./
     ```
 - Copy synthesis file to create `CODE_REVIEW.md`
 

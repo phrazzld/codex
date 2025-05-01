@@ -23,9 +23,9 @@
 ## 4. Create Remediation Plan
 - **Goal:** Generate a structured, actionable plan from deep-dive findings.
 - **Actions:**
-    - Generate plan using thinktank:
+    - Generate plan using thinktank-wrapper:
         ```bash
-        thinktank --instructions SECURITY_AUDIT.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files) ./
+        thinktank-wrapper --model-set high_context --include-glance --include-philosophy --instructions SECURITY_AUDIT.md ./
         ```
     - Copy synthesis file to create `SECURITY_PLAN.md`
 
