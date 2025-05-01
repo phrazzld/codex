@@ -82,7 +82,7 @@
 - [x] Update claude-commands/debug.md to use new wrapper
 - [x] Update claude-commands/execute.md to use new wrapper
 - [x] Update claude-commands/extract.md to use new wrapper
-- [ ] Update claude-commands/groom.md to use new wrapper
+- [x] Update claude-commands/groom.md to use new wrapper
 - [ ] Update claude-commands/ideate.md to use new wrapper
 - [ ] Update claude-commands/plan.md to use new wrapper
 - [ ] Update claude-commands/refactor.md to use new wrapper
