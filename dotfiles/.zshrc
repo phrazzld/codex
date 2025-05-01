@@ -12,6 +12,7 @@ fi
 
 # Source environment, functions, and aliases
 source $HOME/.env
+[ -f $HOME/.fun ] && source $HOME/.fun
 source $HOME/.aliases
 
 # Load machine-specific configuration

@@ -49,6 +49,27 @@ if [ -L "$HOME/.claude/commands" ]; then
 fi
 ln -sf "$CODEX_DIR/claude-commands" "$HOME/.claude/commands" && echo -e "${GREEN}✓ Claude commands directory${RESET}" || echo -e "${RED}✗ Claude commands directory${RESET}"
 
+# Setup Thinktank configuration
+echo -e "${YELLOW}Setting up Thinktank configuration...${RESET}"
+# Ensure thinktank config directory exists
+mkdir -p "$HOME/.config/thinktank"
+# Create symlink for models.yaml
+if [ -e "$HOME/.config/thinktank/models.yaml" ] && [ ! -L "$HOME/.config/thinktank/models.yaml" ]; then
+  backup_file="$HOME/.config/thinktank/models.yaml.bak.$(date +%Y%m%d%H%M%S)"
+  echo -e "${YELLOW}Backing up $HOME/.config/thinktank/models.yaml to $backup_file${RESET}"
+  mv "$HOME/.config/thinktank/models.yaml" "$backup_file"
+elif [ -L "$HOME/.config/thinktank/models.yaml" ]; then
+  # Remove existing symlink
+  rm "$HOME/.config/thinktank/models.yaml"
+fi
+ln -sf "$CODEX_DIR/models.yaml" "$HOME/.config/thinktank/models.yaml" && echo -e "${GREEN}✓ Thinktank models.yaml${RESET}" || echo -e "${RED}✗ Thinktank models.yaml${RESET}"
+
+# Setup Git hooks
+echo -e "${YELLOW}Setting up Git hooks...${RESET}"
+git config core.hooksPath .githooks
+chmod +x .githooks/*
+echo -e "${GREEN}✓ Git hooks${RESET}"
+
 # Reload shell
 echo -e "${GREEN}Installation complete!${RESET}"
 echo -e "${YELLOW}To apply changes immediately, run:${RESET}"

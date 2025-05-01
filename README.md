@@ -41,6 +41,24 @@ cd ~/Development/codex
 
 This creates symbolic links from your home directory to the configuration files and sets up Claude Code slash commands.
 
+### Git Hooks
+
+This repository includes custom Git hooks in the `.githooks` directory. After installation, hooks are automatically configured with:
+
+```bash
+git config core.hooksPath .githooks
+```
+
+Current hooks:
+- `post-commit`: Runs `glance ./` asynchronously after each commit and saves output to `.glance-output.md`
+
+If you need to manually set up the hooks after cloning:
+
+```bash
+git config core.hooksPath .githooks
+chmod +x .githooks/*
+```
+
 ## Repository Structure
 
 - **Root**: Documentation and installation script
