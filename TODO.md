@@ -72,7 +72,7 @@
 - [x] Determine optimal installation location
 - [x] Update installation script to add wrapper to PATH
 - [x] Update documentation to reference new wrapper
-- [ ] Test wrapper functionality from various locations
+- [x] Test wrapper functionality from various locations
 
 ## Command Migration
 - [ ] Update claude-commands/address.md to use new wrapper
