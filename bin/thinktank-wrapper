@@ -1,0 +1,84 @@
+#!/usr/bin/env bash
+# =============================================================================
+# thinktank-wrapper
+# =============================================================================
+# A configurable wrapper script around the thinktank executable that:
+#   1. Centralizes the definition of common model sets (--model flags)
+#   2. Centralizes the logic for finding context files (glance.md, DEVELOPMENT_PHILOSOPHY*.md)
+#   3. Simplifies invocation of thinktank from other scripts and commands
+#
+# USAGE:
+#   thinktank-wrapper [OPTIONS] [FILE_PATHS...]
+#
+# COMMON OPTIONS:
+#   --model-set <set_name>     Use predefined model set (all, high_context)
+#   --include-glance           Include glance.md files automatically
+#   --include-philosophy       Include DEVELOPMENT_PHILOSOPHY*.md files automatically
+#   -h, --help                 Show this help message
+#
+# Any other options are passed directly to the thinktank command
+# Any paths provided are included with automatically found paths
+#
+# EXAMPLES:
+#   thinktank-wrapper --include-philosophy --include-glance --instructions prompt.md ./
+#   thinktank-wrapper --model-set high_context --include-glance ./src
+#
+# Version: 1.0.0
+# Last Updated: 2024-05-01
+# =============================================================================
+
+# -----------------------------------------------------------------------------
+# Configuration - Model Sets and Synthesis Model
+# -----------------------------------------------------------------------------
+# These arrays will be populated with the model configurations
+
+# Initialize model set arrays - will be populated later
+declare -a MODELS_ALL=()
+declare -a MODELS_HIGH_CTX=()
+declare -a MODEL_SYNTH=()
+
+# -----------------------------------------------------------------------------
+# File Finding Functions
+# -----------------------------------------------------------------------------
+# These functions will find relevant context files
+
+find_glance_files_internal() {
+  # Placeholder for glance.md file finder
+  echo "Placeholder for glance file finder"
+}
+
+find_philosophy_files_internal() {
+  # Placeholder for DEVELOPMENT_PHILOSOPHY*.md file finder
+  echo "Placeholder for philosophy file finder"
+}
+
+# -----------------------------------------------------------------------------
+# Help Text Function
+# -----------------------------------------------------------------------------
+show_help() {
+  # Placeholder for help text function - will extract from script header
+  grep '^#' "$0" | grep -v '#!/usr/bin/env bash' | sed 's/^# //' | sed 's/^#//'
+}
+
+# -----------------------------------------------------------------------------
+# Argument Parsing
+# -----------------------------------------------------------------------------
+# Placeholder for argument parsing logic
+
+# -----------------------------------------------------------------------------
+# Command Execution
+# -----------------------------------------------------------------------------
+# Placeholder for command construction and execution logic
+
+# -----------------------------------------------------------------------------
+# Main Script Logic
+# -----------------------------------------------------------------------------
+# Entry point - this will be expanded with the full implementation
+if [[ "$1" == "-h" || "$1" == "--help" ]]; then
+  show_help
+  exit 0
+fi
+
+echo "thinktank-wrapper placeholder - will be implemented in future tasks"
+echo "For now, this is just a basic shell script structure"
+exit 0
