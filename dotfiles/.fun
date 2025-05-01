@@ -1,30 +1,15 @@
 #!/bin/bash
 # .fun - Collection of useful shell functions
 
-# Find glance.md files in current directory and immediate subdirectories only
+# Find glance.md files in current directory and subdirectories up to specified depth
 find_glance_files() {
   # Get current directory's absolute path
   local current_dir="$(pwd)"
+  local max_depth="${1:-2}"  # Default to 2 levels deep if not specified
   
-  # Check if glance.md exists in current directory
-  if [ -f "$current_dir/glance.md" ]; then
-    echo "$current_dir/glance.md"
-  fi
-  
-  # Check immediate subdirectories only
-  for dir in "$current_dir"/*/; do
-    # Skip if not a directory
-    if [ ! -d "$dir" ]; then
-      continue
-    fi
-    
-    # Remove trailing slash to avoid double slashes
-    dir="${dir%/}"
-    
-    if [ -f "$dir/glance.md" ]; then
-      echo "$dir/glance.md"
-    fi
-  done
+  # Use find to locate all glance.md files efficiently
+  # +1 to max_depth because maxdepth counts from 0 (current directory)
+  find "$current_dir" -maxdepth $((max_depth + 1)) -type f -name "glance.md" | sort
 }
 
 # Find all development philosophy files in the current directory or any subdirectory
