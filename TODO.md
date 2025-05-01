@@ -57,16 +57,16 @@
 - [x] Document environment considerations
 
 ## Testing
-- [ ] Test with default model set
-- [ ] Test with specified model set
-- [ ] Test with glance files inclusion
-- [ ] Test with philosophy files inclusion
-- [ ] Test with both file types included
-- [ ] Test with explicit paths
-- [ ] Test with mixed options and paths
-- [ ] Test error handling conditions
-- [ ] Verify correct command construction
-- [ ] Test in various directory structures
+- [x] Test with default model set
+- [x] Test with specified model set
+- [x] Test with glance files inclusion
+- [x] Test with philosophy files inclusion
+- [x] Test with both file types included
+- [x] Test with explicit paths
+- [x] Test with mixed options and paths
+- [x] Test error handling conditions
+- [x] Verify correct command construction
+- [x] Test in various directory structures
 
 ## Installation and Integration
 - [ ] Determine optimal installation location

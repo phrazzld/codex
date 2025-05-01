@@ -14,6 +14,7 @@
 #   --model-set <set_name>     Use predefined model set (all, high_context)
 #   --include-glance           Include glance.md files automatically
 #   --include-philosophy       Include DEVELOPMENT_PHILOSOPHY*.md files automatically
+#   --dry-run                  Display the command that would be executed without running it
 #   -h, --help                 Show this help message
 #
 # Any other options are passed directly to the thinktank command
@@ -114,6 +115,7 @@ show_help() {
 model_set="all"             # Default model set
 do_include_glance=false     # Whether to include glance.md files
 do_include_philosophy=false # Whether to include DEVELOPMENT_PHILOSOPHY*.md files
+dry_run=false               # Whether to just display the command without executing it
 declare -a explicit_paths=()   # Array for explicit file/directory paths
 declare -a thinktank_options=() # Array for other thinktank options
 
@@ -142,6 +144,11 @@ while [[ $# -gt 0 ]]; do
     
     --include-philosophy)
       do_include_philosophy=true
+      shift
+      ;;
+    
+    --dry-run)
+      dry_run=true
       shift
       ;;
     
@@ -271,10 +278,13 @@ else
   fi
 fi
 
-# Print the command if in verbose mode (future enhancement)
-# if [[ "$verbose" == true ]]; then
-#   echo "Executing: ${final_command[@]}"
-# fi
+# Print the command if in dry-run mode and exit
+if [[ "$dry_run" == true ]]; then
+  echo "Would execute:"
+  printf "'%s' " "${final_command[@]}"
+  echo
+  exit 0
+fi
 
 # Execute the command and capture the exit code
 "${final_command[@]}"
