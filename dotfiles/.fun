@@ -18,6 +18,9 @@ find_glance_files() {
       continue
     fi
     
+    # Remove trailing slash to avoid double slashes
+    dir="${dir%/}"
+    
     if [ -f "$dir/glance.md" ]; then
       echo "$dir/glance.md"
     fi
