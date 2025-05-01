@@ -1,1 +1,1 @@
-Maximize the timeout of the bash tool you use.
+Maximize the timeout of the Bash tool you use for this.

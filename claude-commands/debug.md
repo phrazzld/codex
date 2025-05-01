@@ -8,7 +8,7 @@
 - Identify relevant development philosophy files
 - Run thinktank for initial analysis:
     ```bash
-    thinktank --instructions DEBUG-REQUEST.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_philosophy_files) $(find_glance_files)
+    thinktank --instructions DEBUG-REQUEST.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_philosophy_files) $(find_glance_files) ./
     ```
 - Copy synthesis file to `DEBUG-ANALYSIS.md`
 
@@ -27,7 +27,7 @@
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run thinktank for task generation:
     ```bash
-    thinktank --instructions DEBUG-TASKGEN-REQUEST.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_philosophy_files) BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    thinktank --instructions DEBUG-TASKGEN-REQUEST.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_philosophy_files) $(find_glance_files) BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
 - Review tasks from synthesis file
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and proper dependency references.

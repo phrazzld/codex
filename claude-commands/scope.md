@@ -1,12 +1,7 @@
 # SCOPE
 
 ## GOAL
-Analyze and right-size PLAN.md, breaking it into manageable pieces if needed to avoid oversized tasks, excessive TODO files, and unwieldy pull requests.
-
-## USAGE
-```
-/scope
-```
+Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed to avoid unwieldy pull requests.
 
 ## FLOW
 
@@ -44,7 +39,7 @@ Analyze and right-size PLAN.md, breaking it into manageable pieces if needed to 
 ### 3. Generate Scope Analysis with Thinktank
 - Run thinktank:
   ```bash
-  thinktank --instructions SCOPE-ANALYSIS.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL PLAN.md TODO.md $(find_philosophy_files)
+  thinktank --instructions SCOPE-ANALYSIS.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL PLAN.md TODO.md $(find_philosophy_files) $(find_glance_files)
   ```
 - Copy synthesis file to create `SCOPE-RESULT.md`
 
@@ -71,12 +66,12 @@ Analyze and right-size PLAN.md, breaking it into manageable pieces if needed to 
     ```
   - Run thinktank for splitting:
     ```bash
-    thinktank --instructions SCOPE-SPLIT.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL PLAN.md TODO.md SCOPE-RESULT.md
+    thinktank --instructions SCOPE-SPLIT.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL PLAN.md TODO.md SCOPE-RESULT.md $(find_philosophy_files) $(find_glance_files)
     ```
   - Parse thinktank output to extract todo files
-  - Write each plan to TODO-{n}.md files
-  - Rename original to TODO-ORIGINAL.md
-  - Create TODO-INDEX.md listing all generated plans
+  - Write each plan to `TODO-{n}.md` files
+  - Rename original to `TODO-ORIGINAL.md`
+  - Create `TODO-INDEX.md` listing all generated plans
 
 ### 5. Review & Clean Up
 - Present results to user

@@ -9,9 +9,9 @@
 - Find relevant development philosophy files
 - Run thinktank:
     ```bash
-    thinktank --instructions ticket-task.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL PLAN.md $(find_philosophy_files)
+    thinktank --instructions ticket-task.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL PLAN.md $(find_philosophy_files) $(find_glance_files)
     ```
-- Copy synthesis file to create TODO.md
+- Copy synthesis file to create `TODO.md`
 
 ## 3. Review Tasks
 - Verify `TODO.md`:
