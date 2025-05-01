@@ -6,10 +6,9 @@
 - Append full content of `PLAN.md` under `## Implementation Plan`.
 
 ## 2. Generate Task Breakdown
-- Find relevant development philosophy files
-- Run thinktank:
+- Run thinktank-wrapper:
     ```bash
-    thinktank --instructions ticket-task.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" PLAN.md $(find_philosophy_files) $(find_glance_files)
+    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions ticket-task.md PLAN.md
     ```
 - Copy synthesis file to create `TODO.md`
 

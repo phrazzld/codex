@@ -17,9 +17,9 @@
 - Add `## Task Description\n[Scoped task description]` at the top.
 
 ## 4. Generate Plan with Thinktank
-- Run thinktank:
+- Run thinktank-wrapper:
     ```bash
-    thinktank --instructions TASK-PROMPT.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files) ./
+    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions TASK-PROMPT.md ./
     ```
 - Copy synthesis file to create `PLAN.md`
 - Remove `TASK-PROMPT.md`.

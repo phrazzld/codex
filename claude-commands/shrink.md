@@ -4,10 +4,10 @@
 - Create `task.md`.
 - Copy content from `docs/prompts/shrink.md`.
 
-## 2. Run thinktank
+## 2. Run thinktank-wrapper
 - Run:
     ```bash
-    thinktank --instructions task.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files) ./
+    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions task.md ./
     ```
 - Copy synthesis file to create a `SHRINK_PLAN.md` file
 - Handle errors (log, retry).

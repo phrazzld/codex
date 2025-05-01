@@ -84,12 +84,12 @@
 - [x] Update claude-commands/extract.md to use new wrapper
 - [x] Update claude-commands/groom.md to use new wrapper
 - [x] Update claude-commands/ideate.md to use new wrapper
-- [ ] Update claude-commands/plan.md to use new wrapper
-- [ ] Update claude-commands/refactor.md to use new wrapper
-- [ ] Update claude-commands/review.md to use new wrapper
-- [ ] Update claude-commands/scope.md to use new wrapper
-- [ ] Update claude-commands/shrink.md to use new wrapper
-- [ ] Update claude-commands/ticket.md to use new wrapper
+- [x] Update claude-commands/plan.md to use new wrapper
+- [x] Update claude-commands/refactor.md to use new wrapper
+- [x] Update claude-commands/review.md to use new wrapper
+- [x] Update claude-commands/scope.md to use new wrapper
+- [x] Update claude-commands/shrink.md to use new wrapper
+- [x] Update claude-commands/ticket.md to use new wrapper
 
 ## Additional Features
 - [ ] Implement override for synthesis model
