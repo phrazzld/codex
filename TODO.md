@@ -75,7 +75,7 @@
 - [x] Test wrapper functionality from various locations
 
 ## Command Migration
-- [ ] Update claude-commands/address.md to use new wrapper
+- [x] Update claude-commands/address.md to use new wrapper
 - [ ] Update claude-commands/align.md to use new wrapper
 - [ ] Update claude-commands/audit.md to use new wrapper
 - [ ] Update claude-commands/consult.md to use new wrapper
