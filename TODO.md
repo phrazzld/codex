@@ -69,7 +69,7 @@
 - [x] Test in various directory structures
 
 ## Installation and Integration
-- [ ] Determine optimal installation location
+- [x] Determine optimal installation location
 - [ ] Update installation script to add wrapper to PATH
 - [ ] Update documentation to reference new wrapper
 - [ ] Test wrapper functionality from various locations
