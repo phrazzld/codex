@@ -8,7 +8,7 @@
 ## 2. Run thinktank
 - Run:
     ```bash
-    thinktank --instructions task.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_glance_files) $(find_philosophy_files) ./
+    thinktank --instructions task.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files) ./
     ```
 - Copy synthesis file to create `REFACTOR_PLAN.md`
 

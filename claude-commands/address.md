@@ -13,7 +13,7 @@
 - Identify the most relevant source code files mentioned in the code review
 - Run thinktank:
     ```bash
-    thinktank --instructions ADDRESS-PROMPT.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_philosophy_files) $(find_glance_files) [relevant source files]
+    thinktank --instructions ADDRESS-PROMPT.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_philosophy_files) $(find_glance_files) [relevant source files]
     ```
 - Copy synthesis file to create a `REMEDIATION_PLAN.md` file
 

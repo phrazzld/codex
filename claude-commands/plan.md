@@ -19,7 +19,7 @@
 ## 4. Generate Plan with Thinktank
 - Run thinktank:
     ```bash
-    thinktank --instructions TASK-PROMPT.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_glance_files) $(find_philosophy_files) ./
+    thinktank --instructions TASK-PROMPT.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files) ./
     ```
 - Copy synthesis file to create `PLAN.md`
 - Remove `TASK-PROMPT.md`.

@@ -16,7 +16,7 @@ EOL
 ## RUN
 # Execute analysis with thinktank
 ```bash
-thinktank --instructions ALIGN-PROMPT.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_glance_files) $(find_philosophy_files) ./
+thinktank --instructions ALIGN-PROMPT.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files) ./
 ```
 
 # Create alignment plan

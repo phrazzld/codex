@@ -20,7 +20,7 @@ Create an organized, expanded, and prioritized backlog based on comprehensive co
 ## 3. Generate Enhanced Backlog with Thinktank
 - Run thinktank with multiple models for diverse perspectives:
   ```bash
-  thinktank --instructions GROOM-PROMPT.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL BACKLOG.md $(find_philosophy_files) $(find_glance_files)
+  thinktank --instructions GROOM-PROMPT.md "${THINKTANK_ALL_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" BACKLOG.md $(find_philosophy_files) $(find_glance_files)
   ```
 - Copy synthesis file to create new `BACKLOG.md`
 - Remove `GROOM-PROMPT.md` and `thinktank_*/`

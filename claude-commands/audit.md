@@ -25,7 +25,7 @@
 - **Actions:**
     - Generate plan using thinktank:
         ```bash
-        thinktank --instructions SECURITY_AUDIT.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_glance_files) $(find_philosophy_files) ./
+        thinktank --instructions SECURITY_AUDIT.md "${THINKTANK_HIGH_CONTEXT_MODELS[@]}" "${THINKTANK_SYNTHESIS_MODEL[@]}" $(find_glance_files) $(find_philosophy_files) ./
         ```
     - Copy synthesis file to create `SECURITY_PLAN.md`
 
