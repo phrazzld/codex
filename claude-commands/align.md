@@ -15,13 +15,13 @@ EOL
 
 ## RUN
 # Execute analysis with thinktank
-thinktank --instructions ALIGN-PROMPT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+```bash
+thinktank --instructions ALIGN-PROMPT.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_glance_files) $(find_philosophy_files)
+```
 
 # Create alignment plan
-cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md ALIGN-PLAN.md
+Copy synthesis file to `ALIGN_PLAN.md`
 
 ## CLEANUP
 rm ALIGN-PROMPT.md
 
-## REVIEW
-echo "Review ALIGN-PLAN.md for actionable improvements to better align with our development philosophy."

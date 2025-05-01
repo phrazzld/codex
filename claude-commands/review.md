@@ -15,17 +15,7 @@
     - `PLAN.md` and `TODO.md`
 - Run:
     ```bash
-    thinktank --instructions diff.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 --model o4-mini [at least 10 relevant reference files]
+    thinktank --instructions diff.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL [at least 10 relevant reference files]
     ```
-- Copy synthesis file to create code review:
-    ```bash
-    cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md CODE_REVIEW.md
-    ```
-- Handle errors (log, retry).
-
-## 4. Review the Review
-- Read `CODE_REVIEW.MD`.
-- Verify feedback covers all dimensions of `DEVELOPMENT_PHILOSOPHY.md`.
-- Ensure review addresses both quality and complexity - flagging both under-engineering (too simplistic, brittle) and over-engineering (unnecessary complexity, premature abstraction).
-- Validate that review keeps the program's purpose in mind and evaluates code against practical value delivery.
+- Copy synthesis file to create `CODE_REVIEW.md`
 

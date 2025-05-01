@@ -17,16 +17,13 @@
     - The most relevant source code files mentioned in the code review
 - Run thinktank:
     ```bash
-    thinktank --instructions ADDRESS-PROMPT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini [development philosophy files] [glance.md files] [relevant source files]
+    thinktank --instructions ADDRESS-PROMPT.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_philosophy_files) $(find_glance_files) [relevant source files]
     ```
-- Copy synthesis file to create plan:
-    ```bash
-    cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md PLAN.md
-    ```
+- Copy synthesis file to create a PLAN.md file.
 - Handle errors (report, log, retry once, stop). Report success.
 
 ## 4. Review Remediation Plan
-- Read `PLAN.MD`.
+- Read `PLAN.md`.
 - Verify it addresses all significant issues from the code review.
 - Ensure solutions align with `DEVELOPMENT_PHILOSOPHY.md`.
 - Remove `ADDRESS-PROMPT.md`.

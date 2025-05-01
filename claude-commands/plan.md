@@ -19,21 +19,11 @@
 ## 4. Generate Plan with Thinktank
 - Run thinktank:
     ```bash
-    thinktank --instructions TASK-PROMPT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+    thinktank --instructions TASK-PROMPT.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_glance_files) $(find_philosophy_files)
     ```
-- Copy synthesis file to create plan:
-    ```bash
-    cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md PLAN.md
-    ```
-- Handle errors (report, log, retry once, stop). Report success.
-
-## 5. Review Plan
-- Read `PLAN.MD`.
-- Verify content (steps, approaches, testability), scope (atomic unit), and alignment with `DEVELOPMENT_PHILOSOPHY.md`.
-- Evaluate if the plan maintains a good balance between high-quality maintainable code and avoiding overengineering.
-- Ensure the plan keeps the project's purpose in mind and prioritizes practical value delivery.
+- Copy synthesis file to create `PLAN.md`
 - Remove `TASK-PROMPT.md`.
 
-## 6. Checkout Branch
+## 5. Checkout Branch
 - Check out a branch for completing all of the work in the generated `PLAN.md`.
 

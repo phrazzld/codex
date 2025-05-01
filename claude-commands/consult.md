@@ -11,12 +11,9 @@
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
 - Run thinktank:
     ```bash
-    thinktank --instructions CONSULT-REQUEST.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini [development philosophy files] [ten most relevant files]
+    thinktank --instructions CONSULT-REQUEST.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL [development philosophy files] [ten most relevant files]
     ```
-- Copy synthesis file to final destination:
-    ```bash
-    cp consultation-report/gemini-2.5-pro-preview-03-25-synthesis.md CONSULTANT-PLAN.md
-    ```
+- Copy synthesis file to `CONSULTANT-PLAN.md`
 - Handle errors (log, retry once, stop). Report success/failure.
 
 ## 3. Generate Resolution Tasks in TODO.md
@@ -28,9 +25,9 @@
     - Final task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run thinktank for task generation with synthesis model:
     ```bash
-    thinktank --instructions CONSULT-TASKGEN-REQUEST.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini [development philosophy files] CONSULTANT-PLAN.md
+    thinktank --instructions CONSULT-TASKGEN-REQUEST.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL [development philosophy files] CONSULTANT-PLAN.md
     ```
-- Review synthesized tasks in `thinktank_output_tasks/o4-mini-synthesis.md`
+- Review tasks in synthesis file
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and ensuring proper dependency references.
 - Remove `CONSULT-REQUEST.md`, `CONSULTANT-PLAN.md`, `CONSULT-TASKGEN-REQUEST.md`.
 - Report: "Generated resolution tasks [New Task IDs] in TODO.md for original task [Original Task ID]. Proceed via /execute."

@@ -8,16 +8,7 @@
 ## 2. Run thinktank
 - Run:
     ```bash
-    # Find relevant context files if needed
-    thinktank --instructions task.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 ./
+    thinktank --instructions task.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_glance_files) $(find_philosophy_files)
     ```
-- Copy synthesis file to create plan:
-    ```bash
-    cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md EXTRACT_PLAN.md
-    ```
-- Review to ensure plan maintains a proper balance between modularity and simplicity.
-- Handle errors (log, retry).
+- Copy synthesis file to create `EXTRACT_PLAN.md`
 
-## 3. Read Plan
-- Review `EXTRACT_PLAN.md` for proposed modularization steps.
-- Validate that extraction suggestions improve maintainability without unnecessary complexity.

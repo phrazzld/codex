@@ -8,9 +8,9 @@
 - Identify relevant development philosophy files
 - Run thinktank for initial analysis:
     ```bash
-    thinktank --instructions DEBUG-REQUEST.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gpt-4.1 --model gemini-2.5-pro-preview-03-25 [relevant development philosophy files] ./
+    thinktank --instructions DEBUG-REQUEST.md $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_philosophy_files) $(find_glance_files)
     ```
-- Copy synthesis file: `cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md DEBUG-ANALYSIS.md`.
+- Copy synthesis file to `DEBUG-ANALYSIS.md`
 
 ## 2. Formulate Initial Hypotheses
 - Analyze bug details, components, `DEBUG-ANALYSIS.md`, code, git history.
@@ -27,9 +27,9 @@
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
 - Run thinktank for task generation:
     ```bash
-    thinktank --instructions DEBUG-TASKGEN-REQUEST.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model o4-mini --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 [relevant development philosophy files] BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    thinktank --instructions DEBUG-TASKGEN-REQUEST.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL $(find_philosophy_files) BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
-- Review synthesized tasks in `thinktank_output_tasks/o4-mini-synthesis.md`
+- Review tasks from synthesis file
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and proper dependency references.
 - Remove `DEBUG-TASKGEN-REQUEST.md`.
 - Report: "Generated debug tasks [New Task IDs] in TODO.md related to original task [Original Task ID]. Proceed via /execute."

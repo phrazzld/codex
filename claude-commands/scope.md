@@ -12,18 +12,20 @@ Analyze and right-size PLAN.md, breaking it into manageable pieces if needed to 
 
 ### 1. Gather Context
 - Read PLAN.md
+- Read TODO.md
 - Find relevant development philosophy files
 
 ### 2. Analyze Plan Scope
 - Create SCOPE-ANALYSIS.md with pattern:
   ```markdown
   # SCOPE ANALYSIS
-  
-  Analyze the complexity and scope of PLAN.md and determine if it should be broken into multiple smaller plans.
-  
+
+  Analyze the complexity and scope of PLAN.md and TODO.md and determine if it should be broken into multiple smaller, more focused TODO files.
+
   ## Context
   - PLAN.md contains [feature/task description]
-  
+  - TODO.md contains [atomized task list to implement plan]
+
   ## Scope Criteria
   - Size: total steps, tasks, or changes required
   - Cohesion: how tightly coupled the changes are
@@ -31,58 +33,54 @@ Analyze and right-size PLAN.md, breaking it into manageable pieces if needed to 
   - Testing complexity: scope of testing required
   - Review burden: how difficult this would be to meaningfully review
   - Deployment risk: potential for regression or issues
-  
+
   ## Analysis Instructions
-  1. Determine if PLAN.md should be split based on the scope criteria above
+  1. Determine if TODO.md should be split based on the scope criteria above
   2. If splitting is recommended, identify logical boundaries for separation
-  3. Define clear, focused sub-plans with minimal interdependencies
-  4. Ensure each sub-plan is independently implementable and testable
+  3. Define clear, focused sub-todos with minimal interdependencies
+  4. Ensure each sub-todo is independently implementable and testable
   ```
 
 ### 3. Generate Scope Analysis with Thinktank
 - Run thinktank:
   ```bash
-  thinktank --instructions SCOPE-ANALYSIS.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini PLAN.md [relevant development philosophy files]
+  thinktank --instructions SCOPE-ANALYSIS.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL PLAN.md TODO.md $(find_philosophy_files)
   ```
-- Copy synthesis file to create analysis:
-  ```bash
-  cp thinktank_output/gemini-2.5-pro-preview-03-25-synthesis.md SCOPE-RESULT.md
-  ```
-- Handle errors (log, retry once, stop). Report success.
+- Copy synthesis file to create `SCOPE-RESULT.md`
 
-### 4. Execute Plan Splitting (If Needed)
+### 4. Execute Splitting (If Needed)
 - If SCOPE-RESULT.md recommends splitting:
   - Create SCOPE-SPLIT.md prompt with:
     ```markdown
     # SCOPE SPLITTING
-    
-    Based on the scope analysis, split PLAN.md into multiple focused plan files.
-    
+
+    Based on the scope analysis, split TODO.md into multiple focused todo files.
+
     ## Source Plan
     [Include PLAN.md content]
-    
+
+    ## Source TODO
+    [Include TODO.md content]
+
     ## Scope Analysis Results
     [Include SCOPE-RESULT.md content]
-    
+
     ## Output Requirements
-    1. Create separate plan files (PLAN-1.md, PLAN-2.md, etc.)
-    2. Each plan file must be independently implementable
-    3. Each must include a complete plan structure (introduction, context, approach, steps)
-    4. Each must maintain proper markdown formatting
-    5. Ensure all original content is preserved across the split plans
-    6. Add a "Dependency Notes" section to each plan if there are cross-dependencies
+    1. Create separate plan files (TODO-1.md, TODO-2.md, etc.)
+    2. Each todo file must be independently implementable
     ```
   - Run thinktank for splitting:
     ```bash
-    thinktank --instructions SCOPE-SPLIT.md --synthesis-model gemini-2.5-pro-preview-03-25 --model gemini-2.5-flash-preview-04-17 --model gemini-2.5-pro-preview-03-25 --model gpt-4.1 --model o4-mini PLAN.md SCOPE-RESULT.md
+    thinktank --instructions SCOPE-SPLIT.md $THINKTANK_ALL_MODELS $THINKTANK_SYNTHESIS_MODEL PLAN.md TODO.md SCOPE-RESULT.md
     ```
-  - Parse thinktank output to extract plan files
-  - Write each plan to PLAN-{n}.md files
-  - Rename original to PLAN-ORIGINAL.md
-  - Create PLAN-INDEX.md listing all generated plans
+  - Parse thinktank output to extract todo files
+  - Write each plan to TODO-{n}.md files
+  - Rename original to TODO-ORIGINAL.md
+  - Create TODO-INDEX.md listing all generated plans
 
 ### 5. Review & Clean Up
 - Present results to user
-  - If not split: "Plan scope is appropriate - proceed with ticket command"
-  - If split: "Plan split into N parts: [list file names]. Run ticket command on each plan separately."
-- Remove temporary files (SCOPE-ANALYSIS.md, SCOPE-SPLIT.md, thinktank_output/)
+  - If not split: "TODO scope is appropriate - proceed with ticket command"
+  - If split: "TODO split into N parts: [list file names]"
+- Remove temporary files (SCOPE-ANALYSIS.md, SCOPE-SPLIT.md, thinktank_*/)
+
