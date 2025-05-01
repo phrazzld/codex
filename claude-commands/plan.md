@@ -17,6 +17,7 @@
 - Add `## Task Description\n[Scoped task description]` at the top.
 
 ## 4. Generate Plan with Thinktank
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper:
     ```bash
     thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions TASK-PROMPT.md ./

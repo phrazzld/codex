@@ -18,6 +18,7 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
   ```
 
 ## 3. Generate Ideas with Thinktank
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper:
   ```bash
   thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions IDEATE-PROMPT.md

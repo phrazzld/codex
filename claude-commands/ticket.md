@@ -6,6 +6,7 @@
 - Append full content of `PLAN.md` under `## Implementation Plan`.
 
 ## 2. Generate Task Breakdown
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper:
     ```bash
     thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions ticket-task.md PLAN.md

@@ -14,6 +14,7 @@ $(cat "docs/prompts/align.md")
 EOL
 
 ## RUN
+# Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 # Execute analysis with thinktank-wrapper
 ```bash
 thinktank-wrapper --model-set high_context --include-glance --include-philosophy --instructions ALIGN-PROMPT.md ./

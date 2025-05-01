@@ -6,6 +6,7 @@
 - Create `BUGFIXPLAN.md` (Sections: Bug Desc, Repro, Expected, Actual, Components, Hypotheses, Test Log, Root Cause, Fix Desc, Status: Investigating).
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
 - Identify relevant development philosophy files
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper for initial analysis:
     ```bash
     thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions DEBUG-REQUEST.md ./
@@ -25,6 +26,7 @@
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper for task generation:
     ```bash
     thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions DEBUG-TASKGEN-REQUEST.md BUGFIXPLAN.md DEBUG-ANALYSIS.md

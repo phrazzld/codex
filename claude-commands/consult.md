@@ -9,6 +9,7 @@
 
 ## 2. Invoke Thinktank for Plan
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper:
     ```bash
     thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions CONSULT-REQUEST.md [ten most relevant files]
@@ -23,6 +24,7 @@
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper for task generation:
     ```bash
     thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions CONSULT-TASKGEN-REQUEST.md CONSULTANT-PLAN.md

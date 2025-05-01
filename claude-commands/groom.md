@@ -18,6 +18,7 @@ Create an organized, expanded, and prioritized backlog based on comprehensive co
   ```
 
 ## 3. Generate Enhanced Backlog with Thinktank
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper with multiple models for diverse perspectives:
   ```bash
   thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions GROOM-PROMPT.md BACKLOG.md

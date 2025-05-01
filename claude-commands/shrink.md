@@ -5,6 +5,7 @@
 - Copy content from `docs/prompts/shrink.md`.
 
 ## 2. Run thinktank-wrapper
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run:
     ```bash
     thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions task.md ./

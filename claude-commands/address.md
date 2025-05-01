@@ -11,6 +11,7 @@
 
 ## 3. Generate Plan with Thinktank
 - Identify the most relevant source code files mentioned in the code review
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper:
     ```bash
     thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions ADDRESS-PROMPT.md [relevant source files]

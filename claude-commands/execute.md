@@ -26,6 +26,7 @@ Your only goal: grab the next unblocked ticket, finish it, commit. No ceremony.
    - Run the exact thinktank command:
 
      ```bash
+     # Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
      thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions <sanitized-task-title>-TASK.md [top-ten-other-relevant-files]
      ```
    - Copy synthesis file to create a task plan file

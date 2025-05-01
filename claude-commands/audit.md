@@ -23,6 +23,7 @@
 ## 4. Create Remediation Plan
 - **Goal:** Generate a structured, actionable plan from deep-dive findings.
 - **Actions:**
+    - Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
     - Generate plan using thinktank-wrapper:
         ```bash
         thinktank-wrapper --model-set high_context --include-glance --include-philosophy --instructions SECURITY_AUDIT.md ./

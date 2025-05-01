@@ -37,6 +37,7 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
   ```
 
 ### 3. Generate Scope Analysis with Thinktank
+- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper:
   ```bash
   thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions SCOPE-ANALYSIS.md PLAN.md TODO.md
@@ -64,6 +65,7 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
     1. Create separate plan files (TODO-1.md, TODO-2.md, etc.)
     2. Each todo file must be independently implementable
     ```
+  - Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
   - Run thinktank-wrapper for splitting:
     ```bash
     thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions SCOPE-SPLIT.md PLAN.md TODO.md SCOPE-RESULT.md
