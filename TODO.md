@@ -70,8 +70,8 @@
 
 ## Installation and Integration
 - [x] Determine optimal installation location
-- [ ] Update installation script to add wrapper to PATH
-- [ ] Update documentation to reference new wrapper
+- [x] Update installation script to add wrapper to PATH
+- [x] Update documentation to reference new wrapper
 - [ ] Test wrapper functionality from various locations
 
 ## Command Migration

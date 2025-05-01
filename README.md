@@ -89,6 +89,16 @@ The repository includes a suite of slash commands for Claude Code that enable st
 - `/review` - Establish code review processes and documentation
 - `/ticket` - Convert plans into prioritized task tickets
 
+## Helper Utilities
+
+The repository includes several helper utilities in the `bin` directory:
+
+- **`thinktank-wrapper`** - A configurable wrapper around the thinktank CLI that:
+  - Centralizes model configuration for predefined model sets
+  - Simplifies finding and including context files (glance.md, DEVELOPMENT_PHILOSOPHY*.md)
+  - Provides consistent command-line flags for common operations
+  - Makes thinktank invocation from scripts and commands more consistent
+
 ## Development Philosophy
 
 The repository includes a comprehensive development philosophy document that establishes standards for:
