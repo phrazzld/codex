@@ -78,7 +78,7 @@
 - [x] Update claude-commands/address.md to use new wrapper
 - [x] Update claude-commands/align.md to use new wrapper
 - [x] Update claude-commands/audit.md to use new wrapper
-- [ ] Update claude-commands/consult.md to use new wrapper
+- [x] Update claude-commands/consult.md to use new wrapper
 - [ ] Update claude-commands/debug.md to use new wrapper
 - [ ] Update claude-commands/execute.md to use new wrapper
 - [ ] Update claude-commands/extract.md to use new wrapper
