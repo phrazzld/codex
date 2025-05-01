@@ -30,26 +30,71 @@
 # -----------------------------------------------------------------------------
 # Configuration - Model Sets and Synthesis Model
 # -----------------------------------------------------------------------------
-# These arrays will be populated with the model configurations
+# These model configurations are derived from the models.yaml file
+# Each model set is defined as an array of flags to be passed to thinktank
 
-# Initialize model set arrays - will be populated later
-declare -a MODELS_ALL=()
-declare -a MODELS_HIGH_CTX=()
-declare -a MODEL_SYNTH=()
+# ALL MODELS - Comprehensive set of models for thorough analysis
+declare -a MODELS_ALL=(
+    # OpenAI Models
+    "--model" "gpt-4.1"
+    "--model" "o4-mini"
+    
+    # Gemini Models
+    "--model" "gemini-2.5-pro-preview-03-25"
+    "--model" "gemini-2.5-flash-preview-04-17"
+    
+    # OpenRouter Models
+    "--model" "openrouter/deepseek/deepseek-chat-v3-0324"
+    "--model" "openrouter/deepseek/deepseek-prover-v2"
+    "--model" "openrouter/deepseek/deepseek-r1"
+    "--model" "openrouter/x-ai/grok-3-beta"
+    "--model" "openrouter/x-ai/grok-3-mini-beta"
+    "--model" "openrouter/meta-llama/llama-4-maverick"
+    "--model" "openrouter/meta-llama/llama-4-scout"
+)
+
+# HIGH CONTEXT MODELS - Models with larger context windows for complex files
+declare -a MODELS_HIGH_CTX=(
+    # OpenAI Models
+    "--model" "gpt-4.1"
+    
+    # Gemini Models
+    "--model" "gemini-2.5-pro-preview-03-25"
+    "--model" "gemini-2.5-flash-preview-04-17"
+    
+    # OpenRouter Models
+    "--model" "openrouter/meta-llama/llama-4-maverick"
+    "--model" "openrouter/meta-llama/llama-4-scout"
+)
+
+# SYNTHESIS MODEL - Model used for final output generation
+declare -a MODEL_SYNTH=(
+    "--synthesis-model" "gemini-2.5-pro-preview-03-25"
+)
 
 # -----------------------------------------------------------------------------
 # File Finding Functions
 # -----------------------------------------------------------------------------
-# These functions will find relevant context files
+# These functions find relevant context files for thinktank
 
+# Find glance.md files in current directory and subdirectories
+# Usage: find_glance_files_internal [max_depth]
+# Where max_depth is the maximum directory depth to search (default: 3)
 find_glance_files_internal() {
-  # Placeholder for glance.md file finder
-  echo "Placeholder for glance file finder"
+  local max_depth="${1:-3}"  # Default to 3 levels deep if not specified
+  local current_dir="$(pwd)"
+  
+  # Use find to locate all glance.md files efficiently
+  find "$current_dir" -maxdepth "$max_depth" -type f -name "glance.md" | sort
 }
 
+# Find all development philosophy files in the current directory or any subdirectory
+# Uses -L option to follow symbolic links in case they're in a different location
 find_philosophy_files_internal() {
-  # Placeholder for DEVELOPMENT_PHILOSOPHY*.md file finder
-  echo "Placeholder for philosophy file finder"
+  local current_dir="$(pwd)"
+  
+  # Use find with -L option to follow symbolic links
+  find -L "$current_dir" -type f -name "DEVELOPMENT_PHILOSOPHY*.md" | sort
 }
 
 # -----------------------------------------------------------------------------
@@ -63,22 +108,177 @@ show_help() {
 # -----------------------------------------------------------------------------
 # Argument Parsing
 # -----------------------------------------------------------------------------
-# Placeholder for argument parsing logic
+# Parse and process command-line arguments
+
+# Initialize variables for options and flags
+model_set="all"             # Default model set
+do_include_glance=false     # Whether to include glance.md files
+do_include_philosophy=false # Whether to include DEVELOPMENT_PHILOSOPHY*.md files
+declare -a explicit_paths=()   # Array for explicit file/directory paths
+declare -a thinktank_options=() # Array for other thinktank options
+
+# Process arguments one by one
+while [[ $# -gt 0 ]]; do
+  case "$1" in
+    # Handle special wrapper options
+    --model-set)
+      if [[ $# -lt 2 ]]; then
+        echo "Error: --model-set requires a value" >&2
+        exit 1
+      fi
+      model_set="$2"
+      # Validate model_set
+      if [[ "$model_set" != "all" && "$model_set" != "high_context" ]]; then
+        echo "Error: --model-set must be 'all' or 'high_context'" >&2
+        exit 1
+      fi
+      shift 2 # Skip both option and its value
+      ;;
+    
+    --include-glance)
+      do_include_glance=true
+      shift
+      ;;
+    
+    --include-philosophy)
+      do_include_philosophy=true
+      shift
+      ;;
+    
+    -h|--help)
+      show_help
+      exit 0
+      ;;
+    
+    # Handle options that require a value (pass through to thinktank)
+    --instructions|--output-dir|--timeout|--synthesis-model)
+      if [[ $# -lt 2 ]]; then
+        echo "Error: $1 requires a value" >&2
+        exit 1
+      fi
+      thinktank_options+=("$1" "$2")
+      shift 2
+      ;;
+    
+    # Handle --model option (pass through to thinktank)
+    --model)
+      if [[ $# -lt 2 ]]; then
+        echo "Error: --model requires a value" >&2
+        exit 1
+      fi
+      thinktank_options+=("$1" "$2")
+      shift 2
+      ;;
+    
+    # Handle other options that might be passed to thinktank
+    --*)
+      thinktank_options+=("$1")
+      shift
+      ;;
+    
+    # Anything not an option is assumed to be a file/directory path
+    *)
+      explicit_paths+=("$1")
+      shift
+      ;;
+  esac
+done
 
 # -----------------------------------------------------------------------------
-# Command Execution
+# File Aggregation
 # -----------------------------------------------------------------------------
-# Placeholder for command construction and execution logic
+# Collect context files based on flags and explicit paths
 
-# -----------------------------------------------------------------------------
-# Main Script Logic
-# -----------------------------------------------------------------------------
-# Entry point - this will be expanded with the full implementation
-if [[ "$1" == "-h" || "$1" == "--help" ]]; then
-  show_help
-  exit 0
+# Initialize an empty array for context files
+declare -a context_files=()
+
+# If --include-glance flag is set, add glance.md files
+if [[ "$do_include_glance" == true ]]; then
+  # Use process substitution to read the output of find_glance_files_internal
+  while IFS= read -r file; do
+    context_files+=("$file")
+  done < <(find_glance_files_internal)
 fi
 
-echo "thinktank-wrapper placeholder - will be implemented in future tasks"
-echo "For now, this is just a basic shell script structure"
-exit 0
+# If --include-philosophy flag is set, add DEVELOPMENT_PHILOSOPHY*.md files
+if [[ "$do_include_philosophy" == true ]]; then
+  # Use process substitution to read the output of find_philosophy_files_internal
+  while IFS= read -r file; do
+    context_files+=("$file")
+  done < <(find_philosophy_files_internal)
+fi
+
+# Add any explicitly provided file/directory paths
+for path in "${explicit_paths[@]}"; do
+  context_files+=("$path")
+done
+
+# Remove duplicates by using process substitution with sort -u
+# Store the result in a new array for unique context files
+declare -a unique_context_files=()
+if [[ ${#context_files[@]} -gt 0 ]]; then
+  while IFS= read -r file; do
+    unique_context_files+=("$file")
+  done < <(printf '%s\n' "${context_files[@]}" | sort -u)
+fi
+
+# -----------------------------------------------------------------------------
+# Command Construction and Execution
+# -----------------------------------------------------------------------------
+# Build and execute the thinktank command
+
+# Check if thinktank executable exists
+if ! command -v thinktank &> /dev/null; then
+  echo "Error: thinktank executable not found in PATH" >&2
+  echo "Make sure thinktank is installed and available in your PATH" >&2
+  exit 1
+fi
+
+# Select the appropriate model set based on the model_set variable
+declare -a selected_models=()
+if [[ "$model_set" == "all" ]]; then
+  selected_models=("${MODELS_ALL[@]}")
+elif [[ "$model_set" == "high_context" ]]; then
+  selected_models=("${MODELS_HIGH_CTX[@]}")
+else
+  # This should never happen due to earlier validation
+  echo "Error: Invalid model set '$model_set'" >&2
+  exit 1
+fi
+
+# Construct the final command array
+# Order: thinktank + options + models + synthesis model + context files
+declare -a final_command=("thinktank")
+
+# Add any pass-through options
+if [[ ${#thinktank_options[@]} -gt 0 ]]; then
+  final_command+=("${thinktank_options[@]}")
+fi
+
+# Add the selected model set
+final_command+=("${selected_models[@]}")
+
+# Add the synthesis model
+final_command+=("${MODEL_SYNTH[@]}")
+
+# Add the context files
+if [[ ${#unique_context_files[@]} -gt 0 ]]; then
+  final_command+=("${unique_context_files[@]}")
+else
+  # Check if we have explicit paths - if not and we're using include flags, warn the user
+  if [[ ${#explicit_paths[@]} -eq 0 && ("$do_include_glance" == true || "$do_include_philosophy" == true) ]]; then
+    echo "Warning: No context files found with the specified include flags" >&2
+  fi
+fi
+
+# Print the command if in verbose mode (future enhancement)
+# if [[ "$verbose" == true ]]; then
+#   echo "Executing: ${final_command[@]}"
+# fi
+
+# Execute the command and capture the exit code
+"${final_command[@]}"
+exit_code=$?
+
+# Return the same exit code as thinktank
+exit $exit_code
