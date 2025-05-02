@@ -1,4 +1,4 @@
-# BACKLOG
+# PROJECT BACKLOG
 
 ## ACTIVE
 
@@ -131,48 +131,4 @@
   - reclaim.ai competitor, calendar / todo list integration that manages your schedule and todo list for you
 
 - **bucket list helper**
-
-
-## names
-
-- sploot
-- cloaca maxima
-- tidbit
-- shorthand
-- blurb
-- zipline
-- grimoire
-- heartbeat
-- meatspace
-- arcana
-- lifelink
-- untap
-- incubate
-- flashback
-- landfall
-- spectacle
-- treshold
-- urza
-- teferi
-- yawgmoth
-- symposium
-- sisyphus
-- prime material
-- powder
-- jinx
-- polymorph
-- mirari
-- weatherlight
-- deathtouch
-- hexproof
-- leyline
-- arcane
-- sunburst
-- misty step
-- necronomicon
-- rule 30
-- move 37
-- xxi
-- vi
-- <roman numerals>
 

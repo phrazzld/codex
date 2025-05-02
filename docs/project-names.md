@@ -1,0 +1,77 @@
+# PROJECT NAMES
+
+- sploot
+- cloaca maxima
+- tidbit
+- shorthand
+- blurb
+- zipline
+- grimoire
+- heartbeat
+- meatspace
+- arcana
+- lifelink
+- untap
+- incubate
+- flashback
+- landfall
+- spectacle
+- treshold
+- urza
+- teferi
+- yawgmoth
+- symposium
+- sisyphus
+- prime material
+- powder
+- jinx
+- polymorph
+- mirari
+- weatherlight
+- deathtouch
+- hexproof
+- leyline
+- arcane
+- sunburst
+- misty step
+- necronomicon
+- rule 30
+- move 37
+- xxi
+- vi
+- <roman numerals>
+- scry
+- prime
+- pulse
+- gitpulse
+- whetstone
+- brainrot publishing house
+- time is money
+- switchboard
+- thinktank
+- architect
+- ward
+- bouncer
+- glance
+- handoff
+- anyzine
+- superwire
+- vibecheck
+- blueprint
+- keysmash
+- scratch
+- pepper
+- ponder
+- studymode
+- judith
+- crucible
+- quack
+- devil's advocate
+- brainstorm press
+- hoth
+- rubberduck
+- conversation
+- personality
+- ministry of truth
+- personality factory
+
