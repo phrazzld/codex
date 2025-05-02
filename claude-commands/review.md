@@ -9,10 +9,11 @@
 - Run `git diff master` (or relevant base branch). Append output to `diff.md`.
 
 ## 3. Run Thinktank Review
+- Identify every file changed in the diff
 - Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run:
     ```bash
-    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions diff.md ./
+    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions diff.md [changed files]
     ```
 - Copy synthesis file to create `CODE_REVIEW.md`
 

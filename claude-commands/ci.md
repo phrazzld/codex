@@ -1,4 +1,4 @@
-# CI Status Check
+# CI
 
 Check the CI for the current PR.
 

@@ -1,4 +1,4 @@
-# AUDIT: AI-Assisted Security Review
+# AUDIT
 
 ## 1. Init Workspace
 - Create `SECURITY_AUDIT.md` (Sections: Scope & Goals, Methodology Notes, Exploratory Log, Deep Dive Log).

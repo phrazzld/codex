@@ -12,7 +12,7 @@
 - Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper:
     ```bash
-    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions CONSULT-REQUEST.md [ten most relevant files]
+    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions CONSULT-REQUEST.md ./
     ```
 - Copy synthesis file to `CONSULTANT-PLAN.md`
 - Handle errors (log, retry once, stop). Report success/failure.

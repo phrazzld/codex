@@ -1,4 +1,4 @@
-# RESOLVE (Git Merge Conflicts)
+# RESOLVE
 
 ## 1. Analyze Conflict
 - `git status` (identify conflicted files).

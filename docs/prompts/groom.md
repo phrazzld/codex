@@ -20,6 +20,8 @@ Examine all provided glance.md files to:
 - Discover potential areas for enhancement not captured in current backlog
 - Understand technical constraints and dependencies
 
+Examine all provided development philosophy files to understand the ideal structure and architecture of the system.
+
 ## 3. Craft a Multi-Dimensional Backlog
 
 Create a comprehensive backlog that considers ALL of these perspectives:
