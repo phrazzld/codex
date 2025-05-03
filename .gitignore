@@ -28,3 +28,6 @@ bin/thinktank-venv/
 **/.pytest_cache/
 **/dist/
 **/build/
+
+# Thinktank output directories
+thinktank_*/
