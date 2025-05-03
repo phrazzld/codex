@@ -10,3 +10,21 @@ architect_output/
 .glance-output.md
 
 **/.claude/settings.local.json
+
+# Python virtual environment
+bin/thinktank-venv/
+**/__pycache__/
+**/*.py[cod]
+**/*$py.class
+**/*.so
+**/.Python
+**/pip-log.txt
+**/.coverage
+**/.coverage.*
+**/htmlcov/
+**/.tox/
+**/.nox/
+**/.hypothesis/
+**/.pytest_cache/
+**/dist/
+**/build/
