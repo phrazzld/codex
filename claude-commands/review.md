@@ -24,7 +24,7 @@ Generate a comprehensive code review of changes against best practices, using a 
 
 ## 3. Run Thinktank Review
 - Identify every file changed in the diff
-- Run:
+- Run (with the maximum timeout in the bash tool used to invoke it):
     ```bash
     thinktank-wrapper --instructions REVIEW-PROMPT.md --model-set high_context --include-philosophy --include-glance [changed files]
     ```

@@ -8,7 +8,7 @@ Generate a detailed task breakdown from a high-level implementation plan into a 
 - Find relevant development philosophy files.
 
 ## 2. Generate Task Breakdown
-- Run thinktank-wrapper with the ticket template:
+- Run thinktank-wrapper with the ticket template (with the maximum timeout in the bash tool used to invoke it):
     ```bash
     thinktank-wrapper --template ticket --model-set all --include-philosophy --include-glance PLAN.md
     ```

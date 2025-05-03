@@ -9,7 +9,7 @@ Systematically identify, analyze, and create a plan to fix bugs through structur
 - Create `BUGFIXPLAN.md` (Sections: Bug Desc, Repro, Expected, Actual, Components, Hypotheses, Test Log, Root Cause, Fix Desc, Status: Investigating).
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
 - Identify relevant development philosophy files
-- Run thinktank-wrapper using the debug template:
+- Run thinktank-wrapper using the debug template (with the maximum timeout in the bash tool used to invoke it):
     ```bash
     thinktank-wrapper --template debug --model-set high_context --include-philosophy --include-glance ./
     ```
@@ -28,7 +28,7 @@ Systematically identify, analyze, and create a plan to fix bugs through structur
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
-- Run thinktank-wrapper for task generation:
+- Run thinktank-wrapper for task generation (with the maximum timeout in the bash tool used to invoke it):
     ```bash
     thinktank-wrapper --instructions DEBUG-TASKGEN-REQUEST.md --model-set all --include-philosophy --include-glance BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```

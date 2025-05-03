@@ -23,7 +23,7 @@ Generate a structured plan to address findings from a code review, with concrete
 
 ## 3. Generate Plan with Thinktank
 - Identify the most relevant source code files mentioned in the code review
-- Run thinktank-wrapper:
+- Run thinktank-wrapper (with the maximum timeout in the bash tool used to invoke it):
   ```bash
   thinktank-wrapper --instructions ADDRESS-PROMPT.md --model-set all --include-philosophy --include-glance [relevant source files]
   ```

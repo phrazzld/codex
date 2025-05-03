@@ -26,7 +26,7 @@ Perform a comprehensive security audit of the codebase, identifying potential vu
 ## 4. Create Remediation Plan
 - **Goal:** Generate a structured, actionable plan from deep-dive findings.
 - **Actions:**
-    - Generate plan using thinktank-wrapper with the audit template:
+    - Generate plan using thinktank-wrapper with the audit template (with the maximum timeout in the bash tool used to invoke it):
         ```bash
         thinktank-wrapper --template audit --model-set high_context --include-glance --include-philosophy ./
         ```

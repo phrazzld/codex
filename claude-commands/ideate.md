@@ -9,7 +9,7 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 - Analyze codebase structure to identify areas for enhancement.
 
 ## 2. Generate Ideas with Thinktank
-- Run thinktank-wrapper with the ideate template:
+- Run thinktank-wrapper with the ideate template (with the maximum timeout in the bash tool used to invoke it):
   ```bash
   thinktank-wrapper --template ideate --model-set all --include-philosophy --include-glance ./
   ```

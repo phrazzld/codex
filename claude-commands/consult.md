@@ -12,7 +12,7 @@ Generate alternative approaches and solutions for a blocked task by leveraging m
 
 ## 2. Invoke Thinktank for Plan
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
-- Run thinktank-wrapper with the consult template:
+- Run thinktank-wrapper with the consult template (with the maximum timeout in the bash tool used to invoke it):
     ```bash
     thinktank-wrapper --template consult --model-set high_context --include-philosophy --include-glance ./
     ```
@@ -26,7 +26,7 @@ Generate alternative approaches and solutions for a blocked task by leveraging m
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
-- Run thinktank-wrapper for task generation:
+- Run thinktank-wrapper for task generation (with the maximum timeout in the bash tool used to invoke it):
     ```bash
     thinktank-wrapper --instructions CONSULT-TASKGEN-REQUEST.md --model-set all --include-philosophy --include-glance CONSULTANT-PLAN.md
     ```

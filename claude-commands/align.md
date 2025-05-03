@@ -21,7 +21,7 @@ Analyze the codebase against our development philosophy and generate backlog ite
 - Add the current backlog content to the prompt file
 
 ## 3. Generate Philosophy-Aligned Backlog Items
-- Run thinktank-wrapper:
+- Run thinktank-wrapper (with the maximum timeout in the bash tool used to invoke it):
   ```bash
   thinktank-wrapper --instructions ALIGN-PROMPT.md --model-set high_context --include-philosophy --include-glance ./
   ```
