@@ -1,0 +1,1 @@
+"""Package containing prompt templates for thinktank."""
