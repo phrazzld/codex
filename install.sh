@@ -2,6 +2,7 @@
 
 # Codex installation script
 # This script creates symlinks from the home directory to the configuration files in this directory
+# and installs the Python-based thinktank-wrapper
 
 # Colors for output
 RED='\033[0;31m'
@@ -65,11 +66,70 @@ elif [ -L "$HOME/.config/thinktank/models.yaml" ]; then
 fi
 ln -sf "$CODEX_DIR/models.yaml" "$HOME/.config/thinktank/models.yaml" && echo -e "${GREEN}✓ Thinktank models.yaml${RESET}" || echo -e "${RED}✗ Thinktank models.yaml${RESET}"
 
+# Install Python-based thinktank-wrapper
+echo -e "${YELLOW}Installing Python-based thinktank-wrapper...${RESET}"
+WRAPPER_DIR="$CODEX_DIR/bin/thinktank_wrapper"
+if [ -d "$WRAPPER_DIR" ]; then
+  # Check if Python 3.8+ is available
+  python_version=$(python3 --version 2>&1 | awk '{print $2}')
+  if [[ "$(printf '%s\n' "3.8" "$python_version" | sort -V | head -n1)" == "3.8" ]]; then
+    # Python 3.8 or higher is available
+    echo -e "${BLUE}Python $python_version is available, installing thinktank-wrapper...${RESET}"
+    # Install the package in development mode
+    (cd "$WRAPPER_DIR" && pip install -e . && echo -e "${GREEN}✓ thinktank-wrapper Python package${RESET}") || echo -e "${RED}✗ thinktank-wrapper Python package installation failed${RESET}"
+    
+    # Create a Bash wrapper script for backward compatibility
+    THINKTANK_WRAPPER_SCRIPT="$CODEX_DIR/bin/thinktank-wrapper"
+    echo -e "${BLUE}Creating thinktank-wrapper script...${RESET}"
+    cat > "$THINKTANK_WRAPPER_SCRIPT" << 'EOF'
+#!/bin/bash
+# This script is a compatibility wrapper for the Python-based thinktank-wrapper
+# It ensures that $CODEX_DIR is set correctly before invoking the Python package
+
+# Set CODEX_DIR to the parent directory of the bin directory
+export CODEX_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
+
+# Execute the Python package with all arguments
+python3 -m thinktank_wrapper "$@"
+EOF
+    chmod +x "$THINKTANK_WRAPPER_SCRIPT" && echo -e "${GREEN}✓ thinktank-wrapper script${RESET}" || echo -e "${RED}✗ thinktank-wrapper script creation failed${RESET}"
+  else
+    echo -e "${RED}Python 3.8 or higher is required, but version $python_version is installed.${RESET}"
+    echo -e "${YELLOW}Please install Python 3.8 or higher and re-run this script.${RESET}"
+  fi
+else
+  echo -e "${RED}thinktank_wrapper directory not found at $WRAPPER_DIR${RESET}"
+fi
+
 # Setup Git hooks
 echo -e "${YELLOW}Setting up Git hooks...${RESET}"
 git config core.hooksPath .githooks
 chmod +x .githooks/*
 echo -e "${GREEN}✓ Git hooks${RESET}"
+
+# Set CODEX_DIR in shell configuration
+echo -e "${YELLOW}Setting up CODEX_DIR environment variable...${RESET}"
+if [ -f "$HOME/.zshrc" ]; then
+  # Check if CODEX_DIR is already in .zshrc
+  if ! grep -q "export CODEX_DIR=" "$HOME/.zshrc"; then
+    echo -e "\n# Codex directory path for thinktank-wrapper" >> "$HOME/.zshrc"
+    echo "export CODEX_DIR=\"$CODEX_DIR\"" >> "$HOME/.zshrc"
+    echo -e "${GREEN}✓ Added CODEX_DIR to .zshrc${RESET}"
+  else
+    echo -e "${YELLOW}CODEX_DIR already defined in .zshrc${RESET}"
+  fi
+fi
+
+if [ -f "$HOME/.bashrc" ]; then
+  # Check if CODEX_DIR is already in .bashrc
+  if ! grep -q "export CODEX_DIR=" "$HOME/.bashrc"; then
+    echo -e "\n# Codex directory path for thinktank-wrapper" >> "$HOME/.bashrc"
+    echo "export CODEX_DIR=\"$CODEX_DIR\"" >> "$HOME/.bashrc"
+    echo -e "${GREEN}✓ Added CODEX_DIR to .bashrc${RESET}"
+  else
+    echo -e "${YELLOW}CODEX_DIR already defined in .bashrc${RESET}"
+  fi
+fi
 
 # Reload shell
 echo -e "${GREEN}Installation complete!${RESET}"
