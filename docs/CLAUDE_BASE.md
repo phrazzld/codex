@@ -20,4 +20,3 @@
 4.  **Logging & Context:** Use standard structured (JSON) logging. Ensure `correlation_id` is generated, propagated, and included in all logs. Consult `glance.md` files for directory context.
 5.  **Planning:** Outline non-trivial tasks ("think" or checklist) before coding.
 6.  **Currency Check:** Your knowledge cutoff prevents you from knowing what is current. ALWAYS do a web search before assuming that a dependency needs to be downgraded, or anything similar.
-

@@ -1,15 +1,28 @@
 # REFACTOR
 
-## 1. Create task.md
-- Create `task.md`.
+## GOAL
+Analyze the codebase and generate backlog items for code refactoring while preserving functionality.
+
+## 1. Prepare Context
+- Read `BACKLOG.md` to understand current tasks.
+- Read `DEVELOPMENT_PHILOSOPHY.md` and relevant language-specific appendices.
+- Identify all `glance.md` files in the codebase to gather architectural insights.
+
+## 2. Create Prompt File
+- Create `REFACTOR-PROMPT.md`.
 - Copy content from `docs/prompts/refactor.md`.
-- Add note: "Keep the program's purpose in mind and strive for the highest quality maintainable code while avoiding overengineering. Focus on practical improvements that provide real value."
+- Add current backlog context:
+  ```
+  ## Current Backlog
+  [Copy content from BACKLOG.md]
+  ```
 
-## 2. Run thinktank-wrapper
+## 3. Generate Refactoring Backlog Items
 - Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
-- Run:
-    ```bash
-    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions task.md ./
-    ```
-- Copy synthesis file to create `REFACTOR_PLAN.md`
-
+- Run thinktank-wrapper for comprehensive analysis:
+  ```bash
+  thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions REFACTOR-PROMPT.md ./
+  ```
+- Copy synthesis file to create temporary `REFACTOR_BACKLOG_ITEMS.md`
+- Append items to `BACKLOG.md` after review
+- Remove `REFACTOR-PROMPT.md` and temporary files
