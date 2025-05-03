@@ -15,31 +15,49 @@ export PATH="$PATH:$HOME/Development/codex/bin"
 
 ### thinktank-wrapper
 
-A configurable wrapper around the thinktank CLI that centralizes model configuration and file finding logic.
+A Python-based wrapper around the thinktank CLI that centralizes model configuration, manages prompt templates, and simplifies context file discovery.
+
+**Key Features:**
+- Embedded prompt templates (no need for symlinking across repositories)
+- Template selection by name with `--template`
+- Automatic context file discovery
+- Structured logging with correlation IDs
+- Backward compatibility with the original Bash implementation
 
 **Usage:**
 ```bash
-thinktank-wrapper [OPTIONS] [FILE_PATHS...]
+thinktank-wrapper [OPTIONS] [CONTEXT_PATHS...]
 ```
 
 **Common Options:**
+- `--template <name>` - Use a named template from the embedded templates
+- `--list-templates` - List all available templates and exit
 - `--model-set <set_name>` - Use predefined model set (all, high_context)
 - `--include-glance` - Include glance.md files automatically
 - `--include-philosophy` - Include DEVELOPMENT_PHILOSOPHY*.md files automatically
 - `--dry-run` - Display the command that would be executed without running it
+- `--instructions <file>` - Use an explicit instructions file (overrides --template)
 - `-h, --help` - Show help message
 
 **Examples:**
 ```bash
-# Basic usage with explicit files
-thinktank-wrapper --model-set all file1.md file2.md
+# Use a template by name
+thinktank-wrapper --template plan ./src
 
-# Include glance.md files automatically
-thinktank-wrapper --include-glance --model-set high_context
+# List available templates
+thinktank-wrapper --list-templates
+
+# Include glance.md files automatically with a specific template
+thinktank-wrapper --template debug --include-glance --model-set high_context
 
 # Include both glance and philosophy files
-thinktank-wrapper --include-glance --include-philosophy
+thinktank-wrapper --template ideate --include-glance --include-philosophy
 
 # Show command without executing (dry run)
-thinktank-wrapper --dry-run --include-philosophy file.md
+thinktank-wrapper --template review --dry-run file.md
+
+# Backward compatibility with explicit instructions file
+thinktank-wrapper --instructions custom-prompt.md --include-philosophy
 ```
+
+For more detailed documentation, see the [thinktank_wrapper README](./thinktank_wrapper/README.md).

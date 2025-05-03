@@ -1,17 +1,19 @@
 # DEBUG
 
+## GOAL
+Systematically identify, analyze, and create a plan to fix bugs through structured investigation, hypothesis testing, and task generation.
+
 ## 1. Init Investigation & Identify Task
 - Read `BUG.MD`. Stop if critically unclear.
 - Identify related `Original Task ID: TXXX` from `TODO.md`. Note if none.
 - Create `BUGFIXPLAN.md` (Sections: Bug Desc, Repro, Expected, Actual, Components, Hypotheses, Test Log, Root Cause, Fix Desc, Status: Investigating).
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
 - Identify relevant development philosophy files
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
-- Run thinktank-wrapper for initial analysis:
+- Run thinktank-wrapper using the debug template:
     ```bash
-    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions DEBUG-REQUEST.md ./
+    thinktank-wrapper --template debug --model-set high_context --include-philosophy --include-glance ./
     ```
-- Copy synthesis file to `DEBUG-ANALYSIS.md`
+- Review the generated output directory and use the synthesis file to create `DEBUG-ANALYSIS.md`
 
 ## 2. Formulate Initial Hypotheses
 - Analyze bug details, components, `DEBUG-ANALYSIS.md`, code, git history.
@@ -26,10 +28,9 @@
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper for task generation:
     ```bash
-    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions DEBUG-TASKGEN-REQUEST.md BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    thinktank-wrapper --instructions DEBUG-TASKGEN-REQUEST.md --model-set all --include-philosophy --include-glance BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
 - Review tasks from synthesis file
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and proper dependency references.
@@ -42,4 +43,3 @@
     - Update `Status: BLOCKED` in `BUGFIXPLAN.md`. Add `Blocker Details`.
     - Report: "DEBUG process BLOCKED. See `BUGFIXPLAN.md`. Manual assistance required."
     - **Stop**.
-

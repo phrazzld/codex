@@ -1,25 +1,21 @@
 # TICKET
 
-## 1. Create Ticket Task File
-- Create `ticket-task.md`.
-- Copy content from `docs/prompts/ticket.md`.
-- Append full content of `PLAN.md` under `## Implementation Plan`.
+## GOAL
+Generate a detailed task breakdown from a high-level implementation plan into a series of atomic, actionable tasks with proper dependencies.
+
+## 1. Review Plan
+- Ensure PLAN.md exists and contains sufficient implementation details.
+- Find relevant development philosophy files.
 
 ## 2. Generate Task Breakdown
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
-- Run thinktank-wrapper:
+- Run thinktank-wrapper with the ticket template:
     ```bash
-    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions ticket-task.md PLAN.md
+    thinktank-wrapper --template ticket --model-set all --include-philosophy --include-glance PLAN.md
     ```
-- Copy synthesis file to create `TODO.md`
+- Review the generated output directory and use the synthesis file to create `TODO.md`
 
 ## 3. Review Tasks
 - Verify `TODO.md`:
     - Completeness (all features/ACs covered or clarified).
     - Correct Task ID usage and dependency mapping (no cycles).
     - Appropriate inclusion of verification steps for UI/UX changes and user-facing features.
-
-## 4. Clean Up
-- Remove `ticket-task.md`
-- Remove `thinktank_*/`
-

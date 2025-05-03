@@ -1,5 +1,8 @@
 # AUDIT
 
+## GOAL
+Perform a comprehensive security audit of the codebase, identifying potential vulnerabilities and creating a remediation plan.
+
 ## 1. Init Workspace
 - Create `SECURITY_AUDIT.md` (Sections: Scope & Goals, Methodology Notes, Exploratory Log, Deep Dive Log).
 - Create `SECURITY_PLAN.md` (Sections: Summary, Findings & Recommendations).
@@ -23,10 +26,8 @@
 ## 4. Create Remediation Plan
 - **Goal:** Generate a structured, actionable plan from deep-dive findings.
 - **Actions:**
-    - Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
-    - Generate plan using thinktank-wrapper:
+    - Generate plan using thinktank-wrapper with the audit template:
         ```bash
-        thinktank-wrapper --model-set high_context --include-glance --include-philosophy --instructions SECURITY_AUDIT.md ./
+        thinktank-wrapper --template audit --model-set high_context --include-glance --include-philosophy ./
         ```
-    - Copy synthesis file to create `SECURITY_PLAN.md`
-
+    - Review the generated output directory and use the synthesis file to create `SECURITY_PLAN.md`

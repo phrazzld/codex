@@ -1,5 +1,8 @@
 # CONSULT
 
+## GOAL
+Generate alternative approaches and solutions for a blocked task by leveraging multiple AI models, then create specific follow-up tasks in TODO.md.
+
 ## 1. Formulate Request & Identify Task
 - Identify struggling `Original Task ID: TXXX` from `TODO.md`.
 - Create `CONSULT-REQUEST.md`.
@@ -9,12 +12,11 @@
 
 ## 2. Invoke Thinktank for Plan
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
-- Run thinktank-wrapper:
+- Run thinktank-wrapper with the consult template:
     ```bash
-    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions CONSULT-REQUEST.md ./
+    thinktank-wrapper --template consult --model-set high_context --include-philosophy --include-glance ./
     ```
-- Copy synthesis file to `CONSULTANT-PLAN.md`
+- Review the generated output directory and use the synthesis file to create `CONSULTANT-PLAN.md`
 - Handle errors (log, retry once, stop). Report success/failure.
 
 ## 3. Generate Resolution Tasks in TODO.md
@@ -24,14 +26,12 @@
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper for task generation:
     ```bash
-    thinktank-wrapper --model-set all --include-philosophy --include-glance --instructions CONSULT-TASKGEN-REQUEST.md CONSULTANT-PLAN.md
+    thinktank-wrapper --instructions CONSULT-TASKGEN-REQUEST.md --model-set all --include-philosophy --include-glance CONSULTANT-PLAN.md
     ```
 - Review tasks in synthesis file
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and ensuring proper dependency references.
 - Remove `CONSULT-REQUEST.md`, `CONSULTANT-PLAN.md`, `CONSULT-TASKGEN-REQUEST.md`.
 - Report: "Generated resolution tasks [New Task IDs] in TODO.md for original task [Original Task ID]. Proceed via /execute."
 - **Stop** `/consult`.
-
