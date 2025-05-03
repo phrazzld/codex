@@ -16,10 +16,9 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
 
 ## 3. Generate Plan with Thinktank
 - Prepare task description for the thinktank prompt
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper with the plan template:
     ```bash
-    thinktank-wrapper --template plan --model-set high_context --include-philosophy --include-glance --timeout 600000 ./
+    thinktank-wrapper --template plan --model-set high_context --include-philosophy --include-glance ./
     ```
 - Review the generated output directory and use the synthesis file as the basis for `PLAN.md`
 

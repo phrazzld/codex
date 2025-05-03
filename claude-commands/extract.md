@@ -1,15 +1,11 @@
 # EXTRACT
 
-## 1. Create task.md
-- Create `task.md`.
-- Copy content from `docs/prompts/extract.md`.
-- Add note: "Keep the program's purpose in mind and strive for the highest quality maintainable code while avoiding overengineering. Balance modularity with avoiding unnecessary complexity."
+## GOAL
+Generate a detailed plan for extracting reusable functionality into independent components to improve maintainability, reusability, and adherence to code principles.
 
-## 2. Run thinktank-wrapper
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
-- Run:
+## 1. Run thinktank-wrapper
+- Run thinktank-wrapper with the extract template:
     ```bash
-    thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions task.md ./
+    thinktank-wrapper --template extract --model-set high_context --include-philosophy --include-glance ./
     ```
-- Copy synthesis file to create `EXTRACT_PLAN.md`
-
+- Review the generated output directory and use the synthesis file to create `EXTRACT_PLAN.md`

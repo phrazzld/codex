@@ -9,9 +9,8 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 - Analyze codebase structure to identify areas for enhancement.
 
 ## 2. Generate Ideas with Thinktank
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper with the ideate template:
   ```bash
-  thinktank-wrapper --template ideate --model-set all --include-philosophy --include-glance --timeout 600000 ./
+  thinktank-wrapper --template ideate --model-set all --include-philosophy --include-glance ./
   ```
 - Review the generated output directory and use the synthesis file to create `IDEAS.md`

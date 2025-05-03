@@ -18,7 +18,6 @@ Analyze the codebase and generate backlog items for code refactoring while prese
   ```
 
 ## 3. Generate Refactoring Backlog Items
-- Make sure to maximize the timeout on the Bash tool you use to invoke `thinktank-wrapper`
 - Run thinktank-wrapper for comprehensive analysis:
   ```bash
   thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions REFACTOR-PROMPT.md ./
