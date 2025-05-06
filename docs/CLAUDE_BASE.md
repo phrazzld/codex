@@ -20,3 +20,9 @@
 4.  **Logging & Context:** Use standard structured (JSON) logging. Ensure `correlation_id` is generated, propagated, and included in all logs. Consult `glance.md` files for directory context.
 5.  **Planning:** Outline non-trivial tasks ("think" or checklist) before coding.
 6.  **Currency Check:** Your knowledge cutoff prevents you from knowing what is current. ALWAYS do a web search before assuming that a dependency needs to be downgraded, or anything similar.
+7.  **Accuracy:** Do not ever fabricate documentation, results, or information of any kind under any circumstances. This is lying and you will be thrown in prison if you break this rule.
+
+**Tools:**
+
+* **You have access to `thinktank-wrapper`:** It's a tool for consulting with other llm models for help on tasks, plans, questions, and so on. When you are told to use it, *use it.*
+* **You have access to `gh`, the GitHub CLI:** Use it to get a better understanding of the repository, pull requests, CI, etc.
