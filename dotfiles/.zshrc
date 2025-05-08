@@ -89,3 +89,4 @@ esac
 
 # Codex directory path for thinktank-wrapper
 export CODEX_DIR="/Users/phaedrus/Development/codex"
+export PATH="$HOME/bin:$PATH"

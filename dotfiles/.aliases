@@ -101,6 +101,7 @@ alias vn="nvim ~/.config/nvim/init.lua"
 alias xit="exit"
 alias vimv="$HOME/Development/vimv"
 alias ts="todo-stats"
+alias python="python3"
 
 alias l="ls -lha"
 alias dark="kitty +kitten themes --reload-in=all Rosé Pine Moon"

@@ -14,7 +14,7 @@ MODELS_ALL: List[str] = [
     "o4-mini",
     
     # Gemini Models
-    "gemini-2.5-pro-preview-03-25",
+    "gemini-2.5-pro-preview-05-06",
     "gemini-2.5-flash-preview-04-17",
     
     # OpenRouter Models
@@ -33,7 +33,7 @@ MODELS_HIGH_CONTEXT: List[str] = [
     "gpt-4.1",
     
     # Gemini Models
-    "gemini-2.5-pro-preview-03-25",
+    "gemini-2.5-pro-preview-05-06",
     "gemini-2.5-flash-preview-04-17",
     
     # OpenRouter Models
@@ -42,7 +42,7 @@ MODELS_HIGH_CONTEXT: List[str] = [
 ]
 
 # SYNTHESIS MODEL - Model used for final output generation
-SYNTHESIS_MODEL: str = "gemini-2.5-pro-preview-03-25"
+SYNTHESIS_MODEL: str = "gemini-2.5-pro-preview-05-06"
 
 # Dictionary mapping model set names to their corresponding model lists
 # This provides a convenient lookup for the CLI argument parsing
