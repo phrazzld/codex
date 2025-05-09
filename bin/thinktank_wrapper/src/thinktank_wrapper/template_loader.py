@@ -122,14 +122,18 @@ def inject_context(template_content: str, context_file_path: Optional[str]) -> s
         with open(context_file_path, "r", encoding="utf-8") as f:
             context_content = f.read()
         
-        # Replace the content between the markers with the context content
-        pattern = re.compile(
-            f"{re.escape(config.CONTEXT_BEGIN_MARKER)}.*?{re.escape(config.CONTEXT_END_MARKER)}", 
-            re.DOTALL
-        )
-        replaced_content = pattern.sub(
-            f"{config.CONTEXT_BEGIN_MARKER}\n{context_content}\n{config.CONTEXT_END_MARKER}",
-            template_content
+        # Instead of using regex, use string operations for replacement
+        # Find the positions of the markers
+        begin_pos = template_content.find(config.CONTEXT_BEGIN_MARKER)
+        end_pos = template_content.find(config.CONTEXT_END_MARKER, begin_pos) + len(config.CONTEXT_END_MARKER)
+        
+        # Replace the content between markers
+        replaced_content = (
+            template_content[:begin_pos] + 
+            config.CONTEXT_BEGIN_MARKER + 
+            "\n" + context_content + "\n" + 
+            config.CONTEXT_END_MARKER + 
+            template_content[end_pos:]
         )
         
         return replaced_content
