@@ -26,8 +26,23 @@ Perform a comprehensive security audit of the codebase, identifying potential vu
 ## 4. Create Remediation Plan
 - **Goal:** Generate a structured, actionable plan from deep-dive findings.
 - **Actions:**
+    - Create `AUDIT-CONTEXT.md` with the findings from the security audit:
+      ```markdown
+      # Security Audit Findings
+      
+      [Include a summary of the findings from SECURITY_AUDIT.md]
+      
+      ## Critical Issues
+      [List critical security vulnerabilities]
+      
+      ## High Priority Issues
+      [List high priority security issues]
+      
+      ## Medium/Low Priority Issues
+      [List less severe issues]
+      ```
     - Generate plan using thinktank-wrapper with the audit template (with the maximum timeout in the bash tool used to invoke it):
         ```bash
-        thinktank-wrapper --template audit --model-set high_context --include-glance --include-philosophy ./
+        thinktank-wrapper --template audit --inject AUDIT-CONTEXT.md --model-set high_context --include-glance --include-philosophy ./
         ```
     - Review the generated output directory and use the synthesis file to create `SECURITY_PLAN.md`

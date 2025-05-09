@@ -19,9 +19,9 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
 
 ### 3. Execute Splitting (If Needed)
 - If SCOPE-RESULT.md recommends splitting:
-  - Create SCOPE-SPLIT.md prompt with:
+  - Create SCOPE-CONTEXT.md with the following content:
     ```markdown
-    # SCOPE SPLITTING
+    # Scope Splitting Context
 
     Based on the scope analysis, split TODO.md into multiple focused todo files.
 
@@ -40,7 +40,7 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
     ```
   - Run thinktank-wrapper for splitting (with the maximum timeout in the bash tool used to invoke it):
     ```bash
-    thinktank-wrapper --instructions SCOPE-SPLIT.md --model-set all --include-philosophy --include-glance PLAN.md TODO.md SCOPE-RESULT.md
+    thinktank-wrapper --template scope --inject SCOPE-CONTEXT.md --model-set all --include-philosophy --include-glance PLAN.md TODO.md SCOPE-RESULT.md
     ```
   - Parse thinktank output to extract todo files
   - Write each plan to `TODO-{n}.md` files
@@ -51,4 +51,4 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
 - Present results to user
   - If not split: "TODO scope is appropriate - proceed with ticket command"
   - If split: "TODO split into N parts: [list file names]"
-- Remove temporary files (SCOPE-SPLIT.md)
+- Remove temporary files (SCOPE-CONTEXT.md)

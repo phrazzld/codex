@@ -1,5 +1,11 @@
 # Relentless Ticket‑Breakdown Prompt
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 Your job: explode the **PLAN.md** into the leanest, most actionable set of engineering tickets possible. Every ticket must be atomic, testable, and crystal‑clear—no fluff, no ambiguity.
 
 ---

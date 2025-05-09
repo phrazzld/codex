@@ -1,5 +1,11 @@
 # Implementation‑Approach‑Analysis.md – Ruthless Prompt
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 You are the senior thinktank. Produce the single best way to solve **<task‑id> – <title>**. Kill weak options.
 
 ---

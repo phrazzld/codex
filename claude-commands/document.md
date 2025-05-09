@@ -13,13 +13,25 @@ Audit, critique, evaluate, consolidate, expand, and improve the documentation in
 - Review `BACKLOG.md` to understand current documentation-related tasks
 - Read `DEVELOPMENT_PHILOSOPHY.md` for documentation standards and expectations
 
-## 2. Create Instructions File
-- Create `DOCUMENT-INSTRUCTIONS.md` with content from `docs/prompts/document.md`
+## 2. Create Context File
+- Create `DOCUMENT-CONTEXT.md` with project-specific documentation context:
+  ```markdown
+  # Documentation Context
+
+  ## Project Structure
+  [Brief description of project layout and documentation organization]
+
+  ## Documentation Priorities
+  [List specific areas where documentation improvements are most needed]
+
+  ## Current Documentation Issues
+  [Known documentation problems or gaps]
+  ```
 
 ## 3. Execute Documentation Audit
-- Run thinktank-wrapper with documentation files as context (with the maximum timeout in the bash tool used to invoke it):
+- Run thinktank-wrapper with the document template and context file (with the maximum timeout in the bash tool used to invoke it):
   ```bash
-  thinktank-wrapper --model-set all --instructions DOCUMENT-INSTRUCTIONS.md --include-philosophy --include-glance
+  thinktank-wrapper --model-set all --template document --inject DOCUMENT-CONTEXT.md --include-philosophy --include-glance
   ```
 - Review the generated output directory and copy synthesis file to create `DOCUMENTATION_IMPROVEMENT_PLAN.md`
 

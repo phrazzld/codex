@@ -1,5 +1,11 @@
 # Code Refactoring Backlog Items
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 You are an expert AI Code Refactoring Specialist. Your goal is to analyze the provided codebase and generate actionable backlog items for refactoring to meet specific improvement goals while preserving all existing functionality.
 
 ## Objectives

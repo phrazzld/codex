@@ -26,6 +26,7 @@ def mock_parse_args():
         args.list_templates = False
         args.template = "test-template"
         args.instructions = None
+        args.inject = None
         args.include_glance = True
         args.include_philosophy = True
         args.context_paths = ["/path/to/file.md"]
@@ -56,6 +57,14 @@ def mock_load_template():
     """Mock the template loading."""
     with patch("thinktank_wrapper.template_loader.load_template") as mock:
         mock.return_value = "# Mock template content"
+        yield mock
+
+
+@pytest.fixture
+def mock_inject_context():
+    """Mock the context injection."""
+    with patch("thinktank_wrapper.template_loader.inject_context") as mock:
+        mock.return_value = "# Mock template content with injected context"
         yield mock
 
 
@@ -117,6 +126,43 @@ def test_main_success(
     mock_validate_args.assert_called_once()
     mock_find_context_files.assert_called_once()
     mock_load_template.assert_called_once_with("test-template")
+    mock_build_command.assert_called_once()
+    mock_run_command.assert_called_once()
+    
+    # Assert temporary file was deleted
+    mock_os_unlink.assert_called_once_with("/tmp/thinktank-template-12345.md")
+
+
+def test_main_with_inject(
+    mock_setup_logging,
+    mock_parse_args,
+    mock_validate_args,
+    mock_find_context_files,
+    mock_load_template,
+    mock_inject_context,
+    mock_build_command,
+    mock_run_command,
+    mock_os_unlink,
+    mock_os_path_exists,
+):
+    """Test that main successfully runs with template and context injection."""
+    # Update mock_parse_args to include inject parameter
+    args = mock_parse_args.return_value[0]
+    args.inject = "/path/to/context.md"
+    
+    # Call the function
+    result = __main__.main(["--template", "test-template", "--inject", "/path/to/context.md"])
+    
+    # Assert the result is 0 (success)
+    assert result == 0
+    
+    # Assert all mocks were called
+    mock_setup_logging.assert_called_once()
+    mock_parse_args.assert_called_once_with(["--template", "test-template", "--inject", "/path/to/context.md"])
+    mock_validate_args.assert_called_once()
+    mock_find_context_files.assert_called_once()
+    mock_load_template.assert_called_once_with("test-template")
+    mock_inject_context.assert_called_once_with("# Mock template content", "/path/to/context.md")
     mock_build_command.assert_called_once()
     mock_run_command.assert_called_once()
     
@@ -196,6 +242,34 @@ def test_main_template_not_found_error(
     # Assert the error message was printed
     captured = capsys.readouterr()
     assert "Error: Template 'test-template' not found" in captured.err
+
+
+def test_main_inject_context_error(
+    mock_setup_logging,
+    mock_parse_args,
+    mock_validate_args,
+    mock_find_context_files,
+    mock_load_template,
+    mock_inject_context,
+    capsys,
+):
+    """Test that main handles context injection errors correctly."""
+    # Update mock_parse_args to include inject parameter
+    args = mock_parse_args.return_value[0]
+    args.inject = "/path/to/context.md"
+    
+    # Mock inject_context to raise ValueError
+    mock_inject_context.side_effect = ValueError("Failed to inject context: Template does not contain required markers")
+    
+    # Call the function
+    result = __main__.main(["--template", "test-template", "--inject", "/path/to/context.md"])
+    
+    # Assert the result is 1 (error)
+    assert result == 1
+    
+    # Assert the error message was printed
+    captured = capsys.readouterr()
+    assert "Error: Failed to inject context" in captured.err
 
 
 def test_main_command_builder_error(

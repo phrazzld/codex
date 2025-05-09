@@ -1,5 +1,11 @@
 # Security Audit Instructions
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 You are an expert AI security auditor. Your goal is to perform a thorough security review of the provided codebase context and generate a detailed, actionable remediation plan.
 
 ## Methodology & Instructions

@@ -23,14 +23,22 @@ Check the CI status for the current PR and generate actionable resolution tasks 
 - Handle errors (log, retry once, stop). Report success/failure.
 
 ## 4. Generate Resolution Tasks
-- Create `CI-TASKGEN-REQUEST.md` with instructions to:
-  - Analyze the `CI-RESOLUTION-PLAN.md`
-  - Decompose plan into atomic, implementable tasks
+- Create `CI-TASKS-CONTEXT.md` with task generation context:
+  ```markdown
+  # CI Fix Task Generation
+
+  ## Resolution Plan
+  [Relevant excerpts from CI-RESOLUTION-PLAN.md]
+
+  ## Task Requirements
+  - Decompose the resolution plan into atomic, implementable tasks
   - Format tasks according to project conventions
   - Include verification steps for each task
-- Run thinktank-wrapper with all models:
+  - Ensure tasks are sequenced properly with dependencies
+  ```
+- Run thinktank-wrapper with ci-failure template and context:
   ```bash
-  thinktank-wrapper --instructions CI-TASKGEN-REQUEST.md --model-set all --include-philosophy --include-glance CI-RESOLUTION-PLAN.md
+  thinktank-wrapper --template ci-failure --inject CI-TASKS-CONTEXT.md --model-set all --include-philosophy --include-glance CI-RESOLUTION-PLAN.md
   ```
 - Review generated tasks and insert into `TODO.md`
 - Remove temporary files

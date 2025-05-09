@@ -65,3 +65,8 @@ INCLUDE_GLANCE_ARG: str = "--include-glance"
 INCLUDE_PHILOSOPHY_ARG: str = "--include-philosophy"
 DRY_RUN_ARG: str = "--dry-run"
 INSTRUCTIONS_ARG: str = "--instructions"
+INJECT_ARG: str = "--inject"
+
+# Template context marker constants
+CONTEXT_BEGIN_MARKER: str = "<!-- BEGIN:CONTEXT -->"
+CONTEXT_END_MARKER: str = "<!-- END:CONTEXT -->"

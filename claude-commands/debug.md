@@ -23,14 +23,28 @@ Systematically identify, analyze, and create a plan to fix bugs through structur
 
 ## 3. Generate Investigation Tasks in TODO.md
 - Decide next logical debug step (e.g., test hypothesis, gather data).
-- Create `DEBUG-TASKGEN-REQUEST.md`. Instruct AI (via prompt) to:
-    - Generate new, atomic tasks for `TODO.md` for next debug steps (e.g., "Test Hypo X", "Analyze Y", "Implement Fix Z").
+- Create `DEBUG-CONTEXT.md` with task generation context:
+    ```markdown
+    # Debug Task Generation
+
+    ## Original Task
+    Original Task ID: TXXX
+
+    ## Bug Analysis
+    [Summary of key findings from BUGFIXPLAN.md and DEBUG-ANALYSIS.md]
+
+    ## Current Hypotheses
+    [List of current hypotheses from BUGFIXPLAN.md]
+
+    ## Next Steps
+    Generate new, atomic tasks for `TODO.md` for next debug steps (e.g., "Test Hypo X", "Analyze Y", "Implement Fix Z").
     - Assign new unique Task IDs (sequential).
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
+    ```
 - Run thinktank-wrapper for task generation (with the maximum timeout in the bash tool used to invoke it):
     ```bash
-    thinktank-wrapper --instructions DEBUG-TASKGEN-REQUEST.md --model-set all --include-philosophy --include-glance BUGFIXPLAN.md DEBUG-ANALYSIS.md
+    thinktank-wrapper --template debug --inject DEBUG-CONTEXT.md --model-set all --include-philosophy --include-glance BUGFIXPLAN.md DEBUG-ANALYSIS.md
     ```
 - Review tasks from synthesis file
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and proper dependency references.
