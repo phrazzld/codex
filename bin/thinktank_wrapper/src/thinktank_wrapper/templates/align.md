@@ -1,5 +1,11 @@
 # Philosophy-Aligned Backlog Item Generation
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 You are a strategic product thinktank analyzing this codebase against our development philosophy to generate actionable backlog items that will improve alignment.
 
 ## Process

@@ -38,6 +38,7 @@ def test_parse_args_defaults():
     assert not args.include_philosophy
     assert not args.dry_run
     assert args.instructions is None
+    assert args.inject is None
     assert args.context_paths == []
     assert unknown == []
 
@@ -95,6 +96,15 @@ def test_parse_args_instructions():
     
     # Assert the instructions path is set
     assert args.instructions == "/path/to/instructions.md"
+
+
+def test_parse_args_inject():
+    """Test that parse_args handles --inject correctly."""
+    # Call the function with --inject
+    args, unknown = cli.parse_args(["--inject", "/path/to/context.md"])
+    
+    # Assert the inject path is set
+    assert args.inject == "/path/to/context.md"
 
 
 def test_parse_args_context_paths():
@@ -159,6 +169,7 @@ def test_validate_args_valid(mock_load_template):
         "list_templates": False,
         "template": "template1",
         "instructions": None,
+        "inject": None,
     })()
     
     # Call the function
@@ -175,12 +186,32 @@ def test_validate_args_valid_instructions():
         "list_templates": False,
         "template": None,
         "instructions": "/path/to/instructions.md",
+        "inject": None,
     })()
     
     # Call the function
     cli.validate_args(args)
     
     # No assertions needed, just checking that no exceptions are raised
+
+
+def test_validate_args_valid_template_with_inject(mock_load_template, mock_os_path_checks):
+    """Test that validate_args passes for valid arguments with --template and --inject."""
+    # Create valid args with --template and --inject
+    args = type("Args", (), {
+        "list_templates": False,
+        "template": "template1",
+        "instructions": None,
+        "inject": "/path/to/context.md",
+    })()
+    
+    # Call the function
+    cli.validate_args(args)
+    
+    # Assert template_loader.load_template was called
+    mock_load_template.assert_called_once_with("template1")
+    
+    # No exceptions should be raised
 
 
 def test_validate_args_invalid_missing_both():
@@ -190,6 +221,7 @@ def test_validate_args_invalid_missing_both():
         "list_templates": False,
         "template": None,
         "instructions": None,
+        "inject": None,
     })()
     
     # Call the function and assert it raises ValueError
@@ -207,6 +239,7 @@ def test_validate_args_invalid_template(mock_available_templates):
         "list_templates": False,
         "template": "invalid-template",
         "instructions": None,
+        "inject": None,
     })()
     
     # Mock load_template to raise TemplateNotFoundError
@@ -221,3 +254,76 @@ def test_validate_args_invalid_template(mock_available_templates):
     
     # Assert the error message
     assert "Template 'invalid-template' not found" in str(excinfo.value)
+
+
+def test_validate_args_inject_without_template():
+    """Test that validate_args raises ValueError when --inject is used without --template."""
+    # Create args with --inject but no --template
+    args = type("Args", (), {
+        "list_templates": False,
+        "template": None,
+        "instructions": "/path/to/instructions.md",
+        "inject": "/path/to/context.md",
+    })()
+    
+    # Call the function and assert it raises ValueError
+    with pytest.raises(ValueError) as excinfo:
+        cli.validate_args(args)
+    
+    # Assert the error message
+    assert "--inject can only be used with --template" in str(excinfo.value)
+
+
+@pytest.fixture
+def mock_os_path_checks():
+    """Mock os.path functions for file existence and readability checks."""
+    with patch("os.path.isfile") as mock_isfile, \
+         patch("os.access") as mock_access:
+        # By default, files exist and are readable
+        mock_isfile.return_value = True
+        mock_access.return_value = True
+        yield mock_isfile, mock_access
+
+
+def test_validate_args_inject_file_not_found(mock_os_path_checks):
+    """Test that validate_args raises ValueError when the inject file does not exist."""
+    mock_isfile, mock_access = mock_os_path_checks
+    mock_isfile.return_value = False
+    
+    # Create args with --template and --inject
+    args = type("Args", (), {
+        "list_templates": False,
+        "template": "template1",
+        "instructions": None,
+        "inject": "/path/to/nonexistent/context.md",
+    })()
+    
+    # Call the function and assert it raises ValueError
+    with pytest.raises(ValueError) as excinfo:
+        with patch("thinktank_wrapper.template_loader.load_template"):
+            cli.validate_args(args)
+    
+    # Assert the error message
+    assert "Inject file not found" in str(excinfo.value)
+
+
+def test_validate_args_inject_file_not_readable(mock_os_path_checks):
+    """Test that validate_args raises ValueError when the inject file is not readable."""
+    mock_isfile, mock_access = mock_os_path_checks
+    mock_access.return_value = False
+    
+    # Create args with --template and --inject
+    args = type("Args", (), {
+        "list_templates": False,
+        "template": "template1",
+        "instructions": None,
+        "inject": "/path/to/unreadable/context.md",
+    })()
+    
+    # Call the function and assert it raises ValueError
+    with pytest.raises(ValueError) as excinfo:
+        with patch("thinktank_wrapper.template_loader.load_template"):
+            cli.validate_args(args)
+    
+    # Assert the error message
+    assert "Inject file not readable" in str(excinfo.value)

@@ -1,5 +1,11 @@
 # Mermaid Diagram Generator
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 ## Purpose
 Generate a precise, effective Mermaid diagram that clarifies system architecture, workflows, or relationships.
 

@@ -1,5 +1,11 @@
 # Bug Analysis and Task Generation Instructions
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 You are an expert AI debugger and task planner. Your task is to analyze a reported bug, systematically investigate its root cause using the provided context, and **generate actionable debugging tasks for TODO.md**.
 
 Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering. Aim for fixes that are simple, direct, and focused on the actual problem without adding unnecessary complexity.

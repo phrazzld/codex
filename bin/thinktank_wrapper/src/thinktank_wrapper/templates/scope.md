@@ -1,5 +1,11 @@
 # PLAN SCOPE ANALYSIS
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 ## Purpose
 Analyze implementation plans to ensure they have appropriate scope for manageable pull requests, clean todo lists, and focused development efforts.
 

@@ -77,6 +77,19 @@ def main(args: Optional[List[str]] = None) -> int:
                 "template_name": parsed_args.template,
                 "template_size": len(template_content),
             })
+            
+            # Inject context if --inject is provided
+            if parsed_args.inject:
+                try:
+                    template_content = template_loader.inject_context(template_content, parsed_args.inject)
+                    logger.info(f"Injected context from: {parsed_args.inject}", extra={
+                        "inject_file": parsed_args.inject,
+                        "template_size_after_injection": len(template_content),
+                    })
+                except ValueError as e:
+                    logger.error(f"Failed to inject context: {e}")
+                    print(f"Error: {e}", file=sys.stderr)
+                    return 1
         
         # Build the command
         cmd_args, temp_file_path = command_builder.build_command(

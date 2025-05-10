@@ -20,6 +20,7 @@ A Python-based wrapper around the thinktank CLI that centralizes model configura
 **Key Features:**
 - Embedded prompt templates (no need for symlinking across repositories)
 - Template selection by name with `--template`
+- Context injection into templates with `--inject`
 - Automatic context file discovery
 - Structured logging with correlation IDs
 - Backward compatibility with the original Bash implementation
@@ -31,6 +32,7 @@ thinktank-wrapper [OPTIONS] [CONTEXT_PATHS...]
 
 **Common Options:**
 - `--template <name>` - Use a named template from the embedded templates
+- `--inject <file>` - Inject context from a file into the template's CONTEXT section
 - `--list-templates` - List all available templates and exit
 - `--model-set <set_name>` - Use predefined model set (all, high_context)
 - `--include-glance` - Include glance.md files automatically
@@ -44,14 +46,17 @@ thinktank-wrapper [OPTIONS] [CONTEXT_PATHS...]
 # Use a template by name
 thinktank-wrapper --template plan ./src
 
+# Use a template with injected context
+thinktank-wrapper --template debug --inject bug-details.md ./src
+
 # List available templates
 thinktank-wrapper --list-templates
 
 # Include glance.md files automatically with a specific template
 thinktank-wrapper --template debug --include-glance --model-set high_context
 
-# Include both glance and philosophy files
-thinktank-wrapper --template ideate --include-glance --include-philosophy
+# Include both glance and philosophy files with context injection
+thinktank-wrapper --template ideate --inject context.md --include-glance --include-philosophy
 
 # Show command without executing (dry run)
 thinktank-wrapper --template review --dry-run file.md

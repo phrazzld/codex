@@ -5,8 +5,12 @@ that are bundled as package resources with the thinktank_wrapper package.
 """
 
 import importlib.resources
+import os
 import pathlib
-from typing import List
+import re
+from typing import List, Optional
+
+from thinktank_wrapper import config
 
 
 class TemplateNotFoundError(Exception):
@@ -86,3 +90,52 @@ def load_template(name: str) -> str:
         # This should not happen if we've already validated the template exists,
         # but handle it just in case
         raise TemplateNotFoundError(name, available_templates) from e
+
+
+def inject_context(template_content: str, context_file_path: Optional[str]) -> str:
+    """Inject context from a file into a template's CONTEXT section.
+    
+    Args:
+        template_content: The template content as a string.
+        context_file_path: The path to the file containing the context to inject.
+                          If None, the template is returned unchanged.
+    
+    Returns:
+        The template content with the injected context.
+        
+    Raises:
+        ValueError: If the template doesn't contain the CONTEXT markers.
+    """
+    if not context_file_path:
+        return template_content
+    
+    # Check if the template has the CONTEXT section
+    if (config.CONTEXT_BEGIN_MARKER not in template_content or 
+        config.CONTEXT_END_MARKER not in template_content):
+        raise ValueError(
+            f"Template does not contain required markers for context injection: "
+            f"{config.CONTEXT_BEGIN_MARKER} and {config.CONTEXT_END_MARKER}"
+        )
+    
+    try:
+        # Read the context content
+        with open(context_file_path, "r", encoding="utf-8") as f:
+            context_content = f.read()
+        
+        # Instead of using regex, use string operations for replacement
+        # Find the positions of the markers
+        begin_pos = template_content.find(config.CONTEXT_BEGIN_MARKER)
+        end_pos = template_content.find(config.CONTEXT_END_MARKER, begin_pos) + len(config.CONTEXT_END_MARKER)
+        
+        # Replace the content between markers
+        replaced_content = (
+            template_content[:begin_pos] + 
+            config.CONTEXT_BEGIN_MARKER + 
+            "\n" + context_content + "\n" + 
+            config.CONTEXT_END_MARKER + 
+            template_content[end_pos:]
+        )
+        
+        return replaced_content
+    except (IOError, OSError) as e:
+        raise ValueError(f"Failed to read context file {context_file_path}: {e}") from e

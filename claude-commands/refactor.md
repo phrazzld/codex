@@ -8,19 +8,23 @@ Analyze the codebase and generate backlog items for code refactoring while prese
 - Read `DEVELOPMENT_PHILOSOPHY.md` and relevant language-specific appendices.
 - Identify all `glance.md` files in the codebase to gather architectural insights.
 
-## 2. Create Prompt File
-- Create `REFACTOR-PROMPT.md`.
-- Copy content from `docs/prompts/refactor.md`.
-- Add current backlog context:
-  ```
+## 2. Create Context File
+- Create `REFACTOR-CONTEXT.md` with the following content:
+  ```markdown
+  # Refactoring Analysis Context
+
   ## Current Backlog
   [Copy content from BACKLOG.md]
+
+  ## Request
+  Analyze the codebase and generate backlog items for code refactoring while preserving functionality.
+  Focus on improving maintainability, readability, and reducing technical debt.
   ```
 
 ## 3. Generate Refactoring Backlog Items
-- Run thinktank-wrapper for comprehensive analysis (with the maximum timeout in the bash tool used to invoke it):
+- Run thinktank-wrapper with refactor template (with the maximum timeout in the bash tool used to invoke it):
   ```bash
-  thinktank-wrapper --model-set high_context --include-philosophy --include-glance --instructions REFACTOR-PROMPT.md ./
+  thinktank-wrapper --template refactor --inject REFACTOR-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
   ```
 - Copy synthesis file to create temporary `REFACTOR_BACKLOG_ITEMS.md`
 - Append items to `BACKLOG.md` after review

@@ -1,5 +1,11 @@
 # Brutal Remediation‑Planning Prompt
 
+
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+
 Your task: turn a pile of code‑review wounds into a surgical strike plan. No fluff, no ego—just the shortest path from "broken" to "bulletproof."
 
 ---

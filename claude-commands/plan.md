@@ -15,10 +15,27 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
     4. Document dependencies.
 
 ## 3. Generate Plan with Thinktank
-- Prepare task description for the thinktank prompt
+- Create `PLAN-CONTEXT.md` with the task description and requirements:
+  ```markdown
+  # Task Description
+  
+  ## Overview
+  [Brief description of the task to be implemented]
+  
+  ## Requirements
+  - [Requirement 1]
+  - [Requirement 2]
+  - [Requirement 3]
+  
+  ## Technical Context
+  [Any relevant technical details, constraints, or existing system information]
+  
+  ## Considerations
+  [Special considerations, challenges, or trade-offs to be addressed]
+  ```
 - Run thinktank-wrapper with the plan template (with the maximum timeout in the bash tool used to invoke it):
     ```bash
-    thinktank-wrapper --template plan --model-set high_context --include-philosophy --include-glance ./
+    thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
     ```
 - Review the generated output directory and use the synthesis file as the basis for `PLAN.md`
 

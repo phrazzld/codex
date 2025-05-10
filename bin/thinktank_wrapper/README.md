@@ -6,6 +6,7 @@ A Python wrapper for the thinktank tool that manages prompt templates directly a
 
 - **Embedded Templates:** Prompt templates are bundled as package resources, eliminating the need for symlinking across repositories
 - **Template Selection:** Choose templates by name with the `--template` option
+- **Context Injection:** Inject custom context into template's designated CONTEXT section
 - **Automatic Context Discovery:** Automatically find and include glance.md and development philosophy files
 - **Flexible Configuration:** Configure model sets and easily override options
 - **Structured Logging:** JSON-formatted logs with correlation IDs for traceability
@@ -49,14 +50,17 @@ The codex repository's `install.sh` script will automatically set up the thinkta
 # Use a template by name
 thinktank-wrapper --template plan ./src
 
+# Use a template with injected context
+thinktank-wrapper --template debug --inject bug-details.md ./src
+
 # List available templates
 thinktank-wrapper --list-templates
 
 # Use a specific model set
 thinktank-wrapper --template debug --model-set high_context ./src
 
-# Include automatic context files
-thinktank-wrapper --template ideate --include-glance --include-philosophy ./src
+# Include automatic context files with injection
+thinktank-wrapper --template ideate --inject context.md --include-glance --include-philosophy ./src
 
 # Dry run (print command without executing)
 thinktank-wrapper --template review --dry-run ./src
@@ -82,6 +86,19 @@ Templates are embedded as package resources in the `thinktank_wrapper/templates`
 1. Edit the files in the `src/thinktank_wrapper/templates` directory
 2. Reinstall the package (`pip install -e .`)
 
+### Context Injection
+
+Templates include a standardized CONTEXT section that can be replaced with custom content using the `--inject` parameter. This section is marked with HTML comment markers:
+
+```markdown
+<!-- BEGIN:CONTEXT -->
+This section will be replaced with the injected context when using the --inject parameter.
+If no context is injected, this default message will remain.
+<!-- END:CONTEXT -->
+```
+
+When using `--inject <file_path>`, the content between these markers will be replaced with the content of the specified file. This allows for customizing templates with specific contextual information without modifying the template itself.
+
 ## Command Reference
 
 ```
@@ -91,6 +108,7 @@ thinktank-wrapper [OPTIONS] [CONTEXT_PATHS...]
 ### Template Options
 
 - `--template <template_name>`: Select a template by name
+- `--inject <file_path>`: Inject content from a file into the template's CONTEXT section
 - `--list-templates`: List available templates and exit
 - `--instructions <file_path>`: Use an explicit instructions file (overrides `--template`)
 

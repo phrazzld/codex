@@ -20,15 +20,22 @@ Generate alternative approaches and solutions for a blocked task by leveraging m
 - Handle errors (log, retry once, stop). Report success/failure.
 
 ## 3. Generate Resolution Tasks in TODO.md
-- Create `CONSULT-TASKGEN-REQUEST.md`. Instruct AI (via prompt) to:
-    - Analyze `CONSULTANT-PLAN.md`.
-    - Decompose plan into new, atomic tasks for `TODO.md`.
-    - Assign appropriate task IDs based on your project's conventions.
-    - Format tasks according to your project's task format.
-    - Ensure final task resolves the original issue.
+- Create `CONSULT-CONTEXT.md` with task generation context:
+    ```markdown
+    # Consultation Task Generation
+
+    ## Consultation Plan
+    [Summary of key points from CONSULTANT-PLAN.md]
+
+    ## Task Requirements
+    - Decompose the consultant's plan into new, atomic tasks for TODO.md
+    - Assign appropriate task IDs based on project conventions
+    - Format tasks according to project's task format
+    - Ensure final task resolves the original issue
+    ```
 - Run thinktank-wrapper for task generation (with the maximum timeout in the bash tool used to invoke it):
     ```bash
-    thinktank-wrapper --instructions CONSULT-TASKGEN-REQUEST.md --model-set all --include-philosophy --include-glance CONSULTANT-PLAN.md
+    thinktank-wrapper --template consult --inject CONSULT-CONTEXT.md --model-set all --include-philosophy --include-glance CONSULTANT-PLAN.md
     ```
 - Review tasks in synthesis file
 - Insert tasks into `TODO.md`, maintaining consistent formatting.

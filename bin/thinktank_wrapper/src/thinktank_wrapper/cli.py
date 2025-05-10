@@ -5,6 +5,7 @@ positional arguments, and template selection logic.
 """
 
 import argparse
+import os
 import sys
 from typing import List, Optional, Tuple
 
@@ -41,6 +42,11 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         config.LIST_TEMPLATES_ARG,
         action="store_true",
         help="List available embedded templates and exit",
+    )
+    template_group.add_argument(
+        config.INJECT_ARG,
+        help="Path to file containing context to inject into the template's CONTEXT section",
+        metavar="<file_path>",
     )
     
     # Model selection options
@@ -137,3 +143,19 @@ def validate_args(args: argparse.Namespace) -> None:
         except template_loader.TemplateNotFoundError as e:
             # Re-raise as ValueError for consistent error handling in __main__
             raise ValueError(str(e)) from e
+    
+    # If --inject is provided, validate that:
+    # 1. --template is also provided (can't inject into --instructions)
+    # 2. The inject file exists and is readable
+    if args.inject:
+        if not args.template:
+            raise ValueError(
+                f"{config.INJECT_ARG} can only be used with {config.TEMPLATE_ARG}, "
+                f"not with {config.INSTRUCTIONS_ARG}."
+            )
+        
+        if not os.path.isfile(args.inject):
+            raise ValueError(f"Inject file not found: {args.inject}")
+        
+        if not os.access(args.inject, os.R_OK):
+            raise ValueError(f"Inject file not readable: {args.inject}")

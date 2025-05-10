@@ -8,9 +8,21 @@ Generate a detailed task breakdown from a high-level implementation plan into a 
 - Find relevant development philosophy files.
 
 ## 2. Generate Task Breakdown
+- Create `TICKET-CONTEXT.md` with the plan details:
+  ```markdown
+  # Plan Details
+  
+  [Include content from PLAN.md]
+  
+  ## Task Breakdown Requirements
+  - Create atomic, independent tasks
+  - Ensure proper dependency mapping
+  - Include verification steps
+  - Follow project task ID and formatting conventions
+  ```
 - Run thinktank-wrapper with the ticket template (with the maximum timeout in the bash tool used to invoke it):
     ```bash
-    thinktank-wrapper --template ticket --model-set all --include-philosophy --include-glance PLAN.md
+    thinktank-wrapper --template ticket --inject TICKET-CONTEXT.md --model-set all --include-philosophy --include-glance PLAN.md
     ```
 - Review the generated output directory and use the synthesis file to create `TODO.md`
 
