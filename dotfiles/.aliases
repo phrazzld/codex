@@ -9,6 +9,7 @@ alias clear="clear && source ~/.zshrc && exec zsh"
 alias compress='tar czf'
 alias decompress='tar xzf'
 alias f='fzf --bind "enter:execute(nvim {})"'
+alias c='claude'
 
 # Git aliases
 alias g='git'
