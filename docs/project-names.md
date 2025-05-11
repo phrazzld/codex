@@ -74,4 +74,5 @@
 - personality
 - ministry of truth
 - personality factory
+- forbidden pattern
 

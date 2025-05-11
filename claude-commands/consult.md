@@ -14,7 +14,7 @@ Generate alternative approaches and solutions for a blocked task by leveraging m
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
 - Run thinktank-wrapper with the consult template (with the maximum timeout in the bash tool used to invoke it):
     ```bash
-    thinktank-wrapper --template consult --model-set high_context --include-philosophy --include-glance ./
+    thinktank-wrapper --template consult --inject CONSULT-REQUEST.md --model-set high_context --include-philosophy --include-glance ./
     ```
 - Review the generated output directory and use the synthesis file to create `CONSULTANT-PLAN.md`
 - Handle errors (log, retry once, stop). Report success/failure.
