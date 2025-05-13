@@ -29,5 +29,19 @@ bin/thinktank-venv/
 **/dist/
 **/build/
 
+# Include specific thinktank_wrapper files we want to version
+!/bin/thinktank_wrapper/
+!/bin/thinktank_wrapper/pyproject.toml
+!/bin/thinktank_wrapper/README.md
+!/bin/thinktank_wrapper/src/
+!/bin/thinktank_wrapper/src/thinktank_wrapper/
+!/bin/thinktank_wrapper/src/thinktank_wrapper/*.py
+!/bin/thinktank_wrapper/src/thinktank_wrapper/templates/
+!/bin/thinktank_wrapper/src/thinktank_wrapper/templates/*.md
+!/bin/thinktank_wrapper/src/thinktank_wrapper/templates/__init__.py
+!/bin/thinktank_wrapper/tests/
+!/bin/thinktank_wrapper/tests/*.py
+!/bin/thinktank_wrapper/tests/conftest.py
+
 # Thinktank output directories
 thinktank_*/
