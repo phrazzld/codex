@@ -9,7 +9,7 @@ alias clear="clear && source ~/.zshrc && exec zsh"
 alias compress='tar czf'
 alias decompress='tar xzf'
 alias f='fzf --bind "enter:execute(nvim {})"'
-alias c='claude'
+alias c='BASH_DEFAULT_TIMEOUT_MS=600000 BASH_MAX_TIMEOUT_MS=600000 claude'
 
 # Git aliases
 alias g='git'

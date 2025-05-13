@@ -8,7 +8,7 @@
   - **Complexity**: Medium
   - **Rationale**: The current name "codex" does not reflect the system's evolving role as the engineering base of operations; a distinctive, resonant name will improve team cohesion, documentation clarity, and external perception.
   - **Expected Outcome**: All references to "codex" (code, configs, docs, CI/CD, scripts, repo, branding) are updated consistently to the new name. Internal/external docs and onboarding material reflect the change.
-  - **Potential Names**: fortress of solitude, cloud nine, the lanes, necronomicon, cloaca maxima, grimoire, thinktank, architect, blueprint
+  - **Potential Names**: cloud nine, necronomicon, cloaca maxima, grimoire
 
 ### Automation & AI Integration
 
