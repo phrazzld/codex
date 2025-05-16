@@ -1,0 +1,47 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0"
+    echo "  Identifies opportunities for radical simplification in the codebase"
+    echo "  Inspired by Alexander's approach to the Gordian Knot"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+echo "Analyzing codebase for radical simplification opportunities..."
+
+# Run thinktank analysis
+echo "Running thinktank analysis with high_context model set..."
+thinktank-wrapper --template gordian --model-set high_context --include-philosophy --include-glance ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    # Copy synthesis to results file
+    cp "$SYNTHESIS_FILE" GORDIAN_ANALYSIS.md
+    echo "Created GORDIAN_ANALYSIS.md from synthesis output"
+    
+    # Show preview of recommendations
+    echo ""
+    echo "Preview of simplification recommendations:"
+    echo "========================================"
+    head -30 GORDIAN_ANALYSIS.md
+    echo ""
+    echo "[...truncated for preview]"
+    echo ""
+    
+    echo "Gordian analysis complete! See GORDIAN_ANALYSIS.md"
+    echo ""
+    echo "Remember: 'The number one mistake great engineers make"
+    echo "is optimizing something that shouldn't exist.' - Elon Musk"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    exit 1
+fi

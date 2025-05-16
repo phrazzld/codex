@@ -1,0 +1,57 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0"
+    echo "  Generates a detailed implementation plan from PLAN-CONTEXT.md"
+    echo "  Assumes PLAN-CONTEXT.md already exists with task details"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Step 1: Verify Context File
+if [ ! -f "PLAN-CONTEXT.md" ]; then
+    echo "Error: PLAN-CONTEXT.md not found"
+    echo "Please create PLAN-CONTEXT.md with task details"
+    exit 1
+fi
+
+echo "Found PLAN-CONTEXT.md, generating implementation plan..."
+
+# Step 2: Generate Plan with Thinktank
+echo "Running thinktank analysis with high_context model set..."
+thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    cp "$SYNTHESIS_FILE" PLAN.md
+    echo "Created PLAN.md from synthesis output"
+    
+    # Show preview of the plan
+    echo ""
+    echo "Preview of generated plan:"
+    echo "========================="
+    head -30 PLAN.md
+    echo ""
+    echo "[...truncated for preview]"
+    echo ""
+    
+    # Remind about branch creation
+    echo "Plan generation complete! See PLAN.md"
+    echo ""
+    echo "Next steps:"
+    echo "1. Review the generated PLAN.md"
+    echo "2. Create a branch for implementation:"
+    echo "   git checkout -b feature/[task-name]"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    echo "Plan context remains in PLAN-CONTEXT.md for manual inspection"
+    exit 1
+fi

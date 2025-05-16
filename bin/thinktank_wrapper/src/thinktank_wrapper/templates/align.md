@@ -30,16 +30,18 @@ You are a strategic product thinktank analyzing this codebase against our develo
 
 ## Backlog Item Format
 
-Format each backlog item consistently using this structure:
+Format each backlog item as follows:
 
 ```markdown
-- **[Item Title]**: Clear, actionable description of the improvement needed
-  - **Complexity**: Simple/Medium/Complex
-  - **Priority**: Critical/High/Medium/Low
-  - **Rationale**: Connection to specific philosophy principle(s)
-  - **Affected Areas**: Files, components, or patterns requiring changes
-  - **Expected Outcome**: What success looks like for this item
+- [ ] [PHILOSOPHY-{PRIORITY}] Clear, actionable title
+  Description: Brief explanation of what needs to be done
+  Principle: Which philosophy principle this addresses
+  Affected: Files/components that need changes  
+  Complexity: [SMALL/MEDIUM/LARGE]
+  Outcome: Expected result after implementation
 ```
+
+Where {PRIORITY} is one of: CRITICAL, HIGH, MEDIUM, LOW
 
 ## Output Requirements
 

@@ -1,0 +1,72 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [plan_file]"
+    echo "  plan_file: Path to plan file (default: PLAN.md)"
+    echo "  Generates TODO.md task breakdown from implementation plan"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Parse arguments
+PLAN_FILE="${1:-PLAN.md}"
+
+# Step 1: Review Plan
+if [ ! -f "$PLAN_FILE" ]; then
+    echo "Error: $PLAN_FILE not found"
+    echo "Please ensure your plan file exists"
+    exit 1
+fi
+
+echo "Found $PLAN_FILE, proceeding..."
+
+# Step 2: Generate Task Breakdown
+echo "Creating ticket context file..."
+cat > TICKET-CONTEXT.md << EOF
+# Plan Details
+
+$(cat "$PLAN_FILE")
+
+## Task Breakdown Requirements
+- Create atomic, independent tasks
+- Ensure proper dependency mapping
+- Include verification steps
+- Follow project task ID and formatting conventions
+EOF
+
+echo "Running thinktank analysis..."
+thinktank-wrapper --template ticket --inject TICKET-CONTEXT.md --model-set all --include-philosophy --include-glance "$PLAN_FILE"
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    cp "$SYNTHESIS_FILE" TODO.md
+    echo "Created TODO.md from synthesis output"
+    
+    # Clean up
+    rm -f TICKET-CONTEXT.md
+    
+    # Step 3: Basic validation of generated tasks
+    echo ""
+    echo "Task breakdown complete! Generated TODO.md"
+    echo ""
+    echo "Summary:"
+    echo "- Total tasks: $(grep -c "^- \[" TODO.md || echo "0")"
+    echo "- Uncompleted tasks: $(grep -c "^- \[ \]" TODO.md || echo "0")"
+    echo ""
+    echo "Please review TODO.md for:"
+    echo "- Completeness (all features/ACs covered)"
+    echo "- Correct Task ID usage and dependency mapping"
+    echo "- Inclusion of verification steps for user-facing features"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    echo "Ticket context saved in TICKET-CONTEXT.md for manual inspection"
+    exit 1
+fi

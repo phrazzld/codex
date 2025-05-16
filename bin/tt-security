@@ -1,0 +1,59 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0"
+    echo "  Performs a security audit and generates backlog items for remediation"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+echo "Performing security audit of codebase..."
+
+# Run thinktank security analysis
+echo "Running security analysis with high_context model set..."
+thinktank-wrapper --template audit --model-set high_context --include-philosophy --include-glance ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    # Copy synthesis to temporary file
+    cp "$SYNTHESIS_FILE" SECURITY_BACKLOG_ITEMS.md
+    echo "Created SECURITY_BACKLOG_ITEMS.md from synthesis output"
+    
+    # Show preview of security findings
+    echo ""
+    echo "Preview of security findings:"
+    echo "==========================="
+    head -20 SECURITY_BACKLOG_ITEMS.md
+    echo ""
+    echo "[...truncated for preview]"
+    echo ""
+    
+    # Prompt for appending to backlog
+    read -p "Append these security items to BACKLOG.md? (y/N): " -n 1 -r
+    echo ""
+    
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # Append with section header
+        echo "" >> BACKLOG.md
+        echo "## Security Remediation (Generated)" >> BACKLOG.md
+        echo "" >> BACKLOG.md
+        cat SECURITY_BACKLOG_ITEMS.md >> BACKLOG.md
+        echo "Security items appended to BACKLOG.md"
+    else
+        echo "Items saved in SECURITY_BACKLOG_ITEMS.md but not appended to BACKLOG.md"
+    fi
+    
+    echo ""
+    echo "Security audit complete!"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    exit 1
+fi

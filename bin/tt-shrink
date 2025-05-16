@@ -1,0 +1,84 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0"
+    echo "  Analyzes codebase for size optimization opportunities"
+    echo "  Generates backlog items to reduce code size"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Step 1: Prepare Context - Check for BACKLOG.md
+if [ ! -f "BACKLOG.md" ]; then
+    echo "Warning: BACKLOG.md not found. Creating empty backlog file..."
+    echo "# BACKLOG" > BACKLOG.md
+    echo "" >> BACKLOG.md
+fi
+
+echo "Analyzing codebase for optimization opportunities..."
+
+# Step 2: Create Context File
+echo "Creating shrink context file..."
+cat > SHRINK-CONTEXT.md << EOF
+# Code Size Optimization Context
+
+## Current Backlog
+$(cat BACKLOG.md)
+
+## Request
+Analyze the codebase and generate backlog items for code size optimization while preserving functionality.
+Focus on reducing file sizes, eliminating duplicated code, and simplifying complex implementations.
+EOF
+
+# Step 3: Generate Size Optimization Backlog Items
+echo "Running thinktank analysis with high_context model set..."
+thinktank-wrapper --template shrink --inject SHRINK-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    # Copy synthesis to temporary file
+    cp "$SYNTHESIS_FILE" SHRINK_BACKLOG_ITEMS.md
+    echo "Created SHRINK_BACKLOG_ITEMS.md from synthesis output"
+    
+    # Show preview of new items
+    echo ""
+    echo "Preview of optimization items generated:"
+    echo "======================================="
+    head -20 SHRINK_BACKLOG_ITEMS.md
+    echo ""
+    echo "[...truncated for preview]"
+    echo ""
+    
+    # Prompt for appending to backlog
+    read -p "Append these optimization items to BACKLOG.md? (y/N): " -n 1 -r
+    echo ""
+    
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # Append with section header
+        echo "" >> BACKLOG.md
+        echo "## Code Size Optimization (Generated)" >> BACKLOG.md
+        echo "" >> BACKLOG.md
+        cat SHRINK_BACKLOG_ITEMS.md >> BACKLOG.md
+        echo "Optimization items appended to BACKLOG.md"
+    else
+        echo "Items saved in SHRINK_BACKLOG_ITEMS.md but not appended to BACKLOG.md"
+    fi
+    
+    # Clean up (but keep the items file for reference)
+    rm -f SHRINK-CONTEXT.md
+    
+    echo ""
+    echo "Shrink analysis complete!"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    echo "Shrink context saved in SHRINK-CONTEXT.md for manual inspection"
+    exit 1
+fi

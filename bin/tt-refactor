@@ -1,0 +1,84 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0"
+    echo "  Analyzes codebase for refactoring opportunities"
+    echo "  Generates backlog items to improve code quality"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Step 1: Prepare Context - Check for BACKLOG.md
+if [ ! -f "BACKLOG.md" ]; then
+    echo "Warning: BACKLOG.md not found. Creating empty backlog file..."
+    echo "# BACKLOG" > BACKLOG.md
+    echo "" >> BACKLOG.md
+fi
+
+echo "Analyzing codebase for refactoring opportunities..."
+
+# Step 2: Create Context File
+echo "Creating refactor context file..."
+cat > REFACTOR-CONTEXT.md << EOF
+# Refactoring Analysis Context
+
+## Current Backlog
+$(cat BACKLOG.md)
+
+## Request
+Analyze the codebase and generate backlog items for code refactoring while preserving functionality.
+Focus on improving maintainability, readability, and reducing technical debt.
+EOF
+
+# Step 3: Generate Refactoring Backlog Items
+echo "Running thinktank analysis with high_context model set..."
+thinktank-wrapper --template refactor --inject REFACTOR-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    # Copy synthesis to temporary file
+    cp "$SYNTHESIS_FILE" REFACTOR_BACKLOG_ITEMS.md
+    echo "Created REFACTOR_BACKLOG_ITEMS.md from synthesis output"
+    
+    # Show preview of new items
+    echo ""
+    echo "Preview of refactoring items generated:"
+    echo "======================================"
+    head -20 REFACTOR_BACKLOG_ITEMS.md
+    echo ""
+    echo "[...truncated for preview]"
+    echo ""
+    
+    # Prompt for appending to backlog
+    read -p "Append these refactoring items to BACKLOG.md? (y/N): " -n 1 -r
+    echo ""
+    
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # Append with section header
+        echo "" >> BACKLOG.md
+        echo "## Code Refactoring (Generated)" >> BACKLOG.md
+        echo "" >> BACKLOG.md
+        cat REFACTOR_BACKLOG_ITEMS.md >> BACKLOG.md
+        echo "Refactoring items appended to BACKLOG.md"
+    else
+        echo "Items saved in REFACTOR_BACKLOG_ITEMS.md but not appended to BACKLOG.md"
+    fi
+    
+    # Clean up (but keep the items file for reference)
+    rm -f REFACTOR-CONTEXT.md
+    
+    echo ""
+    echo "Refactor analysis complete!"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    echo "Refactor context saved in REFACTOR-CONTEXT.md for manual inspection"
+    exit 1
+fi

@@ -1,0 +1,83 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0"
+    echo "  Analyzes codebase alignment with development philosophy"
+    echo "  Generates backlog items to improve philosophy compliance"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Check if BACKLOG.md exists
+if [ ! -f "BACKLOG.md" ]; then
+    echo "Warning: BACKLOG.md not found. Creating empty backlog file..."
+    echo "# BACKLOG" > BACKLOG.md
+    echo "" >> BACKLOG.md
+fi
+
+echo "Analyzing codebase alignment with development philosophy..."
+
+# Create minimal context file with current backlog
+echo "Creating alignment context file..."
+cat > ALIGN-CONTEXT.md << EOF
+# Philosophy Alignment Context
+
+## Current Backlog
+$(cat BACKLOG.md)
+
+## Request
+Analyze the codebase against our development philosophy and generate backlog items to improve alignment.
+EOF
+
+# Run thinktank analysis
+echo "Running philosophy alignment analysis with high_context model set..."
+thinktank-wrapper --template align --inject ALIGN-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    # Copy synthesis to temporary file
+    cp "$SYNTHESIS_FILE" ALIGN_BACKLOG_ITEMS.md
+    echo "Created ALIGN_BACKLOG_ITEMS.md from synthesis output"
+    
+    # Show preview of alignment items
+    echo ""
+    echo "Preview of philosophy alignment items:"
+    echo "===================================="
+    head -20 ALIGN_BACKLOG_ITEMS.md
+    echo ""
+    echo "[...truncated for preview]"
+    echo ""
+    
+    # Prompt for appending to backlog
+    read -p "Append these alignment items to BACKLOG.md? (y/N): " -n 1 -r
+    echo ""
+    
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        # Append with section header
+        echo "" >> BACKLOG.md
+        echo "## Philosophy Alignment (Generated)" >> BACKLOG.md
+        echo "" >> BACKLOG.md
+        cat ALIGN_BACKLOG_ITEMS.md >> BACKLOG.md
+        echo "Alignment items appended to BACKLOG.md"
+    else
+        echo "Items saved in ALIGN_BACKLOG_ITEMS.md but not appended to BACKLOG.md"
+    fi
+    
+    # Clean up (but keep the items file for reference)
+    rm -f ALIGN-CONTEXT.md
+    
+    echo ""
+    echo "Philosophy alignment analysis complete!"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    echo "Alignment context saved in ALIGN-CONTEXT.md for manual inspection"
+    exit 1
+fi

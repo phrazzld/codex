@@ -1,0 +1,56 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0"
+    echo "  Generates a remediation plan from CODE_REVIEW.md"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Step 1: Verify Code Review File
+if [ ! -f "CODE_REVIEW.md" ]; then
+    echo "Error: CODE_REVIEW.md not found"
+    echo "Please run code-review first to generate a review"
+    exit 1
+fi
+
+echo "Found CODE_REVIEW.md, proceeding..."
+
+# Step 2: Create Context File
+echo "Creating address context file..."
+cat > ADDRESS-CONTEXT.md << EOF
+# Code Review Details
+
+## Code Review Content
+$(cat CODE_REVIEW.md)
+
+## Task
+Create a comprehensive plan to address the issues identified in the code review.
+EOF
+
+# Step 3: Generate Plan with Thinktank
+echo "Running thinktank analysis with high_context model set..."
+thinktank-wrapper --template address --inject ADDRESS-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    cp "$SYNTHESIS_FILE" REMEDIATION_PLAN.md
+    echo "Created REMEDIATION_PLAN.md from synthesis output"
+    
+    # Clean up
+    rm -f ADDRESS-CONTEXT.md
+    
+    echo "Remediation plan complete! See REMEDIATION_PLAN.md"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    echo "Address context saved in ADDRESS-CONTEXT.md for manual inspection"
+    exit 1
+fi

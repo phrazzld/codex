@@ -183,7 +183,16 @@ This document specifies the Go language-specific standards, tooling requirements
 
 ---
 
-## 13. Builds and Deployment Artifacts
+## 13. Build Tags
+
+* **Usage Policy:** Refer to the comprehensive [Build Tags Usage Policy](./BUILD_TAGS.md) for detailed guidelines.
+* **Core Application Code:** MUST NOT use restrictive build tags that would prevent normal compilation.
+* **Test Isolation:** Use appropriate build tags (`test_without_external_deps`, `integration`) for test-specific implementations.
+* **Documentation:** Always document the purpose and usage of any build tags in code comments.
+
+---
+
+## 14. Builds and Deployment Artifacts
 
 * **Static Binaries:** Leverage Go's capability to produce statically linked binaries (`CGO_ENABLED=0 GOOS=linux go build ...`) for easy deployment, especially within containers.
 * **Dockerfiles:** Utilize multi-stage Docker builds. Start with a `golang` base image for building, then copy the compiled static binary into a minimal runtime image (e.g., `gcr.io/distroless/static-debian11`, `scratch`, or `alpine` if necessary). This minimizes the final image size and attack surface.

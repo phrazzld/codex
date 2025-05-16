@@ -5,31 +5,23 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
 
 ## 1. Select & Scope Task
 - Identify top item in `BACKLOG.md`.
-- Verify task is an atomic epic (single responsibility, testable, reviewable).
 
-## 2. Decompose Task (If Needed)
-- If task is greater in scope than one focused epic:
-    1. Break into multiple atomic units.
-    2. Sequence by dependency.
-    3. Update `BACKLOG.md`: Remove original, add first unit top, add rest below.
-    4. Document dependencies.
-
-## 3. Generate Plan with Thinktank
+## 2. Generate Plan with Thinktank
 - Create `PLAN-CONTEXT.md` with the task description and requirements:
   ```markdown
   # Task Description
-  
+
   ## Overview
   [Brief description of the task to be implemented]
-  
+
   ## Requirements
   - [Requirement 1]
   - [Requirement 2]
   - [Requirement 3]
-  
+
   ## Technical Context
   [Any relevant technical details, constraints, or existing system information]
-  
+
   ## Considerations
   [Special considerations, challenges, or trade-offs to be addressed]
   ```
@@ -39,5 +31,5 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
     ```
 - Review the generated output directory and use the synthesis file as the basis for `PLAN.md`
 
-## 4. Checkout Branch
+## 3. Checkout Branch
 - Check out a branch for completing all of the work in the generated `PLAN.md`.

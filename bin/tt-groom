@@ -1,0 +1,87 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0"
+    echo "  Organizes, expands, and prioritizes the project backlog"
+    exit 1
+}
+
+# Check for help flag
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+# Check if BACKLOG.md exists
+if [ ! -f "BACKLOG.md" ]; then
+    echo "Error: BACKLOG.md not found"
+    echo "Please create a BACKLOG.md file with initial tasks"
+    exit 1
+fi
+
+echo "Grooming project backlog..."
+
+# Create context file with current backlog
+echo "Creating groom context file..."
+cat > GROOM-CONTEXT.md << EOF
+# Backlog Grooming Context
+
+## Current Backlog
+$(cat BACKLOG.md)
+
+## Grooming Goals
+- Prioritize items based on business value and technical dependencies
+- Identify missing tasks that should be added
+- Remove or modify outdated tasks
+- Ensure all tasks are clear, atomic, and actionable
+EOF
+
+# Run thinktank analysis
+echo "Running thinktank analysis with high_context model set..."
+thinktank-wrapper --template groom --inject GROOM-CONTEXT.md --model-set high_context --include-philosophy --include-glance BACKLOG.md ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    # Save current backlog as backup
+    cp BACKLOG.md BACKLOG.md.backup
+    echo "Saved current backlog to BACKLOG.md.backup"
+    
+    # Copy synthesis to new backlog
+    cp "$SYNTHESIS_FILE" BACKLOG.md.groomed
+    echo "Created BACKLOG.md.groomed from synthesis output"
+    
+    # Show preview of groomed backlog
+    echo ""
+    echo "Preview of groomed backlog:"
+    echo "=========================="
+    head -30 BACKLOG.md.groomed
+    echo ""
+    echo "[...truncated for preview]"
+    echo ""
+    
+    # Prompt for replacing backlog
+    read -p "Replace BACKLOG.md with groomed version? (y/N): " -n 1 -r
+    echo ""
+    
+    if [[ $REPLY =~ ^[Yy]$ ]]; then
+        mv BACKLOG.md.groomed BACKLOG.md
+        echo "BACKLOG.md has been updated with groomed version"
+        echo "Original backlog saved as BACKLOG.md.backup"
+    else
+        echo "Groomed backlog saved as BACKLOG.md.groomed"
+        echo "Original BACKLOG.md unchanged"
+    fi
+    
+    # Clean up context file
+    rm -f GROOM-CONTEXT.md
+    
+    echo ""
+    echo "Backlog grooming complete!"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    echo "Groom context saved in GROOM-CONTEXT.md for manual inspection"
+    exit 1
+fi
