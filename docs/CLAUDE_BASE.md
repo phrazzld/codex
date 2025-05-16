@@ -76,3 +76,6 @@ You MUST strictly adhere to `DEVELOPMENT_PHILOSOPHY.md` and its language-specifi
 * **`gh` (GitHub Command Line Interface):**
     * Employ the `gh` CLI tool to interact with and gather information from GitHub repositories.
     * Use it to gain deeper insights into repository structure, inspect pull requests, check CI/CD statuses, review code, manage issues, and perform other GitHub-related operations as necessary for your tasks.
+
+* **Git Command Best Practices:**
+    * Never use -F when writing a commit message. Always use -m.

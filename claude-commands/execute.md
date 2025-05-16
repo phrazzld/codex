@@ -2,8 +2,6 @@
 
 **OBJECTIVE:** Systematically acquire, classify, plan, execute, and commit the next unblocked ticket from `TODO.md`. Minimize overhead; maximize adherence to standards.
 
----
-
 ## 1. Acquire Next Unblocked Ticket
     a. Scan `TODO.md` sequentially from top to bottom.
     b. Select the FIRST `[ ]` (unstarted) ticket for which ALL `depends-on:` tasks are marked `[x]` (completed), or for which no dependencies exist.

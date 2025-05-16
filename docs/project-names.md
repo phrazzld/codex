@@ -75,4 +75,21 @@
 - ministry of truth
 - personality factory
 - forbidden pattern
+- iroh
+- serenity
+- longclaw
+- rocinante
+- zoboomafoo
+- angela
+- darlene
+- whiterose
+- zuko
+- goku
+- piccolo
+- hisoka
+- netero
+- morpheus
+- babylon
+- hyperbolic time chamber
+- move 78
 
