@@ -1,0 +1,71 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [base_branch]"
+    echo "  base_branch: Branch to compare against (default: master)"
+    exit 1
+}
+
+# Parse arguments
+BASE_BRANCH="${1:-master}"
+
+# Get current branch name
+CURRENT_BRANCH=$(git branch --show-current)
+
+# Check if we're on a branch
+if [ -z "$CURRENT_BRANCH" ]; then
+    echo "Error: Not on a branch"
+    exit 1
+fi
+
+# Get list of changed files
+CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH" || true)
+
+# Check if there are any changes
+if [ -z "$CHANGED_FILES" ]; then
+    echo "No changes detected between $CURRENT_BRANCH and $BASE_BRANCH"
+    exit 0
+fi
+
+# Count changed files
+FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
+
+echo "Generating code review for $FILE_COUNT files..."
+
+# Create context file
+cat > REVIEW-CONTEXT.md << EOF
+# Code Review Context
+
+## PR Details
+Branch: $CURRENT_BRANCH
+Files Changed: $FILE_COUNT
+
+## Diff
+$(git diff "$BASE_BRANCH")
+EOF
+
+# Convert newline-separated files to space-separated for command
+FILES_ARGS=$(echo "$CHANGED_FILES" | tr '\n' ' ')
+
+# Run thinktank-wrapper
+echo "Running thinktank analysis..."
+thinktank-wrapper --template review --inject REVIEW-CONTEXT.md --model-set high_context --include-philosophy --include-glance $FILES_ARGS
+
+# Find the most recent synthesis file in the thinktank output
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    cp "$SYNTHESIS_FILE" CODE_REVIEW.md
+    echo "Created CODE_REVIEW.md from synthesis output"
+
+    # Clean up
+    rm -f REVIEW-CONTEXT.md
+
+    echo "Code review complete! See CODE_REVIEW.md"
+else
+    echo "Warning: Could not find synthesis file from thinktank output"
+    echo "Review context saved in REVIEW-CONTEXT.md for manual inspection"
+    exit 1
+fi

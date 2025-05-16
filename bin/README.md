@@ -66,3 +66,36 @@ thinktank-wrapper --instructions custom-prompt.md --include-philosophy
 ```
 
 For more detailed documentation, see the [thinktank_wrapper README](./thinktank_wrapper/README.md).
+
+### code-review
+
+Automated script for generating comprehensive code reviews using thinktank analysis.
+
+**Usage:**
+```bash
+code-review [base_branch]
+```
+
+**Parameters:**
+- `base_branch` - Branch to compare against (default: master)
+
+**Features:**
+- Automatically generates diff against base branch
+- Identifies all changed files
+- Runs thinktank-wrapper with review template
+- Creates CODE_REVIEW.md from synthesis output
+- Handles errors gracefully
+- Cleans up temporary files
+
+**Examples:**
+```bash
+# Review changes against master
+code-review
+
+# Review changes against specific branch
+code-review feature/new-feature
+```
+
+**Output:**
+- Creates `CODE_REVIEW.md` with comprehensive review analysis
+- Temporarily creates `REVIEW-CONTEXT.md` (cleaned up on success)
