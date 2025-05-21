@@ -1,6 +1,5 @@
 # Backlog Grooming: Comprehensive Organization & Expansion
 
-
 <!-- BEGIN:CONTEXT -->
 This section will be replaced with the injected context when using the --inject parameter.
 If no context is injected, this default message will remain.
@@ -117,6 +116,7 @@ Present the backlog in Markdown with consistent formatting:
 - **Balance** immediate technical needs with long-term strategic vision
 - **Prioritize ruthlessly** based on impact vs. effort
 - **Consider interdependencies** between items when sequencing
+- **Clean up** completed items and items that reference them as dependencies
 
 ## Output Requirements
 

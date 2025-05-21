@@ -50,7 +50,7 @@
             * Identify up to ten additional relevant files from the codebase (e.g., related modules, data structure definitions, key `glance.md` files) that provide essential context for the `thinktank-wrapper`.
         ii. **Execute Analysis (maximize the timeout of your Bash tool when you invoke thinktank-wrapper):**
             ```bash
-            thinktank-wrapper --template execute --inject <task-id>-task.md --model-set all --include-philosophy --include-glance [COMMA_SEPARATED_LIST_OF_UP_TO_10_RELEVANT_FILES]
+            thinktank-wrapper --template execute --inject <task-id>-task.md --model-set high_context --include-philosophy --include-glance ./
             ```
         iii. **Synthesize Plan:** Critically review all files in the `thinktank-wrapper` output directory. Use the synthesis file and other generated artifacts to create a comprehensive, actionable plan in a new file named `<task-id>-plan.md`.
     c. **Develop (Test-First Methodology):**

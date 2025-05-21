@@ -20,7 +20,9 @@ This document specifies the Go language-specific standards, tooling requirements
 - [10. Testing](#10-testing)
 - [11. Logging (`log/slog`)](#11-logging-logslog)
 - [12. Dependency Management (Go Modules)](#12-dependency-management-go-modules)
-- [13. Builds and Deployment Artifacts](#13-builds-and-deployment-artifacts)
+- [13. Build Tags](#13-build-tags)
+- [14. Builds and Deployment Artifacts](#14-builds-and-deployment-artifacts)
+- [15. Database Driver Imports](#15-database-driver-imports)
 
 ---
 
@@ -197,4 +199,21 @@ This document specifies the Go language-specific standards, tooling requirements
 * **Static Binaries:** Leverage Go's capability to produce statically linked binaries (`CGO_ENABLED=0 GOOS=linux go build ...`) for easy deployment, especially within containers.
 * **Dockerfiles:** Utilize multi-stage Docker builds. Start with a `golang` base image for building, then copy the compiled static binary into a minimal runtime image (e.g., `gcr.io/distroless/static-debian11`, `scratch`, or `alpine` if necessary). This minimizes the final image size and attack surface.
 * **Build Flags:** Consider using `-ldflags="-s -w"` during the final build stage to strip debug symbols and reduce binary size for production artifacts.
+
+---
+
+## 15. Database Driver Imports
+
+* **Standard:** Any Go main package using database/sql **MUST** ensure required database drivers are explicitly imported via blank imports (`_ "driver/path"`) within that package's scope.
+* **Rationale:** Database drivers must be imported explicitly to register their driver with the `database/sql` package. Failure to include these imports will result in runtime errors like `sql: unknown driver` when attempting to open database connections.
+* **Implementation:** Always include blank imports for the specific database driver(s) your application uses:
+    ```go
+    import (
+        "database/sql"
+        _ "github.com/jackc/pgx/v5/stdlib" // PostgreSQL driver
+        // _ "github.com/go-sql-driver/mysql" // MySQL driver
+        // _ "github.com/mattn/go-sqlite3" // SQLite driver
+    )
+    ```
+* **Enforcement:** This requirement is particularly critical in main packages and during migration tools where database connections are initialized. The CI pipeline will fail if drivers are not properly imported.
 

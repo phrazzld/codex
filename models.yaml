@@ -120,6 +120,22 @@ models:
         type: int
         default: 40
 
+  - name: gemini-2.5-flash-preview-05-20
+    provider: gemini
+    api_model_id: gemini-2.5-flash-preview-05-20
+    context_window: 1000000
+    max_output_tokens: 65000
+    parameters:
+      temperature:
+        type: float
+        default: 0.7
+      top_p:
+        type: float
+        default: 0.95
+      top_k:
+        type: int
+        default: 40
+
   # OpenRouter Models
   # ----------------
   # OpenRouter provides a unified gateway to access models from various providers
