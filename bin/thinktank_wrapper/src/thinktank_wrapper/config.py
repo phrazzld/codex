@@ -15,7 +15,7 @@ MODELS_ALL: List[str] = [
     
     # Gemini Models
     "gemini-2.5-pro-preview-05-06",
-    "gemini-2.5-flash-preview-04-17",
+    "gemini-2.5-flash-preview-05-20",
     
     # OpenRouter Models
     "openrouter/deepseek/deepseek-chat-v3-0324",
@@ -34,7 +34,7 @@ MODELS_HIGH_CONTEXT: List[str] = [
     
     # Gemini Models
     "gemini-2.5-pro-preview-05-06",
-    "gemini-2.5-flash-preview-04-17",
+    "gemini-2.5-flash-preview-05-20",
     
     # OpenRouter Models
     "openrouter/meta-llama/llama-4-maverick",
