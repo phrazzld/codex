@@ -1,10 +1,13 @@
 # REFACTOR
 
 ## GOAL
-Analyze the codebase and generate backlog items for code refactoring while preserving functionality.
+Analyze the codebase and generate GitHub issues for code refactoring while preserving functionality.
 
 ## 1. Prepare Context
-- Read `BACKLOG.md` to understand current tasks.
+- Fetch current GitHub issues to understand existing tasks:
+  ```bash
+  gh issue list --state open --json number,title,body,labels --limit 100
+  ```
 - Read `DEVELOPMENT_PHILOSOPHY.md` and relevant language-specific appendices.
 - Identify all `glance.md` files in the codebase to gather architectural insights.
 
@@ -13,19 +16,19 @@ Analyze the codebase and generate backlog items for code refactoring while prese
   ```markdown
   # Refactoring Analysis Context
 
-  ## Current Backlog
-  [Copy content from BACKLOG.md]
+  ## Current Issues
+  [Include output from GitHub issues list]
 
   ## Request
-  Analyze the codebase and generate backlog items for code refactoring while preserving functionality.
+  Analyze the codebase and generate items for code refactoring while preserving functionality.
   Focus on improving maintainability, readability, and reducing technical debt.
   ```
 
-## 3. Generate Refactoring Backlog Items
+## 3. Generate Refactoring Items
 - Run thinktank-wrapper with refactor template (with the maximum timeout in the bash tool used to invoke it):
   ```bash
   thinktank-wrapper --template refactor --inject REFACTOR-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
   ```
-- Copy synthesis file to create temporary `REFACTOR_BACKLOG_ITEMS.md`
-- Append items to `BACKLOG.md` after review
-- Remove `REFACTOR-PROMPT.md` and temporary files
+- Thoroughly review all files in the generated output directory, not just the synthesis file
+- If the synthesis file appears truncated or incomplete, manually analyze all output files and synthesize the information
+- For each refactoring opportunity, create a GitHub issue with appropriate details and labels

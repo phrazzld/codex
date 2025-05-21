@@ -1,10 +1,13 @@
 # SHRINK
 
 ## GOAL
-Analyze the codebase and generate backlog items for code size optimization while preserving functionality.
+Analyze the codebase and generate GitHub issues for code size optimization while preserving functionality.
 
 ## 1. Prepare Context
-- Read `BACKLOG.md` to understand current tasks.
+- Fetch current GitHub issues to understand existing tasks:
+  ```bash
+  gh issue list --state open --json number,title,body,labels --limit 100
+  ```
 - Read `DEVELOPMENT_PHILOSOPHY.md` and relevant language-specific appendices.
 - Identify all `glance.md` files in the codebase to gather architectural insights.
 
@@ -13,19 +16,19 @@ Analyze the codebase and generate backlog items for code size optimization while
   ```markdown
   # Code Size Optimization Context
 
-  ## Current Backlog
-  [Copy content from BACKLOG.md]
+  ## Current Issues
+  [Include output from GitHub issues list]
 
   ## Request
-  Analyze the codebase and generate backlog items for code size optimization while preserving functionality.
+  Analyze the codebase and generate items for code size optimization while preserving functionality.
   Focus on reducing file sizes, eliminating duplicated code, and simplifying complex implementations.
   ```
 
-## 3. Generate Size Optimization Backlog Items
+## 3. Generate Size Optimization Items
 - Run thinktank-wrapper with shrink template (with the maximum timeout in the bash tool used to invoke it):
   ```bash
   thinktank-wrapper --template shrink --inject SHRINK-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
   ```
-- Copy synthesis file to create temporary `SHRINK_BACKLOG_ITEMS.md`
-- Append items to `BACKLOG.md` after review
-- Remove `SHRINK-PROMPT.md` and temporary files
+- Thoroughly review all files in the generated output directory, not just the synthesis file
+- If the synthesis file appears truncated or incomplete, manually analyze all output files and synthesize the information
+- For each size optimization opportunity, create a GitHub issue with appropriate details and labels
