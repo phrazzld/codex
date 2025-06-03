@@ -25,10 +25,17 @@ Analyze the codebase and generate GitHub issues for code size optimization while
   ```
 
 ## 3. Generate Size Optimization Items
-- Run thinktank-wrapper with shrink template (with the maximum timeout in the bash tool used to invoke it):
-  ```bash
-  thinktank-wrapper --template shrink --inject SHRINK-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
-  ```
-- Thoroughly review all files in the generated output directory, not just the synthesis file
-- If the synthesis file appears truncated or incomplete, manually analyze all output files and synthesize the information
+- ***Think very hard*** about code size optimization opportunities by:
+  - **Size analysis**: Identify largest files/modules, quantify codebase size metrics (LOC by file/module/type)
+  - **Reduction opportunities**: Systematically catalog:
+    - Redundant/duplicated code across the codebase
+    - Unused/dead code (functions, methods, imports, variables)
+    - Unnecessarily verbose implementations
+    - Overengineered abstractions adding complexity without value
+    - Unnecessary dependencies that could be removed
+    - Over-commented code where self-documenting approaches would suffice
+  - **Solution analysis**: For each opportunity, determine specific approach, potential size reduction, implementation risk, and verification strategy
+  - **Prioritization**: Group by impact (Critical/High/Medium/Low) based on effort vs reduction potential
+- Focus on dramatic size reduction while preserving 100% of essential functionality
+- Balance quick wins (high impact, low effort) with strategic improvements
 - For each size optimization opportunity, create a GitHub issue with appropriate details and labels

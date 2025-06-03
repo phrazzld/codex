@@ -29,11 +29,20 @@ Audit, critique, evaluate, consolidate, expand, and improve the documentation in
   ```
 
 ## 3. Execute Documentation Audit
-- Run thinktank-wrapper with the document template and context file (with the maximum timeout in the bash tool used to invoke it):
-  ```bash
-  thinktank-wrapper --model-set all --template document --inject DOCUMENT-CONTEXT.md --include-philosophy --include-glance
-  ```
-- Review the generated output directory and copy synthesis file to create `DOCUMENTATION_IMPROVEMENT_PLAN.md`
+- ***Think very hard*** about the documentation quality and completeness:
+  - Analyze all markdown files for structure, clarity, and consistency
+  - Evaluate documentation coverage against codebase functionality
+  - Check for missing or outdated information
+  - Assess organization and navigation ease
+  - Identify redundancies and inconsistencies
+  - Review adherence to documentation standards in DEVELOPMENT_PHILOSOPHY.md
+  - Consider documentation accessibility and target audience needs
+  - Evaluate code examples, diagrams, and cross-references
+- Create `DOCUMENTATION_IMPROVEMENT_PLAN.md` with:
+  - Current documentation state assessment
+  - Gaps and issues identified
+  - Prioritized improvement recommendations
+  - Specific action items for each documentation area
 
 ## 4. Create Detailed TODO List
 - Extract actionable tasks from the improvement plan

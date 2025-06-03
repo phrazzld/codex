@@ -14,16 +14,22 @@ Check the CI status for the current PR and generate actionable resolution tasks 
 - Include build information, error logs, failed steps, and affected components
 
 ## 3. Generate Resolution Plan
-- Run thinktank-wrapper with the high_context model set:
-  ```bash
-  thinktank-wrapper --template ci-failure --inject CI-FAILURE-SUMMARY.md --model-set high_context --include-philosophy --include-glance ./
-  ```
-- Review the generated output -- particularly the synthesis file -- and create `CI-RESOLUTION-PLAN.md`
+- **Think very hard** about the CI failure and its root causes:
+  - Analyze the error messages and stack traces in detail
+  - Identify the specific components or tests that are failing
+  - Consider environmental factors that might be causing the failure
+  - Think about recent changes that could have introduced the issue
+  - Develop multiple hypotheses for the failure cause
+  - Prioritize the most likely causes based on the evidence
+- Create `CI-RESOLUTION-PLAN.md` with your comprehensive analysis and resolution approach
 
 ## 4. Generate Resolution Tasks
-- Run thinktank-wrapper with ci-failure template and context:
-  ```bash
-  thinktank-wrapper --template ticket --inject CI-RESOLUTION-PLAN.md --model-set all --include-philosophy --include-glance CI-FAILURE-SUMMARY.md
-  ```
-- Review thinktank output, especially the synthesis output, and insert generated tasks into `TODO.md`
+- **Think very hard** about breaking down the resolution plan into actionable tasks:
+  - Decompose the fix into atomic, testable steps
+  - Consider the order of operations to avoid breaking other functionality
+  - Include verification steps to ensure the fix works
+  - Add tasks for preventing similar failures in the future
+  - Think about edge cases that need to be addressed
+  - Ensure each task is clear and independently executable
+- Create specific, well-formatted tasks and insert them into `TODO.md`
 - Remove temporary files

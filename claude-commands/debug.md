@@ -9,11 +9,18 @@ Systematically identify, analyze, and create a plan to fix bugs through structur
 - Create `BUGFIXPLAN.md` (Sections: Bug Desc, Repro, Expected, Actual, Components, Hypotheses, Test Log, Root Cause, Fix Desc, Status: Investigating).
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
 - Identify relevant development philosophy files
-- Run thinktank-wrapper using the debug template (with the maximum timeout in the bash tool used to invoke it):
-    ```bash
-    thinktank-wrapper --template debug --model-set high_context --include-philosophy --include-glance ./
-    ```
-- Review the generated output directory and use the synthesis file to create `DEBUG-ANALYSIS.md`
+- ***Think very hard*** about the bug:
+  - Analyze the bug description, reproduction steps, and symptoms
+  - Consider the system architecture and component interactions
+  - Review recent code changes that might be related
+  - Examine error logs, stack traces, and debugging output
+  - Study the expected vs actual behavior discrepancies
+  - Identify patterns or similar past issues
+- Create `DEBUG-ANALYSIS.md` with:
+  - Comprehensive bug analysis
+  - Affected components and dependencies
+  - Potential root causes
+  - Investigation approach recommendations
 
 ## 2. Formulate Initial Hypotheses
 - Analyze bug details, components, `DEBUG-ANALYSIS.md`, code, git history.
@@ -42,11 +49,14 @@ Systematically identify, analyze, and create a plan to fix bugs through structur
     - Format tasks correctly (ID, Title, Action, `Depends On:` using IDs, `AC Ref: None`).
     - Final "Verify Fix" task's `Action:` should mark `Original Task ID: TXXX` as `[x]`.
     ```
-- Run thinktank-wrapper for task generation (with the maximum timeout in the bash tool used to invoke it):
-    ```bash
-    thinktank-wrapper --template debug --inject DEBUG-CONTEXT.md --model-set all --include-philosophy --include-glance BUGFIXPLAN.md DEBUG-ANALYSIS.md
-    ```
-- Review tasks from synthesis file
+- ***Think very hard*** about task generation:
+  - Consider the most effective debugging approach based on hypotheses
+  - Break down investigation into atomic, testable steps
+  - Ensure tasks follow proper dependency order
+  - Include validation and verification tasks
+  - Consider edge cases and alternative scenarios
+  - Plan for both positive and negative hypothesis outcomes
+- Generate atomic debug tasks that systematically test hypotheses
 - Insert tasks into `TODO.md` (logically after `Original Task ID`), maintaining consistent formatting and proper dependency references.
 - Remove `DEBUG-TASKGEN-REQUEST.md`.
 - Report: "Generated debug tasks [New Task IDs] in TODO.md related to original task [Original Task ID]. Proceed via /execute."

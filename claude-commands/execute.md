@@ -44,15 +44,27 @@
             2.  **Title:** (from Step 1.e)
             3.  **Original Ticket Text:** (verbatim copy)
             4.  **Implementation Approach Analysis Prompt:** (full content of the standard prompt, typically found in a separate template file)
-    b. **Generate & Refine Plan (via `thinktank-wrapper`):**
-        i. **Context Preparation:**
-            * Sanitize the **Task Title** (from Step 1.e) to create a valid filename component (e.g., `sanitized-task-title`). The input file for `thinktank-wrapper` will be `<sanitized-task-title>-TASK.md` (which is the file created in 5.a.i, ensuring its name aligns if different from `<task-id>-task.md` or using task ID as primary). *Ensure filename consistency.* Let's assume `<task-id>-task.md` is the correct name for injection.
-            * Identify up to ten additional relevant files from the codebase (e.g., related modules, data structure definitions, key `glance.md` files) that provide essential context for the `thinktank-wrapper`.
-        ii. **Execute Analysis (maximize the timeout of your Bash tool when you invoke thinktank-wrapper):**
-            ```bash
-            thinktank-wrapper --template execute --inject <task-id>-task.md --model-set high_context --include-philosophy --include-glance ./
-            ```
-        iii. **Synthesize Plan:** Critically review all files in the `thinktank-wrapper` output directory. Use the synthesis file and other generated artifacts to create a comprehensive, actionable plan in a new file named `<task-id>-plan.md`.
+    b. **Generate & Refine Plan:**
+        i. **Context Gathering:**
+            * Review the task details from `<task-id>-task.md`
+            * Identify up to ten additional relevant files from the codebase (e.g., related modules, data structure definitions, key `glance.md` files) that provide essential context
+        ii. **Think very hard** about the implementation approach:
+            * Deeply analyze the task requirements and acceptance criteria
+            * Consider all architectural implications and design patterns
+            * Evaluate multiple implementation strategies:
+              - What are the tradeoffs of each approach?
+              - Which aligns best with our development philosophy?
+              - What are the testing considerations?
+            * Identify potential risks and mitigation strategies
+            * Consider performance, security, and maintainability aspects
+            * Plan the implementation in logical, testable increments
+            * Ensure the approach follows TDD principles
+        iii. **Synthesize Plan:** Create a comprehensive, actionable plan in a new file named `<task-id>-plan.md` that includes:
+            * Clear implementation steps
+            * Test strategy (what to test, how to test)
+            * Risk mitigation approach
+            * Expected file changes
+            * Success criteria
     c. **Develop (Test-First Methodology):**
         i.  **Write Tests:** Before writing implementation code, develop a comprehensive suite of failing tests. These tests MUST cover the primary success path (happy path) and all critical edge cases and foreseeable failure modes.
         ii. **Mocking Strategy:** Mock **only** true external dependencies (e.g., network services, databases, system I/O not under direct control). Internal collaborators or modules within the project MUST NOT be mocked; refactor for testability if needed.

@@ -30,12 +30,19 @@ Analyze the codebase to identify opportunities for extracting duplicated or rela
   ```
 
 ## 2. Generate Extraction Opportunities
-- Run thinktank-wrapper with the extract template (with the maximum timeout in the bash tool used to invoke it):
-  ```bash
-  thinktank-wrapper --template extract --inject EXTRACT-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
-  ```
-- Thoroughly review all files in the generated output directory, not just the synthesis file
-- If the synthesis file appears truncated or incomplete, manually analyze all output files and synthesize the information
+- ***Think very hard*** about component extraction opportunities by:
+  - **Identifying cohesive units**: Find functionality that forms natural, self-contained modules with clear boundaries
+  - **Analyzing duplication**: Detect code patterns repeated across files that could be consolidated
+  - **Module definition**: For each extraction candidate, define:
+    - Clear module boundaries and responsibilities
+    - Public interfaces and contracts
+    - Dependencies and coupling points
+    - Implementation strategy preserving functionality
+  - **Impact assessment**: Evaluate reuse potential, complexity reduction, maintainability improvements
+  - **Prioritization**: Rank extractions by effort vs benefit, considering dependencies and risk
+- Focus on creating independent, reusable components while maintaining 100% existing functionality
+- Ensure extracted modules follow single responsibility principle and clean architecture
+- Balance abstraction benefits against added complexity
 
 ## 3. Create GitHub Issues
 - For each extraction opportunity identified, create a GitHub issue with:

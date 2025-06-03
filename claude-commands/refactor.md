@@ -25,10 +25,17 @@ Analyze the codebase and generate GitHub issues for code refactoring while prese
   ```
 
 ## 3. Generate Refactoring Items
-- Run thinktank-wrapper with refactor template (with the maximum timeout in the bash tool used to invoke it):
-  ```bash
-  thinktank-wrapper --template refactor --inject REFACTOR-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
-  ```
-- Thoroughly review all files in the generated output directory, not just the synthesis file
-- If the synthesis file appears truncated or incomplete, manually analyze all output files and synthesize the information
+- ***Think very hard*** about code refactoring opportunities by:
+  - **Overview analysis**: Analyze codebase structure to identify key areas needing refactoring based on simplicity, readability, and maintainability goals
+  - **Refactoring opportunities**: Break down effort into concrete, actionable tasks such as:
+    - Removing duplicate functions across files
+    - Improving naming consistency in modules
+    - Restructuring modules to separate concerns
+    - Simplifying complex logic in functions
+    - Breaking up large files (approaching/exceeding 1000 lines)
+    - Enhancing code organization by feature/domain
+  - **Risk assessment**: For each opportunity, consider potential challenges (breaking changes, complex dependencies), verification strategy, and expected benefits
+  - **Prioritization**: Categorize as Critical/High/Medium/Low based on impact and complexity (Simple/Medium/Complex)
+- Ensure 100% of existing functionality is maintained while improving code quality
+- Balance high-quality, maintainable code with avoiding overengineering
 - For each refactoring opportunity, create a GitHub issue with appropriate details and labels

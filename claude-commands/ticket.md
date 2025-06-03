@@ -20,11 +20,21 @@ Generate a detailed task breakdown from a high-level implementation plan into a 
   - Include verification steps
   - Follow project task ID and formatting conventions
   ```
-- Run thinktank-wrapper with the ticket template (with the maximum timeout in the bash tool used to invoke it):
-    ```bash
-    thinktank-wrapper --template ticket --inject TICKET-CONTEXT.md --model-set all --include-philosophy --include-glance PLAN.md
-    ```
-- Review the generated output directory and use the synthesis file to create `TODO.md`
+- **Think very hard** about decomposing the plan into implementable tasks:
+    - Break down each major component into atomic, testable units
+    - Identify logical dependencies and order tasks appropriately
+    - Consider parallel work streams where possible
+    - Include tasks for writing tests before implementation (TDD approach)
+    - Add verification tasks to ensure each component works correctly
+    - Think about integration points and add tasks for testing them
+    - Consider documentation tasks for significant changes
+    - Ensure no task is too large to complete in a reasonable time
+    - Include tasks for code review preparation
+- Create `TODO.md` with well-structured tasks that:
+    - Follow the project's task ID conventions
+    - Have clear, actionable descriptions
+    - Include acceptance criteria where appropriate
+    - Map dependencies correctly
 
 ## 3. Review Tasks
 - Verify `TODO.md`:

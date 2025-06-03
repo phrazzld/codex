@@ -10,14 +10,21 @@ Generate alternative approaches and solutions for a blocked task by leveraging m
 - Identify the ten files most relevant to the problem you're struggling with.
 - Identify development philosophy files
 
-## 2. Invoke Thinktank for Plan
+## 2. Generate Alternative Approaches
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."
-- Run thinktank-wrapper with the consult template (with the maximum timeout in the bash tool used to invoke it):
-    ```bash
-    thinktank-wrapper --template consult --inject CONSULT-REQUEST.md --model-set high_context --include-philosophy --include-glance ./
-    ```
-- Review the generated output directory and use the synthesis file to create `CONSULTANT-PLAN.md`
-- Handle errors (log, retry once, stop). Report success/failure.
+- **Think very hard** about alternative solutions to unblock the task:
+    - Analyze the problem from multiple angles and perspectives
+    - Consider different architectural approaches that could work
+    - Think about similar problems you've solved and how those solutions might apply
+    - Explore trade-offs between different solutions (complexity, performance, maintainability)
+    - Consider both short-term fixes and long-term sustainable solutions
+    - Think about edge cases and potential failure modes for each approach
+    - Evaluate each solution against the project's development philosophy
+- Create `CONSULTANT-PLAN.md` with multiple detailed solution approaches, including:
+    - Pros and cons of each approach
+    - Implementation complexity
+    - Alignment with project principles
+    - Recommended approach with justification
 
 ## 3. Generate Resolution Tasks in TODO.md
 - Create `CONSULT-CONTEXT.md` with task generation context:
@@ -33,12 +40,15 @@ Generate alternative approaches and solutions for a blocked task by leveraging m
     - Format tasks according to project's task format
     - Ensure final task resolves the original issue
     ```
-- Run thinktank-wrapper for task generation (with the maximum timeout in the bash tool used to invoke it):
-    ```bash
-    thinktank-wrapper --template consult --inject CONSULT-CONTEXT.md --model-set all --include-philosophy --include-glance CONSULTANT-PLAN.md
-    ```
-- Review tasks in synthesis file
-- Insert tasks into `TODO.md`, maintaining consistent formatting.
+- **Think very hard** about breaking down the chosen solution into implementable tasks:
+    - Decompose the solution into atomic, testable components
+    - Identify dependencies between tasks and order them appropriately
+    - Include tasks for writing tests to verify the solution
+    - Add tasks for updating documentation if needed
+    - Consider tasks for handling edge cases identified in the plan
+    - Ensure each task has clear acceptance criteria
+    - Think about verification steps to confirm the original issue is resolved
+- Insert well-formatted tasks into `TODO.md`, maintaining consistent formatting.
 - Remove `CONSULT-REQUEST.md`, `CONSULTANT-PLAN.md`, `CONSULT-TASKGEN-REQUEST.md`.
 - Report: "Generated resolution tasks in TODO.md for the original issue. Proceed via /execute."
 - **Stop** `/consult`.

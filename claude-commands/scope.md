@@ -10,12 +10,20 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
 - Read TODO.md
 - Find relevant development philosophy files
 
-### 2. Generate Scope Analysis with Thinktank
-- Run thinktank-wrapper with the scope template (with the maximum timeout in the bash tool used to invoke it):
-  ```bash
-  thinktank-wrapper --template scope --model-set all --include-philosophy --include-glance PLAN.md TODO.md
-  ```
-- Review the generated output directory and use the synthesis file to create `SCOPE-RESULT.md`
+### 2. Analyze Scope and Complexity
+- **Think very hard** about the scope and complexity of TODO.md:
+  - Analyze the total number of tasks and their complexity
+  - Consider the interconnectedness of tasks
+  - Evaluate if the changes would result in a reviewable PR
+  - Think about logical groupings of related functionality
+  - Consider the risk of introducing bugs with too many changes
+  - Assess whether the scope aligns with single-responsibility principle
+  - Identify natural breaking points if the scope is too large
+- Create `SCOPE-RESULT.md` with your analysis including:
+  - Assessment of current scope (appropriate/too large)
+  - If too large, recommended split approach
+  - Logical groupings for separate PRs
+  - Dependencies between proposed splits
 
 ### 3. Execute Splitting (If Needed)
 - If SCOPE-RESULT.md recommends splitting:
@@ -38,11 +46,15 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
     1. Create separate plan files (TODO-1.md, TODO-2.md, etc.)
     2. Each todo file must be independently implementable
     ```
-  - Run thinktank-wrapper for splitting (with the maximum timeout in the bash tool used to invoke it):
-    ```bash
-    thinktank-wrapper --template scope --inject SCOPE-CONTEXT.md --model-set all --include-philosophy --include-glance PLAN.md TODO.md SCOPE-RESULT.md
-    ```
-  - Parse thinktank output to extract todo files
+  - **Think very hard** about how to split the tasks effectively:
+    - Group related tasks that should be implemented together
+    - Ensure each split is independently testable and deployable
+    - Maintain logical coherence within each split
+    - Consider dependencies and order splits appropriately
+    - Ensure no split is still too large for a manageable PR
+    - Think about the review process and keeping changes focused
+    - Create clear boundaries between splits
+  - Generate the split TODO files based on your analysis
   - Write each plan to `TODO-{n}.md` files
   - Rename original to `TODO-ORIGINAL.md`
   - Create `TODO-INDEX.md` listing all generated plans

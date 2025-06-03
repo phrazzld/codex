@@ -20,10 +20,18 @@ Analyze the codebase against our development philosophy and generate GitHub issu
   ```
 
 ## 2. Generate Philosophy-Aligned Improvement Items
-- Run thinktank-wrapper with the align template (with the maximum timeout in the bash tool used to invoke it):
-  ```bash
-  thinktank-wrapper --template align --inject ALIGN-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
-  ```
-- Thoroughly review all files in the generated output directory, not just the synthesis file
-- If the synthesis file appears truncated or incomplete, manually analyze all output files and synthesize the information
+- **Think very hard** about the codebase alignment with our development philosophy:
+  - Read and internalize `DEVELOPMENT_PHILOSOPHY.md` and all language-specific appendices
+  - Systematically analyze each major component/module against our core principles:
+    * Simplicity and modularity
+    * Testability and explicit contracts
+    * Maintainability and clarity
+    * Automation and tooling adherence
+  - Consider the context from `ALIGN-CONTEXT.md` and existing GitHub issues
+  - Identify specific misalignments, anti-patterns, or areas for improvement
+  - For each finding, determine:
+    * The specific principle being violated
+    * The impact on the codebase
+    * A concrete improvement strategy
+    * Priority level (high/medium/low)
 - Create GitHub issues for each alignment item identified, with appropriate labels and priorities based on your assessment of each item

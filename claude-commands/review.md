@@ -20,10 +20,18 @@ Generate a comprehensive code review of changes against best practices, using a 
 - Run `git diff master` (or relevant base branch) and add the output to the context file
 - Update the PR Details section with current branch and files changed info
 
-## 3. Run Thinktank Review
+## 3. Perform Deep Code Review
 - Identify every file changed in the diff
-- Run (with the maximum timeout in the bash tool used to invoke it):
-    ```bash
-    thinktank-wrapper --template review --inject REVIEW-CONTEXT.md --model-set high_context --include-philosophy --include-glance [changed files]
-    ```
-- Review the generated output directory and use the synthesis file to create `CODE_REVIEW.md`
+- ***Think very hard*** about the code changes:
+  - Analyze the diff line-by-line for correctness, performance, security, and maintainability
+  - Check for adherence to DEVELOPMENT_PHILOSOPHY.md principles
+  - Evaluate consistency with existing codebase patterns and conventions
+  - Identify potential bugs, edge cases, or error handling issues
+  - Consider architectural implications and design patterns
+  - Review test coverage and testability of the changes
+  - Assess documentation completeness and clarity
+- Create `CODE_REVIEW.md` with structured findings including:
+  - Summary of changes
+  - Issues found (categorized by severity)
+  - Recommendations for improvement
+  - Positive aspects worth highlighting

@@ -14,7 +14,7 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
   ```
 - Select an important issue ready for implementation, prioritizing those with higher priority labels if available.
 
-## 2. Generate Plan with Thinktank
+## 2. Generate Plan with Deep Analysis
 - Create `PLAN-CONTEXT.md` with the selected GitHub issue details:
   ```markdown
   # Task Description
@@ -34,11 +34,23 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
   ## Related Issues
   [Any linked or referenced issues]
   ```
-- Run thinktank-wrapper with the plan template (with the maximum timeout in the bash tool used to invoke it):
-    ```bash
-    thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
-    ```
-- Review the generated output directory and use the synthesis file as the basis for `PLAN.md`
+- ***Think very hard*** about creating a ruthless, engineering-focused implementation plan by:
+  - **Internalizing philosophy**: Read and deeply understand DEVELOPMENT_PHILOSOPHY.md and all its principles (simplicity, modularity, testability, etc.)
+  - **Drafting multiple approaches**: Generate 2-3 distinct technical approaches, analyzing each against philosophy alignment, pros/cons, and risks
+  - **Selecting the optimal path**: Choose the approach that best balances simplicity, maintainability, and avoiding overengineering
+  - **Expanding into detailed plan**: Create a comprehensive PLAN.md with:
+    - Architecture blueprint (modules, interfaces, data flow)
+    - Precise build steps (ready to convert to tasks)
+    - Testing strategy (layers, minimal mocking, coverage)
+    - Logging & observability approach
+    - Security & configuration considerations
+    - Risk matrix with severities and mitigations
+    - Open questions that need resolution
+- Focus on hard engineering details, expose every technical decision and tradeoff
+- Ensure the plan delivers practical value without unnecessary complexity
 
 ## 3. Checkout Branch
-- Create and check out a branch for implementing the selected GitHub issue, following the repository's branch naming conventions.
+- Use `gh issue develop` to create and check out a branch that is automatically linked to the selected GitHub issue:
+  ```bash
+  gh issue develop [issue-number]
+  ```

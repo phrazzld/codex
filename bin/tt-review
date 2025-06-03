@@ -4,12 +4,43 @@ set -e
 # Function to display usage
 usage() {
     echo "Usage: $0 [base_branch]"
-    echo "  base_branch: Branch to compare against (default: master)"
+    echo "  base_branch: Branch to compare against (default: auto-detected main/master)"
     exit 1
 }
 
+# Function to detect default branch
+get_default_branch() {
+    # Try to get the default branch from remote
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+    
+    if [ -n "$default_branch" ]; then
+        echo "$default_branch"
+        return
+    fi
+    
+    # Check if main exists
+    if git show-ref --verify --quiet refs/heads/main; then
+        # Check if master also exists
+        if git show-ref --verify --quiet refs/heads/master; then
+            # Both exist, prefer master as per instructions
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        # Fallback to master
+        echo "master"
+    fi
+}
+
 # Parse arguments
-BASE_BRANCH="${1:-master}"
+if [ -n "$1" ]; then
+    BASE_BRANCH="$1"
+else
+    BASE_BRANCH=$(get_default_branch)
+fi
 
 # Get current branch name
 CURRENT_BRANCH=$(git branch --show-current)

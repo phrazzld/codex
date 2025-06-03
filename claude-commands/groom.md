@@ -25,11 +25,20 @@ Create an organized, expanded, and prioritized issue backlog based on comprehens
   - Remove or modify outdated tasks
   - Ensure all tasks are clear, atomic, and actionable
   ```
-- Run thinktank-wrapper with the groom template (with the maximum timeout in the bash tool used to invoke it):
-  ```bash
-  thinktank-wrapper --template groom --inject GROOM-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
-  ```
-- Review the generated output directory and use the synthesis file to update GitHub issues
+- **Think very hard** about comprehensive backlog grooming:
+  - Thoroughly analyze the current GitHub issues from your context
+  - Consider the project's overall architecture and direction
+  - Identify:
+    * Missing tasks that should be added (technical debt, improvements, features)
+    * Existing tasks that need clarification or expansion
+    * Outdated tasks that should be closed or modified
+    * Dependencies between tasks that affect prioritization
+  - For each backlog item, ensure:
+    * Clear acceptance criteria
+    * Appropriate sizing (S/M/L/XL)
+    * Correct priority based on value and dependencies
+    * Proper labels for categorization
+  - Create a comprehensive grooming plan that addresses all findings
 
 ## 3. Update GitHub Issues
 - For each existing issue that needs modifications:

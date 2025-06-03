@@ -41,8 +41,18 @@ Perform a comprehensive security audit of the codebase, identifying potential vu
       ## Medium/Low Priority Issues
       [List less severe issues]
       ```
-    - Generate plan using thinktank-wrapper with the audit template (with the maximum timeout in the bash tool used to invoke it):
-        ```bash
-        thinktank-wrapper --template audit --inject AUDIT-CONTEXT.md --model-set high_context --include-glance --include-philosophy ./
-        ```
-    - Review the generated output directory and use the synthesis file to create `SECURITY_PLAN.md`
+    - ***Think very hard*** about creating a comprehensive remediation plan:
+      - Prioritize findings by risk severity and exploitation likelihood
+      - Consider implementation complexity and resource requirements
+      - Develop specific, actionable remediation steps for each vulnerability
+      - Include security testing and validation procedures
+      - Plan for security regression prevention
+      - Consider defense-in-depth strategies
+      - Identify quick wins vs long-term security improvements
+    - Create `SECURITY_PLAN.md` with:
+      - Executive summary of security posture
+      - Detailed findings with evidence and impact analysis
+      - Prioritized remediation roadmap
+      - Specific code changes and security controls needed
+      - Testing and validation requirements
+      - Timeline and resource estimates
