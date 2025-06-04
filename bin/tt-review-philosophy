@@ -1,0 +1,94 @@
+#!/bin/bash
+set -e
+
+# Function to display usage
+usage() {
+    echo "Usage: $0 [base_branch]"
+    echo "  base_branch: Branch to compare against (default: auto-detected main/master)"
+    echo ""
+    echo "Performs philosophy-alignment code review (standards, patterns) -> CODE_REVIEW_PHILOSOPHY.md"
+    exit 1
+}
+
+# Function to detect default branch
+get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [ -n "$default_branch" ]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+# Parse arguments
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+elif [ -n "$1" ]; then
+    BASE_BRANCH="$1"
+else
+    BASE_BRANCH=$(get_default_branch)
+fi
+
+# Get current branch name
+CURRENT_BRANCH=$(git branch --show-current)
+
+if [ -z "$CURRENT_BRANCH" ]; then
+    echo "Error: Not on a branch"
+    exit 1
+fi
+
+# Get list of changed files
+CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH" || true)
+
+if [ -z "$CHANGED_FILES" ]; then
+    echo "No changes detected between $CURRENT_BRANCH and $BASE_BRANCH"
+    exit 0
+fi
+
+FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
+
+echo "Generating philosophy-alignment code review for $FILE_COUNT files..."
+
+# Create context file
+cat > REVIEW-CONTEXT.md << EOF
+# Code Review Context
+
+## PR Details
+Branch: $CURRENT_BRANCH
+Files Changed: $FILE_COUNT
+
+## Diff
+$(git diff "$BASE_BRANCH")
+EOF
+
+# Run philosophy-alignment review
+echo "Analyzing changes for philosophy alignment..."
+thinktank-wrapper --template review-philosophy --inject REVIEW-CONTEXT.md --model-set high_context --include-philosophy --include-glance ./
+
+# Find the most recent synthesis file
+SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+
+if [ -n "$SYNTHESIS_FILE" ]; then
+    cp "$SYNTHESIS_FILE" CODE_REVIEW_PHILOSOPHY.md
+    echo "✓ Created CODE_REVIEW_PHILOSOPHY.md (philosophy alignment)"
+    rm -f REVIEW-CONTEXT.md
+    echo ""
+    echo "Philosophy-alignment code review complete!"
+    echo "📐 Philosophy alignment: CODE_REVIEW_PHILOSOPHY.md"
+else
+    echo "Warning: Could not find synthesis file for philosophy review"
+    echo "Review context saved in REVIEW-CONTEXT.md for manual inspection"
+    exit 1
+fi

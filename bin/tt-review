@@ -1,102 +1,71 @@
 #!/bin/bash
-set -e
 
 # Function to display usage
 usage() {
     echo "Usage: $0 [base_branch]"
     echo "  base_branch: Branch to compare against (default: auto-detected main/master)"
+    echo ""
+    echo "Performs two-pass code review:"
+    echo "  1. Diff-focused review (bugs, functional issues) -> CODE_REVIEW_DIFF.md"
+    echo "  2. Philosophy alignment review (standards, patterns) -> CODE_REVIEW_PHILOSOPHY.md"
+    echo ""
+    echo "For individual reviews, use:"
+    echo "  tt-review-diff       - Only diff-focused review"
+    echo "  tt-review-philosophy - Only philosophy review"
     exit 1
-}
-
-# Function to detect default branch
-get_default_branch() {
-    # Try to get the default branch from remote
-    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
-    
-    if [ -n "$default_branch" ]; then
-        echo "$default_branch"
-        return
-    fi
-    
-    # Check if main exists
-    if git show-ref --verify --quiet refs/heads/main; then
-        # Check if master also exists
-        if git show-ref --verify --quiet refs/heads/master; then
-            # Both exist, prefer master as per instructions
-            echo "master"
-        else
-            echo "main"
-        fi
-    elif git show-ref --verify --quiet refs/heads/master; then
-        echo "master"
-    else
-        # Fallback to master
-        echo "master"
-    fi
 }
 
 # Parse arguments
-if [ -n "$1" ]; then
-    BASE_BRANCH="$1"
+if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
+    usage
+fi
+
+echo "Running two-pass code review..."
+
+# Track success/failure of each pass
+DIFF_SUCCESS=0
+PHILOSOPHY_SUCCESS=0
+
+# Pass 1: Diff-focused review
+echo "Pass 1: Running diff-focused review..."
+if tt-review-diff "$@"; then
+    DIFF_SUCCESS=1
+    echo "✓ Diff review completed successfully"
 else
-    BASE_BRANCH=$(get_default_branch)
+    echo "✗ Diff review failed"
 fi
 
-# Get current branch name
-CURRENT_BRANCH=$(git branch --show-current)
+echo ""
 
-# Check if we're on a branch
-if [ -z "$CURRENT_BRANCH" ]; then
-    echo "Error: Not on a branch"
-    exit 1
+# Pass 2: Philosophy-alignment review
+echo "Pass 2: Running philosophy-alignment review..."
+if tt-review-philosophy "$@"; then
+    PHILOSOPHY_SUCCESS=1
+    echo "✓ Philosophy review completed successfully"
+else
+    echo "✗ Philosophy review failed"
 fi
 
-# Get list of changed files
-CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH" || true)
+echo ""
 
-# Check if there are any changes
-if [ -z "$CHANGED_FILES" ]; then
-    echo "No changes detected between $CURRENT_BRANCH and $BASE_BRANCH"
+# Summary
+if [ $DIFF_SUCCESS -eq 1 ] && [ $PHILOSOPHY_SUCCESS -eq 1 ]; then
+    echo "Two-pass code review complete!"
+    echo "📋 Functional issues: CODE_REVIEW_DIFF.md"
+    echo "📐 Philosophy alignment: CODE_REVIEW_PHILOSOPHY.md"
     exit 0
-fi
-
-# Count changed files
-FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
-
-echo "Generating code review for $FILE_COUNT files..."
-
-# Create context file
-cat > REVIEW-CONTEXT.md << EOF
-# Code Review Context
-
-## PR Details
-Branch: $CURRENT_BRANCH
-Files Changed: $FILE_COUNT
-
-## Diff
-$(git diff "$BASE_BRANCH")
-EOF
-
-# Convert newline-separated files to space-separated for command
-FILES_ARGS=$(echo "$CHANGED_FILES" | tr '\n' ' ')
-
-# Run thinktank-wrapper
-echo "Running thinktank analysis..."
-thinktank-wrapper --template review --inject REVIEW-CONTEXT.md --model-set high_context --include-philosophy --include-glance $FILES_ARGS
-
-# Find the most recent synthesis file in the thinktank output
-SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
-
-if [ -n "$SYNTHESIS_FILE" ]; then
-    cp "$SYNTHESIS_FILE" CODE_REVIEW.md
-    echo "Created CODE_REVIEW.md from synthesis output"
-
-    # Clean up
-    rm -f REVIEW-CONTEXT.md
-
-    echo "Code review complete! See CODE_REVIEW.md"
+elif [ $DIFF_SUCCESS -eq 1 ]; then
+    echo "Partial success: Diff review completed, philosophy review failed"
+    echo "📋 Functional issues: CODE_REVIEW_DIFF.md"
+    echo "Run 'tt-review-philosophy' to retry the failed review"
+    exit 1
+elif [ $PHILOSOPHY_SUCCESS -eq 1 ]; then
+    echo "Partial success: Philosophy review completed, diff review failed"
+    echo "📐 Philosophy alignment: CODE_REVIEW_PHILOSOPHY.md"
+    echo "Run 'tt-review-diff' to retry the failed review"
+    exit 1
 else
-    echo "Warning: Could not find synthesis file from thinktank output"
-    echo "Review context saved in REVIEW-CONTEXT.md for manual inspection"
+    echo "Both reviews failed"
+    echo "Try running 'tt-review-diff' and 'tt-review-philosophy' individually"
     exit 1
 fi
