@@ -5,13 +5,13 @@ This section will be replaced with the injected context when using the --inject 
 If no context is injected, this default message will remain.
 <!-- END:CONTEXT -->
 
-You are performing a **philosophy-alignment code review**. Your purpose is to evaluate how well the changes in this diff align with our development philosophy and coding standards.
+You are performing a **philosophy-alignment code review**. Your purpose is to evaluate how well the changes in this diff align with our development philosophy, leyline documents, and coding standards.
 
 **CRITICAL CONSTRAINT**: Focus primarily on the changed code, but you may consider how changes fit with existing patterns. Do NOT review functional bugs (handled by separate diff review).
 
 ## Philosophy Standards to Evaluate Against
 
-Based on `DEVELOPMENT_PHILOSOPHY.md`:
+Based on `DEVELOPMENT_PHILOSOPHY.md` and leyline documents:
 
 1. **Simplicity & Modularity**
    - Are changes appropriately simple?
@@ -69,7 +69,7 @@ Based on `DEVELOPMENT_PHILOSOPHY.md`:
 # Philosophy-Alignment Code Review
 
 ## SIGNIFICANT VIOLATIONS
-[Major deviations from development philosophy]
+[Major deviations from development philosophy and leyline documents]
 
 ### [Issue Title] - HIGH
 - **Changed Lines**: [specific + lines from diff]

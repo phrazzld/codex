@@ -53,7 +53,7 @@ Based on your analysis, provide a strongly opinionated recommendation:
 
 - **Recommended Approach** - Choose the approach that offers the best balance between:
   - Satisfying the core requirements
-  - Aligning with development philosophy principles
+  - Aligning with development philosophy and leyline document principles
   - Minimizing unnecessary complexity
   - Creating extensible, maintainable code
   - Delivering maximum value for reasonable effort
@@ -67,4 +67,4 @@ Based on your analysis, provide a strongly opinionated recommendation:
 - Present your brainstorming and analysis in a clear, structured document
 - Prioritize technical depth and creative exploration over formality
 - Ensure each idea is explained thoroughly enough to be understood and evaluated
-- Validate all approaches against the organization's development philosophy
+- Validate all approaches against the organization's development philosophy and leyline documents

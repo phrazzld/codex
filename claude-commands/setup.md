@@ -1,7 +1,7 @@
 # SETUP
 
 ## GOAL
-Initialize a project with opinionated defaults, link relevant development philosophy documents, and create a detailed TODO list tailored to the project type.
+Initialize a project with opinionated defaults, link relevant development philosophy and leyline documents, and create a detailed TODO list tailored to the project type.
 
 ## 1. Verify Environment
 - Ensure the `DEVELOPMENT` environment variable is set and points to the root of your development directory.
@@ -51,14 +51,14 @@ Initialize a project with opinionated defaults, link relevant development philos
   fi
   ```
 
-## 3. Symlink Development Philosophy Files
+## 3. Symlink Development Philosophy and Leyline Documents
 - Always link the core development philosophy:
   ```bash
   ln -sfn "$DEVELOPMENT/codex/docs/DEVELOPMENT_PHILOSOPHY.md" docs/DEVELOPMENT_PHILOSOPHY.md
   echo "Linked core development philosophy"
   ```
 
-- Link language-specific appendices based on detected project type:
+- Link language-specific appendices and leyline documents based on detected project type:
   ```bash
   # Link TypeScript appendix if Node.js project
   if [ "$IS_NODE" = true ]; then

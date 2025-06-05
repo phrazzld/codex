@@ -1,6 +1,6 @@
 # EXECUTE
 
-Pick the next unblocked ticket from `TODO.md` and complete it following our development philosophy.
+Pick the next unblocked ticket from `TODO.md` and complete it following our development philosophy and leyline documents.
 
 ## Workflow
 
@@ -17,7 +17,7 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
   - **High**: Architectural changes, cross-cutting concerns → **ultrathink** - brainstorm multiple solutions, evaluate tradeoffs, risk analysis, comprehensive planning
 
 **3. Plan & Implement**
-- Follow `DEVELOPMENT_PHILOSOPHY.md` and relevant language appendices
+- Follow `DEVELOPMENT_PHILOSOPHY.md`, leyline documents, and relevant language appendices
 - For medium+ complexity: write failing tests first, implement to make them pass
 - Never mock internal collaborators - refactor for testability instead
 - Create planning artifacts proportional to complexity

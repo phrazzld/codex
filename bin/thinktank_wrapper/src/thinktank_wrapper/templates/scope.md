@@ -11,7 +11,7 @@ Analyze implementation plans to ensure they have appropriate scope for manageabl
 
 ## Context Requirements
 - `PLAN.md`: The implementation plan to analyze
-- Development philosophy files: For alignment with best practices 
+- Development philosophy files and leyline documents: For alignment with best practices 
 - Codebase: To understand implementation context
 
 ## Process

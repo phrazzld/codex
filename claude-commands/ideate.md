@@ -5,7 +5,7 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 
 ## 1. Prepare Context
 - Read `BACKLOG.md` to understand current tasks and direction.
-- Read `DEVELOPMENT_PHILOSOPHY.md` to understand the ideal general principles of the project's structure and implementation.
+- Read `DEVELOPMENT_PHILOSOPHY.md` and leyline documents to understand the ideal general principles of the project's structure and implementation.
 - Analyze codebase structure to identify areas for enhancement.
 
 ## 2. Generate Ideas Through Deep Analysis
@@ -33,5 +33,5 @@ Generate innovative ideas for the project backlog by analyzing existing tasks an
 - Create `IDEAS.md` with your comprehensive ideation results, organizing ideas by:
   - Priority/Impact
   - Implementation complexity
-  - Alignment with project philosophy
+  - Alignment with project philosophy and leyline documents
   - Dependencies on existing work

@@ -7,7 +7,7 @@
 - ***Think hard*** & identify conflict pattern (Text, Semantic, Structural, Dependency).
 
 ## 2. Plan Resolution Strategy
-- Review `DEVELOPMENT_PHILOSOPHY.md`.
+- Review `DEVELOPMENT_PHILOSOPHY.md` and leyline documents.
 - Identify cross-file dependencies.
 - Decide approach per file (Keep Ours, Keep Theirs, Combine, Rewrite).
 - Document plan for complex conflicts.

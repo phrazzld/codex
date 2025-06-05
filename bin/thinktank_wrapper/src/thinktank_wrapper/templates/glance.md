@@ -1,41 +1,53 @@
 ```text
-/Users/phaedrus/Development/codex/bin/thinktank_wrapper/src/thinktank_wrapper/templates
+## Technical Overview of /Users/phaedrus/Development/codex/bin/thinktank_wrapper/src/thinktank_wrapper/templates
 
-This directory contains prompt templates, written in Markdown, used by the `thinktank_wrapper` application.  The purpose of these templates is to provide structured instructions and context to a large language model (LLM), guiding it to perform specific software engineering tasks. The architecture relies on injecting relevant context (e.g., code snippets, error logs) into the templates before passing them to the LLM.  The LLM's output, based on the template and injected context, is then used to generate reports, code, or other artifacts.
+**Purpose:**
 
-Key File Roles:
+This directory houses a collection of prompt templates used by the `thinktank_wrapper` application. These templates are designed to guide large language models (LLMs) in performing various software engineering tasks, such as planning, code review, task breakdown, security auditing, and documentation improvement. The templates provide a structured framework for the LLM to follow, ensuring that the generated output is focused, actionable, and aligned with specific goals and development philosophies.
 
-*   `address.md`:  Instructions for planning remediation of code review findings. It triages feedback, diagnoses issues, proposes fixes, and builds a strike order.
-*   `align.md`:  Instructions for generating backlog items that specifically address alignment with the project's development philosophy.
-*   `audit.md`:  Instructions for performing a security audit and creating security remediation backlog items.
-*   `ci-failure.md`:  Instructions for analyzing CI pipeline failures and creating a resolution plan.
-*   `consult.md`: Instructions for translating architectural advice or troubleshooting plans into actionable development tasks.
-*   `debug.md`:  Instructions for analyzing bugs and generating actionable debugging tasks for insertion into a TODO list.
-*   `diagram.md`:  Instructions for generating Mermaid diagrams to visualize system architecture, workflows, etc.
-*   `document.md`:  Instructions for analyzing and improving documentation quality.
-*   `execute.md`:  Instructions for analyzing implementation approaches and selecting the best one.
-*   `extract.md`:  Instructions for identifying opportunities for code extraction and modularization.
-*   `gordian.md`:  Instructions for identifying opportunities for radical simplification of the codebase.
-*   `groom.md`:  Instructions for backlog grooming, organizing, and expanding the existing backlog.
-*   `ideate.md`: Instructions for generating innovative, technically sound ideas for backlog items.
-*   `plan.md`:  Instructions for creating a detailed implementation plan for a given task.
-*   `refactor.md`:  Instructions for generating refactoring backlog items.
-*   `resolve.md`:  Instructions for resolving Git merge conflicts.
-*   `review.md`:  Instructions for performing a brutal code review.
-*   `scope.md`: Instructions for analyzing plan scope to ensure manageable pull requests.
-*   `shrink.md`:  Instructions for generating backlog items to reduce code size.
-*   `ticket.md`:  Instructions for breaking down a plan into actionable engineering tickets.
-*   `whiteboard.md`:  Instructions for creative technical brainstorming.
-*   `__init__.py`:  Marks the directory as a Python package.
+**Architecture:**
 
-Important Dependencies/Gotchas:
+The directory's architecture is flat; it contains only `.md` files and a `__init__.py` file. Each `.md` file represents a single prompt template. The `__init__.py` file serves as a simple package declaration, though it currently contains only a docstring. The templates themselves are written in Markdown, allowing for clear formatting and easy readability.  Each template follows a consistent structure, typically including:
 
-*   The effectiveness of these templates heavily relies on the quality and relevance of the injected context.  Poor context will lead to poor results from the LLM.
-*   The templates are designed to be strict and opinionated, enforcing specific coding standards and architectural principles.  This might require careful customization depending on the project's specific needs.
-*   The templates assume the LLM has a good understanding of software engineering principles and best practices.
-*   Each template expects specific input files (e.g., `BUG.MD`, `BUGFIXPLAN.md`, `DEVELOPMENT_PHILOSOPHY.md`) to be present and correctly formatted.
-*   Many templates rely on a `DEVELOPMENT_PHILOSOPHY.md` file, which is not present in this directory, but is assumed to exist elsewhere.  This file defines the project's coding standards, architectural principles, and other development guidelines.  The contents of this file are crucial for the LLM to generate appropriate and consistent output.
-*   The templates often use Markdown formatting for output, including task lists and tables. The application consuming the output must be able to parse this Markdown correctly.
-*   The templates follow a consistent pattern of a preamble, analysis instructions, and output format specification.
-*   The templates frequently emphasize simplicity, modularity, testability, and maintainability.
+*   A high-level instruction set defining the LLM's role and mission.
+*   Context injection points (using `<!-- BEGIN:CONTEXT -->` and `<!-- END:CONTEXT -->` tags) to insert relevant information, such as task descriptions, code snippets, or development philosophy documents.
+*   Detailed steps and guidelines for the LLM to follow in order to complete the assigned task.
+*   Specific output format requirements, ensuring the generated content is structured and easily parsed.
+
+**Key File Roles:**
+
+*   **`plan.md`**:  Generates a detailed implementation plan for a given task, focusing on technical details, risks, and trade-offs.
+*   **`review-diff.md`**:  Performs a diff-focused code review, identifying functional issues, bugs, and critical problems in the changed lines of code.
+*   **`ticket.md`**:  Breaks down an implementation plan into a set of atomic, testable engineering tickets, formatted for a `TODO.md` file.
+*   **`whiteboard.md`**:  Facilitates creative technical brainstorming, exploring various approaches to implementing a backlog item.
+*   **`address.md`**:  Creates a remediation plan based on code review feedback, prioritizing and detailing steps to address identified issues.
+*   **`execute.md`**:  Analyzes and selects the best implementation approach for a given task, justifying the choice and outlining build steps.
+*   **`gordian.md`**:  Identifies opportunities to simplify the codebase by eliminating unnecessary complexity and finding transformative solutions.
+*   **`review-philosophy.md`**:  Evaluates code changes against a defined development philosophy, focusing on maintainability, testability, and adherence to coding standards.
+*   **`review.md`**:  Provides brutal code review instructions, hunting down flaws, oversights, and philosophical breaches in a code diff.
+*   **`__init__.py`**:  Declares the directory as a Python package.
+*   **`audit.md`**:  Performs a security audit of the codebase, generating actionable backlog items for remediation.
+*   **`diagram.md`**:  Generates Mermaid diagrams to visualize system architecture, workflows, or relationships.
+*   **`document.md`**:  Analyzes documentation and creates a plan for comprehensive improvements.
+*   **`groom.md`**:  Transforms a basic backlog into a comprehensive, well-organized roadmap.
+*   **`resolve.md`**:  Resolves Git merge conflicts, preserving functionality and maintaining code quality.
+*   **`shrink.md`**:  Generates backlog items to optimize code size while preserving functionality.
+*   **`align.md`**:  Generates backlog items that improve alignment with a defined development philosophy.
+*   **`ci-failure.md`**:  Analyzes CI pipeline failures and creates a detailed resolution plan.
+*   **`consult.md`**: Decomposes consultant advice into a detailed set of tasks.
+*   **`extract.md`**:  Identifies opportunities to extract code into reusable modules.
+*   **`ideate.md`**:  Generates innovative ideas for the project in the form of backlog items.
+*   **`refactor.md`**:  Generates backlog items for refactoring the codebase to improve quality and maintainability.
+*   **`scope.md`**: Analyzes implementation plans to ensure they have appropriate scope.
+*   **`debug.md`**: Analyzes a reported bug, systematically investigates its root cause, and generates actionable debugging tasks.
+
+**Important Dependencies or Gotchas:**
+
+*   **LLM Dependency:** The effectiveness of these templates heavily relies on the capabilities of the underlying LLM.  The LLM must be able to understand and follow the instructions provided in the templates, as well as generate coherent and relevant code, plans, and analyses.
+*   **Context Injection:** The quality of the injected context is crucial.  Insufficient or inaccurate context can lead to poor results.  The templates use `<!-- BEGIN:CONTEXT -->` and `<!-- END:CONTEXT -->` as placeholders for injected content.
+*   **Development Philosophy:** Several templates reference a `DEVELOPMENT_PHILOSOPHY.md` file. The absence or inconsistency of this file can significantly impact the alignment of the generated output with the project's goals.
+*   **Output Parsing:** The templates are designed to generate structured output in Markdown format.  The application using these templates must be able to reliably parse this output to extract the relevant information (e.g., task lists, code snippets, risk assessments).
+*   **Task ID Management:** Several templates (e.g., `ticket.md`, `debug.md`) involve generating or referencing task IDs. Proper management of these IDs is essential to maintain consistency and avoid conflicts.  The templates generally assume a `TODO.md` file exists or is created.
+*   **Security Considerations:** The `audit.md` template focuses on security auditing.  However, the generated audit findings should always be reviewed and validated by human security experts.  Relying solely on the LLM's analysis could lead to missed vulnerabilities.
+*   **Markdown Interpretation**: The mermaid diagrams in `diagram.md` will only render correctly if the output is interpreted by a markdown renderer that supports the mermaid syntax.
 ```

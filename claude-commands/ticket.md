@@ -5,7 +5,7 @@ Generate a detailed task breakdown from a high-level implementation plan into a 
 
 ## 1. Review Plan
 - Ensure PLAN.md exists and contains sufficient implementation details.
-- Find relevant development philosophy files.
+- Find relevant development philosophy and leyline documents.
 
 ## 2. Generate Task Breakdown
 - Create `TICKET-CONTEXT.md` with the plan details:

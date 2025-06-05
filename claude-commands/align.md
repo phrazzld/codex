@@ -1,7 +1,7 @@
 # ALIGN
 
 ## GOAL
-Analyze the codebase against our development philosophy and generate GitHub issues to improve alignment.
+Analyze the codebase against our development philosophy and leyline documents and generate GitHub issues to improve alignment.
 
 ## 1. Create Context File
 - Fetch current GitHub issues to understand existing tasks:
@@ -16,12 +16,12 @@ Analyze the codebase against our development philosophy and generate GitHub issu
   [Include output from GitHub issues list]
 
   ## Request
-  Analyze the codebase against our development philosophy and generate items to improve alignment.
+  Analyze the codebase against our development philosophy and leyline documents and generate items to improve alignment.
   ```
 
 ## 2. Generate Philosophy-Aligned Improvement Items
-- **Think very hard** about the codebase alignment with our development philosophy:
-  - Read and internalize `DEVELOPMENT_PHILOSOPHY.md` and all language-specific appendices
+- **Think very hard** about the codebase alignment with our development philosophy and leyline documents:
+  - Read and internalize `DEVELOPMENT_PHILOSOPHY.md`, all language-specific appendices, and leyline documents
   - Systematically analyze each major component/module against our core principles:
     * Simplicity and modularity
     * Testability and explicit contracts

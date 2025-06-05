@@ -27,7 +27,7 @@ Generate a structured plan to address findings from a code review, with concrete
   - Consider the impact of changes on existing functionality
   - Plan implementation order based on dependencies and risk
   - Include refactoring opportunities that align with best practices
-  - Ensure fixes follow DEVELOPMENT_PHILOSOPHY.md principles
+  - Ensure fixes follow DEVELOPMENT_PHILOSOPHY.md and leyline document principles
   - Consider test coverage for all changes
   - Plan for code review of the fixes themselves
 - Create `REMEDIATION_PLAN.md` with:

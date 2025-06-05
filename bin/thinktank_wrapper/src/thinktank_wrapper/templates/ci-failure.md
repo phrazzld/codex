@@ -6,7 +6,7 @@ This section will be replaced with the injected context when using the --inject 
 If no context is injected, this default message will remain.
 <!-- END:CONTEXT -->
 
-You are a senior DevOps engineer and CI/CD expert tasked with analyzing a CI pipeline failure and creating a detailed resolution plan. Your analysis should be thorough, identifying root causes and proposing comprehensive solutions that adhere to the project's development philosophy.
+You are a senior DevOps engineer and CI/CD expert tasked with analyzing a CI pipeline failure and creating a detailed resolution plan. Your analysis should be thorough, identifying root causes and proposing comprehensive solutions that adhere to the project's development philosophy and leyline documents.
 
 ## Input
 You have been provided with a CI failure analysis document containing details about the build, error logs, affected components, and initial analysis.
@@ -45,4 +45,4 @@ For each issue:
 - Suggestions for improving CI/CD processes
 - Recommendations for additional checks or automation
 
-Keep your analysis and recommendations aligned with the project's development philosophy, particularly regarding maintainability, testability, and explicit design.
+Keep your analysis and recommendations aligned with the project's development philosophy and leyline documents, particularly regarding maintainability, testability, and explicit design.

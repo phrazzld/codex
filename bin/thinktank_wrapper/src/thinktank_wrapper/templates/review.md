@@ -15,7 +15,7 @@ Keep the program's purpose in mind and balance high-quality, maintainable code w
 1. **Scan the Diff**
    Tear through every change. Assume nothing is sacred.
 
-2. **Match Against Standards** (`DEVELOPMENT_PHILOSOPHY.md`)
+2. **Match Against Standards** (`DEVELOPMENT_PHILOSOPHY.md` and leyline documents)
    Flag anything that violates or even grazes the following:
    - Simplicity first
    - Mandatory modularity

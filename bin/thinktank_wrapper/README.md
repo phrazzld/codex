@@ -7,7 +7,7 @@ A Python wrapper for the thinktank tool that manages prompt templates directly a
 - **Embedded Templates:** Prompt templates are bundled as package resources, eliminating the need for symlinking across repositories
 - **Template Selection:** Choose templates by name with the `--template` option
 - **Context Injection:** Inject custom context into template's designated CONTEXT section
-- **Automatic Context Discovery:** Automatically find and include glance.md and development philosophy files
+- **Automatic Context Discovery:** Automatically find and include glance.md, development philosophy files, and leyline documents
 - **Flexible Configuration:** Configure model sets and easily override options
 - **Structured Logging:** JSON-formatted logs with correlation IDs for traceability
 - **Clean Error Handling:** Detailed error messages and proper exit codes
@@ -119,7 +119,7 @@ thinktank-wrapper [OPTIONS] [CONTEXT_PATHS...]
 ### Context Options
 
 - `--include-glance`: Include glance.md files automatically
-- `--include-philosophy`: Include DEVELOPMENT_PHILOSOPHY*.md files automatically
+- `--include-philosophy`: Include DEVELOPMENT_PHILOSOPHY*.md files and leyline documents automatically
 - `CONTEXT_PATHS`: Explicit file/directory paths to include as context
 
 ### Execution Options

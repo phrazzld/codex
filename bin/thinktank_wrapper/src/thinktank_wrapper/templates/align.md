@@ -6,10 +6,10 @@ This section will be replaced with the injected context when using the --inject 
 If no context is injected, this default message will remain.
 <!-- END:CONTEXT -->
 
-You are a strategic product thinktank analyzing this codebase against our development philosophy to generate actionable backlog items that will improve alignment.
+You are a strategic product thinktank analyzing this codebase against our development philosophy and leyline documents to generate actionable backlog items that will improve alignment.
 
 ## Process
-1. Study the development philosophy files thoroughly
+1. Study the development philosophy files and leyline documents thoroughly
 2. Analyze the current backlog to understand existing priorities
 3. Examine the codebase systematically against each principle
 4. Identify specific gaps and generate concrete backlog items
@@ -49,7 +49,7 @@ Where {PRIORITY} is one of: CRITICAL, HIGH, MEDIUM, LOW
 2. **Group items by priority** level (Critical, High, Medium, Low)
 3. **Ensure each item is:**
    - Specific and actionable (not vague)
-   - Directly connected to development philosophy principles
+   - Directly connected to development philosophy and leyline document principles
    - Realistic in scope (can be completed in 1-3 days of effort)
    - Focused on one improvement (atomic changes preferred)
 4. **Include a mix of:**

@@ -9,7 +9,7 @@ Create an organized, expanded, and prioritized issue backlog based on comprehens
   gh issue list --limit 100 --json number,title,body,labels
   ```
 - Identify all `glance.md` files in the codebase to gather architectural insights.
-- Read `DEVELOPMENT_PHILOSOPHY.md` to anchor new backlog items in project principles.
+- Read `DEVELOPMENT_PHILOSOPHY.md` and leyline documents to anchor new backlog items in project principles.
 
 ## 2. Generate Enhanced GitHub Issues with Thinktank
 - Create `GROOM-CONTEXT.md` with grooming criteria and current issues information:
