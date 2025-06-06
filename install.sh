@@ -24,6 +24,23 @@ ln -sf "$CONFIG_SUBDIR/.aliases" "$HOME/.aliases" && echo -e "${GREEN}✓ .alias
 ln -sf "$CONFIG_SUBDIR/.env" "$HOME/.env" && echo -e "${GREEN}✓ .env${RESET}" || echo -e "${RED}✗ .env${RESET}"
 ln -sf "$CONFIG_SUBDIR/.fun" "$HOME/.fun" && echo -e "${GREEN}✓ .fun${RESET}" || echo -e "${RED}✗ .fun${RESET}"
 
+# Create tmux configuration symlink
+ln -sf "$CONFIG_SUBDIR/.tmux.conf" "$HOME/.tmux.conf" && echo -e "${GREEN}✓ .tmux.conf${RESET}" || echo -e "${RED}✗ .tmux.conf${RESET}"
+
+# Create Alacritty configuration directory and symlink
+echo -e "${YELLOW}Setting up Alacritty configuration...${RESET}"
+mkdir -p "$HOME/.config/alacritty"
+# Backup existing alacritty config if it exists and isn't a symlink
+if [ -e "$HOME/.config/alacritty/alacritty.toml" ] && [ ! -L "$HOME/.config/alacritty/alacritty.toml" ]; then
+  backup_file="$HOME/.config/alacritty/alacritty.toml.bak.$(date +%Y%m%d%H%M%S)"
+  echo -e "${YELLOW}Backing up $HOME/.config/alacritty/alacritty.toml to $backup_file${RESET}"
+  mv "$HOME/.config/alacritty/alacritty.toml" "$backup_file"
+elif [ -L "$HOME/.config/alacritty/alacritty.toml" ]; then
+  # Remove existing symlink
+  rm "$HOME/.config/alacritty/alacritty.toml"
+fi
+ln -sf "$CONFIG_SUBDIR/.alacritty.toml" "$HOME/.config/alacritty/alacritty.toml" && echo -e "${GREEN}✓ alacritty.toml${RESET}" || echo -e "${RED}✗ alacritty.toml${RESET}"
+
 # Create backup of existing configurations if they exist
 backup_if_exists() {
   if [ -e "$1" ] && [ ! -L "$1" ]; then

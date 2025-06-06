@@ -1,0 +1,294 @@
+#!/bin/bash
+
+# Alacritty Theme Switcher
+# Uses the official alacritty-theme repository
+# Usage: alacritty-theme [theme-name|list|search|toggle]
+
+THEMES_DIR="/Users/phaedrus/Development/alacritty-theme/themes"
+ALACRITTY_CONFIG="/Users/phaedrus/Development/codex/dotfiles/.alacritty.toml"
+
+# Curated themes for better user experience
+CURATED_THEMES=(
+    "tokyo_night"
+    "tokyo_night_storm"
+    "tokyo_night_enhanced"
+    "rose_pine"
+    "rose_pine_dawn"
+    "rose_pine_moon"
+    "catppuccin_mocha"
+    "catppuccin_latte"
+    "nord"
+    "dracula"
+    "gruvbox_dark"
+    "gruvbox_light"
+    "solarized_dark"
+    "solarized_light"
+    "one_dark"
+    "ayu_dark"
+    "ayu_light"
+    "material_theme"
+    "papercolor_dark"
+    "papercolor_light"
+)
+
+# Light themes for toggle functionality
+LIGHT_THEMES=(
+    "rose_pine_dawn"
+    "catppuccin_latte"
+    "gruvbox_light"
+    "solarized_light"
+    "ayu_light"
+    "papercolor_light"
+    "alabaster"
+    "ashes_light"
+    "base16_default_light"
+)
+
+# Function to get current theme from alacritty config
+get_current_theme() {
+    if [[ -f "$ALACRITTY_CONFIG" ]]; then
+        local import_line=$(grep -o '"[^"]*\.toml"' "$ALACRITTY_CONFIG" | head -1)
+        if [[ -n "$import_line" ]]; then
+            local theme_file=$(echo "$import_line" | tr -d '"')
+            local theme_name=$(basename "$theme_file" .toml)
+            echo "$theme_name"
+        else
+            echo "rose_pine_dawn"  # default
+        fi
+    else
+        echo "rose_pine_dawn"  # default
+    fi
+}
+
+# Function to check if theme is light
+is_light_theme() {
+    local theme=$1
+    for light_theme in "${LIGHT_THEMES[@]}"; do
+        if [[ "$theme" == "$light_theme" ]]; then
+            return 0
+        fi
+    done
+    return 1
+}
+
+# Function to check if theme exists
+theme_exists() {
+    local theme=$1
+    [[ -f "$THEMES_DIR/$theme.toml" ]]
+}
+
+# Oh My Tmux theme color mappings
+declare -A TMUX_THEME_COLORS=(
+    # Rose Pine Dawn
+    ["rose_pine_dawn"]="#faf4ed #f2e9e1 #9893a5 #56949f #ea9d34 #575279 #b4637a #286983 #907aa9"
+    
+    # Rose Pine Main
+    ["rose_pine"]="#191724 #1f1d2e #6e6a86 #31748f #f6c177 #e0def4 #eb6f92 #9ccfd8 #c4a7e7"
+    
+    # Rose Pine Moon
+    ["rose_pine_moon"]="#232136 #2a273f #6e6a86 #3e8fb0 #f6c177 #e0def4 #eb6f92 #9ccfd8 #c4a7e7"
+    
+    # Tokyo Night
+    ["tokyo_night"]="#1a1b26 #24283b #565f89 #7aa2f7 #e0af68 #c0caf5 #f7768e #9ece6a #bb9af7"
+    
+    # Tokyo Night Storm
+    ["tokyo_night_storm"]="#24283b #414868 #565f89 #7aa2f7 #e0af68 #c0caf5 #f7768e #9ece6a #bb9af7"
+    
+    # Catppuccin Latte
+    ["catppuccin_latte"]="#eff1f5 #e6e9ef #9ca0b0 #1e66f5 #df8e1d #4c4f69 #d20f39 #40a02b #8839ef"
+    
+    # Catppuccin Mocha
+    ["catppuccin_mocha"]="#1e1e2e #313244 #585b70 #89b4fa #f9e2af #cdd6f4 #f38ba8 #a6e3a1 #cba6f7"
+    
+    # Dracula
+    ["dracula"]="#282a36 #44475a #6272a4 #8be9fd #f1fa8c #f8f8f2 #ff5555 #50fa7b #bd93f9"
+    
+    # Nord
+    ["nord"]="#2e3440 #3b4252 #4c566a #81a1c1 #ebcb8b #eceff4 #bf616a #a3be8c #b48ead"
+    
+    # Gruvbox Dark
+    ["gruvbox_dark"]="#282828 #3c3836 #665c54 #458588 #fabd2f #ebdbb2 #fb4934 #b8bb26 #d3869b"
+    
+    # Gruvbox Light
+    ["gruvbox_light"]="#fbf1c7 #f2e5bc #a89984 #076678 #b57614 #3c3836 #9d0006 #79740e #8f3f71"
+)
+
+# Function to update oh-my-tmux theme colors
+update_tmux_theme() {
+    local theme=$1
+    local config_file="/Users/phaedrus/.tmux.conf.local"
+    
+    # Check if we have colors for this theme
+    if [[ -z "${TMUX_THEME_COLORS[$theme]}" ]]; then
+        echo "No tmux theme colors found for $theme"
+        return 1
+    fi
+    
+    # Parse color values
+    local colors=(${TMUX_THEME_COLORS[$theme]})
+    local bg="${colors[0]}"         # background
+    local surface="${colors[1]}"    # surface
+    local muted="${colors[2]}"      # muted
+    local blue="${colors[3]}"       # blue/accent
+    local yellow="${colors[4]}"     # yellow
+    local text="${colors[5]}"       # text
+    local red="${colors[6]}"        # red
+    local green="${colors[7]}"      # green 
+    local purple="${colors[8]}"     # purple
+    
+    # Update the theme colors in oh-my-tmux config
+    local temp_file=$(mktemp)
+    
+    # Replace theme color definitions
+    sed \
+        -e "s/tmux_conf_theme_colour_1=\"[^\"]*\"/tmux_conf_theme_colour_1=\"$bg\"/" \
+        -e "s/tmux_conf_theme_colour_2=\"[^\"]*\"/tmux_conf_theme_colour_2=\"$surface\"/" \
+        -e "s/tmux_conf_theme_colour_3=\"[^\"]*\"/tmux_conf_theme_colour_3=\"$muted\"/" \
+        -e "s/tmux_conf_theme_colour_4=\"[^\"]*\"/tmux_conf_theme_colour_4=\"$blue\"/" \
+        -e "s/tmux_conf_theme_colour_5=\"[^\"]*\"/tmux_conf_theme_colour_5=\"$yellow\"/" \
+        -e "s/tmux_conf_theme_colour_6=\"[^\"]*\"/tmux_conf_theme_colour_6=\"$bg\"/" \
+        -e "s/tmux_conf_theme_colour_7=\"[^\"]*\"/tmux_conf_theme_colour_7=\"$text\"/" \
+        -e "s/tmux_conf_theme_colour_8=\"[^\"]*\"/tmux_conf_theme_colour_8=\"$surface\"/" \
+        -e "s/tmux_conf_theme_colour_9=\"[^\"]*\"/tmux_conf_theme_colour_9=\"$yellow\"/" \
+        -e "s/tmux_conf_theme_colour_10=\"[^\"]*\"/tmux_conf_theme_colour_10=\"$purple\"/" \
+        -e "s/tmux_conf_theme_colour_11=\"[^\"]*\"/tmux_conf_theme_colour_11=\"$green\"/" \
+        -e "s/tmux_conf_theme_colour_12=\"[^\"]*\"/tmux_conf_theme_colour_12=\"$muted\"/" \
+        -e "s/tmux_conf_theme_colour_13=\"[^\"]*\"/tmux_conf_theme_colour_13=\"$text\"/" \
+        -e "s/tmux_conf_theme_colour_14=\"[^\"]*\"/tmux_conf_theme_colour_14=\"$bg\"/" \
+        -e "s/tmux_conf_theme_colour_15=\"[^\"]*\"/tmux_conf_theme_colour_15=\"$surface\"/" \
+        -e "s/tmux_conf_theme_colour_16=\"[^\"]*\"/tmux_conf_theme_colour_16=\"$red\"/" \
+        -e "s/tmux_conf_theme_colour_17=\"[^\"]*\"/tmux_conf_theme_colour_17=\"$text\"/" \
+        "$config_file" > "$temp_file"
+    
+    mv "$temp_file" "$config_file"
+    
+    # Reload tmux config if tmux is running
+    if tmux info &>/dev/null; then
+        tmux source-file ~/.tmux.conf 2>/dev/null
+        echo "Applied oh-my-tmux theme: $theme"
+    else
+        echo "Oh-my-tmux theme will be applied when tmux starts: $theme"
+    fi
+}
+
+# Function to apply theme by updating alacritty config
+apply_theme() {
+    local theme=$1
+    local theme_file="$THEMES_DIR/$theme.toml"
+
+    if ! theme_exists "$theme"; then
+        echo "Error: Theme '$theme' not found."
+        echo "Run '$0 search $theme' to find similar themes"
+        exit 1
+    fi
+
+    # Update the import line in alacritty config
+    if [[ -f "$ALACRITTY_CONFIG" ]]; then
+        # Use sed to replace the import line
+        sed -i '' "s|\".*\.toml\"|\"$theme_file\"|" "$ALACRITTY_CONFIG"
+    else
+        echo "Error: Alacritty config file not found at $ALACRITTY_CONFIG"
+        exit 1
+    fi
+    
+    # Update tmux theme to match
+    update_tmux_theme "$theme"
+
+    echo "Applied $theme theme to Alacritty"
+}
+
+# Function to list curated themes
+list_themes() {
+    echo "Curated themes (recommended):"
+    local current=$(get_current_theme)
+    for theme in "${CURATED_THEMES[@]}"; do
+        if theme_exists "$theme"; then
+            if [[ "$theme" == "$current" ]]; then
+                echo "  * $theme (current)"
+            else
+                echo "    $theme"
+            fi
+        fi
+    done
+    echo ""
+    echo "Use '$0 search <term>' to find more themes"
+    echo "Use '$0 list-all' to see all $(ls "$THEMES_DIR"/*.toml 2>/dev/null | wc -l | tr -d ' ') available themes"
+}
+
+# Function to list all themes
+list_all_themes() {
+    echo "All available themes:"
+    local current=$(get_current_theme)
+    for theme_file in "$THEMES_DIR"/*.toml; do
+        if [[ -f "$theme_file" ]]; then
+            local theme=$(basename "$theme_file" .toml)
+            if [[ "$theme" == "$current" ]]; then
+                echo "  * $theme (current)"
+            else
+                echo "    $theme"
+            fi
+        fi
+    done
+}
+
+# Function to search themes by pattern
+search_themes() {
+    local pattern=$1
+    if [[ -z "$pattern" ]]; then
+        echo "Usage: $0 search <pattern>"
+        exit 1
+    fi
+    
+    echo "Themes matching '$pattern':"
+    local found=0
+    for theme_file in "$THEMES_DIR"/*.toml; do
+        if [[ -f "$theme_file" ]]; then
+            local theme=$(basename "$theme_file" .toml)
+            if [[ "$theme" =~ $pattern ]]; then
+                echo "    $theme"
+                found=1
+            fi
+        fi
+    done
+    
+    if [[ $found -eq 0 ]]; then
+        echo "  No themes found matching '$pattern'"
+    fi
+}
+
+# Main logic
+case ${1:-""} in
+    "list")
+        list_themes
+        ;;
+    "list-all")
+        list_all_themes
+        ;;
+    "search")
+        search_themes "$2"
+        ;;
+    "toggle")
+        current=$(get_current_theme)
+        if is_light_theme "$current"; then
+            apply_theme "tokyo_night"
+        else
+            apply_theme "rose_pine_dawn"
+        fi
+        ;;
+    "")
+        current=$(get_current_theme)
+        echo "Current theme: $current"
+        echo "Usage: $0 [theme-name|list|list-all|search|toggle]"
+        echo "Run '$0 list' to see curated themes"
+        ;;
+    *)
+        if theme_exists "$1"; then
+            apply_theme "$1"
+        else
+            echo "Error: Theme '$1' not found"
+            echo "Run '$0 search $1' to find similar themes"
+            echo "Run '$0 list' to see available themes"
+            exit 1
+        fi
+        ;;
+esac

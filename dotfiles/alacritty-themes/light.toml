@@ -1,0 +1,31 @@
+# Light theme (GitHub Light)
+[colors]
+# Default colors
+primary = { background = "#f7f9fc", foreground = "#24292f" }
+
+# Cursor colors
+cursor = { text = "#f7f9fc", cursor = "#24292f" }
+
+# Vi mode cursor colors
+vi_mode_cursor = { text = "#f7f9fc", cursor = "#24292f" }
+
+# Search colors
+search = { matches = { foreground = "#f7f9fc", background = "#0969da" }, focused_match = { foreground = "#f7f9fc", background = "#0550ae" } }
+
+# Keyboard regex hints
+hints = { start = { foreground = "#f7f9fc", background = "#0969da" }, end = { foreground = "#f7f9fc", background = "#1f883d" } }
+
+# Line indicator colors
+line_indicator = { foreground = "None", background = "None" }
+
+# Selection colors
+selection = { text = "CellForeground", background = "#b6e3ff" }
+
+# Normal colors
+normal = { black = "#24292f", red = "#cf222e", green = "#116329", yellow = "#4d2d00", blue = "#0969da", magenta = "#8250df", cyan = "#1b7c83", white = "#656d76" }
+
+# Bright colors
+bright = { black = "#6e7781", red = "#a40e26", green = "#1a7f37", yellow = "#633c01", blue = "#0550ae", magenta = "#8250df", cyan = "#3192aa", white = "#24292f" }
+
+# Dim colors
+dim = { black = "#6e7781", red = "#cf222e", green = "#116329", yellow = "#4d2d00", blue = "#0969da", magenta = "#8250df", cyan = "#1b7c83", white = "#656d76" }

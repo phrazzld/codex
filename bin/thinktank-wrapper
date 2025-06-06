@@ -5,12 +5,5 @@
 # Set CODEX_DIR to the parent directory of the bin directory
 export CODEX_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# Activate the virtual environment
-SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
-VENV_PATH="$SCRIPT_DIR/thinktank-venv"
-if [ -d "$VENV_PATH" ]; then
-  source "$VENV_PATH/bin/activate"
-fi
-
 # Execute the Python package with all arguments
 python3 -m thinktank_wrapper "$@"

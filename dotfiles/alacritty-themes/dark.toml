@@ -1,0 +1,31 @@
+# Dark theme (Tokyo Night Storm)
+[colors]
+# Default colors
+primary = { background = "#24283b", foreground = "#c0caf5" }
+
+# Cursor colors
+cursor = { text = "#24283b", cursor = "#c0caf5" }
+
+# Vi mode cursor colors
+vi_mode_cursor = { text = "#24283b", cursor = "#c0caf5" }
+
+# Search colors
+search = { matches = { foreground = "#24283b", background = "#a9b1d6" }, focused_match = { foreground = "#24283b", background = "#7aa2f7" } }
+
+# Keyboard regex hints
+hints = { start = { foreground = "#24283b", background = "#7aa2f7" }, end = { foreground = "#24283b", background = "#73daca" } }
+
+# Line indicator colors
+line_indicator = { foreground = "None", background = "None" }
+
+# Selection colors
+selection = { text = "CellForeground", background = "#364a82" }
+
+# Normal colors
+normal = { black = "#15161e", red = "#f7768e", green = "#9ece6a", yellow = "#e0af68", blue = "#7aa2f7", magenta = "#bb9af7", cyan = "#7dcfff", white = "#a9b1d6" }
+
+# Bright colors
+bright = { black = "#414868", red = "#f7768e", green = "#9ece6a", yellow = "#e0af68", blue = "#7aa2f7", magenta = "#bb9af7", cyan = "#7dcfff", white = "#c0caf5" }
+
+# Dim colors
+dim = { black = "#15161e", red = "#f7768e", green = "#9ece6a", yellow = "#e0af68", blue = "#7aa2f7", magenta = "#bb9af7", cyan = "#7dcfff", white = "#a9b1d6" }
