@@ -5,5 +5,5 @@
 # Set CODEX_DIR to the parent directory of the bin directory
 export CODEX_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )/.." && pwd )"
 
-# Execute the Python package with all arguments
-python3 -m thinktank_wrapper "$@"
+# Execute the Python package with all arguments using the virtual environment
+"$CODEX_DIR/bin/thinktank-venv/bin/python3" -m thinktank_wrapper "$@"
