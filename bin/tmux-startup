@@ -34,8 +34,8 @@ declare -a PROJECTS=(
 )
 
 # Configurable commands for each pane
-LEFT_PANE_CMD="eza --long --git --icons --group-directories-first; gs; ts"
-RIGHT_PANE_CMD="claude code"
+LEFT_PANE_CMD="claude"
+RIGHT_PANE_CMD="eza --long --git --icons --group-directories-first; gs; ts"
 
 # Clean, non-bold LS_COLORS for eza
 export_clean_ls_colors() {
