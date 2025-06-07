@@ -353,3 +353,155 @@ parse_common_args() {
     # Return remaining arguments
     echo "$@"
 }
+
+# === Notification System ===
+notify_user() {
+    local title="$1"
+    local message="$2"
+    local method="${3:-$(get_config 'notification_methods.default' 'desktop')}"
+    
+    case "$method" in
+        desktop)
+            notify_desktop "$title" "$message"
+            ;;
+        terminal)
+            notify_terminal "$title" "$message"
+            ;;
+        both)
+            notify_desktop "$title" "$message"
+            notify_terminal "$title" "$message"
+            ;;
+        *)
+            log_warn "Unknown notification method: $method, using terminal"
+            notify_terminal "$title" "$message"
+            ;;
+    esac
+}
+
+notify_desktop() {
+    local title="$1"
+    local message="$2"
+    local os="$(detect_os)"
+    
+    case "$os" in
+        macos)
+            osascript -e "display notification \"$message\" with title \"$title\""
+            ;;
+        linux)
+            if command -v notify-send >/dev/null 2>&1; then
+                notify-send "$title" "$message"
+            else
+                log_warn "notify-send not available, falling back to terminal"
+                notify_terminal "$title" "$message"
+            fi
+            ;;
+        windows)
+            powershell "Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('$message', '$title')"
+            ;;
+        *)
+            log_warn "Desktop notifications not supported on $os, using terminal"
+            notify_terminal "$title" "$message"
+            ;;
+    esac
+}
+
+notify_terminal() {
+    local title="$1"
+    local message="$2"
+    
+    echo ""
+    echo "🔔 $title"
+    echo "   $message"
+    echo ""
+}
+
+# Interactive user prompt with choices
+prompt_user_choice() {
+    local title="$1"
+    local message="$2"
+    local choices="$3"  # e.g., "Yes,No,Postpone"
+    local default="${4:-1}"  # Default choice index (1-based)
+    local timeout="${5:-0}"  # Timeout in seconds (0 = no timeout)
+    
+    # Parse choices into array
+    IFS=',' read -ra choice_array <<< "$choices"
+    local num_choices=${#choice_array[@]}
+    
+    # Try desktop dialog first
+    local response=""
+    local os="$(detect_os)"
+    
+    if [[ "$os" == "macos" ]]; then
+        # Build AppleScript buttons
+        local buttons=""
+        for i in "${!choice_array[@]}"; do
+            if [[ $i -eq 0 ]]; then
+                buttons="\"${choice_array[$i]}\""
+            else
+                buttons="$buttons, \"${choice_array[$i]}\""
+            fi
+        done
+        
+        local default_button="${choice_array[$((default-1))]}"
+        local timeout_clause=""
+        if [[ $timeout -gt 0 ]]; then
+            timeout_clause=" giving up after $timeout"
+        fi
+        
+        # Use osascript for interactive dialog
+        response=$(osascript -e "display dialog \"$message\" with title \"$title\" buttons {$buttons} default button \"$default_button\"$timeout_clause" 2>/dev/null | sed 's/button returned://')
+        
+        if [[ -n "$response" ]]; then
+            echo "$response"
+            return 0
+        fi
+    fi
+    
+    # Fallback to terminal prompt
+    echo ""
+    echo "🔔 $title"
+    echo "   $message"
+    echo ""
+    
+    for i in "${!choice_array[@]}"; do
+        local marker=""
+        if [[ $((i+1)) -eq $default ]]; then
+            marker=" (default)"
+        fi
+        echo "   $((i+1))) ${choice_array[$i]}$marker"
+    done
+    
+    echo ""
+    if [[ $timeout -gt 0 ]]; then
+        echo -n "Choose [1-$num_choices] (timeout in ${timeout}s): "
+        if read -t "$timeout" -r choice; then
+            echo
+        else
+            echo
+            echo "Timeout reached, using default choice: ${choice_array[$((default-1))]}"
+            choice="$default"
+        fi
+    else
+        echo -n "Choose [1-$num_choices]: "
+        read -r choice
+    fi
+    
+    # Validate and return choice
+    if [[ "$choice" =~ ^[0-9]+$ ]] && [[ $choice -ge 1 ]] && [[ $choice -le $num_choices ]]; then
+        echo "${choice_array[$((choice-1))]}"
+    else
+        echo "${choice_array[$((default-1))]}"
+    fi
+}
+
+# Confirm with automatic fallback to default after timeout
+confirm_with_timeout() {
+    local message="$1"
+    local timeout="${2:-30}"
+    local default="${3:-false}"
+    
+    local choice
+    choice=$(prompt_user_choice "Confirmation Required" "$message" "Yes,No" "$(if [[ "$default" == "true" ]]; then echo 1; else echo 2; fi)" "$timeout")
+    
+    [[ "$choice" == "Yes" ]]
+}

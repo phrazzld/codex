@@ -45,6 +45,13 @@ system:
     purge_enabled: true
     swap_threshold_mb: 1024
 
+# Notification Settings
+notification_methods:
+  default: "desktop"  # desktop, terminal, both
+  reboot_prompt: "both"  # Use both desktop and terminal for reboot prompts
+  timeout_seconds: 30  # Default timeout for interactive prompts
+  fallback_to_terminal: true  # Fallback to terminal if desktop fails
+
 # Cross-platform commands
 commands:
   macos:
