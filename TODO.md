@@ -4,7 +4,7 @@
 
 - [x] Remove forced reboot functionality from `weekly-reboot.sh`
 - [x] Replace forced reboot with user-prompt notification system
-- [ ] Add user presence detection before any disruptive operations
+- [x] Add user presence detection before any disruptive operations
 - [ ] Implement graceful shutdown request instead of forced restart
 - [x] Add ability to postpone reboot operations for 1-24 hours
 - [ ] Create reboot cancellation mechanism
@@ -26,7 +26,7 @@
 - [ ] Add `blacklist_patterns` for protected files/directories
 - [x] Add `critical_processes` list to configuration
 - [x] Add `notification_methods` configuration (desktop, email, slack)
-- [ ] Add `user_presence_check` boolean flag
+- [x] Add `user_presence_check` boolean flag
 - [ ] Add `max_single_operation_size` threshold setting
 - [ ] Add `require_backup_verification` safety option
 - [ ] Add `development_mode` flag for stricter safety checks
@@ -44,7 +44,7 @@
 
 ## User Experience & Safety
 
-- [ ] Create multiple notification methods (desktop alerts, terminal messages)
+- [x] Create multiple notification methods (desktop alerts, terminal messages)
 - [ ] Add interactive confirmation for medium-risk operations
 - [ ] Implement operation preview mode with detailed impact analysis
 - [ ] Add rollback testing for all backup operations
