@@ -16,6 +16,67 @@ safety:
   dry_run_default: false
   backup_retention_days: 30
 
+# Critical Processes
+# Processes that should prevent disruptive operations when running
+critical_processes:
+  # Database services
+  databases:
+    - "postgres"
+    - "mysqld" 
+    - "redis-server"
+    - "mongod"
+    - "sqlite"
+    - "mariadb"
+    
+  # Development servers and build tools
+  development:
+    - "npm"
+    - "yarn"
+    - "pnpm"
+    - "node"
+    - "webpack"
+    - "vite"
+    - "cargo"
+    - "rustc"
+    - "go"
+    - "python"
+    - "ruby"
+    - "php"
+    
+  # Container and virtualization
+  containers:
+    - "docker"
+    - "dockerd"
+    - "containerd"
+    - "podman"
+    - "docker-compose"
+    - "k3s"
+    - "kubectl"
+    
+  # IDE and editors with unsaved work potential
+  editors:
+    - "code"           # VS Code
+    - "cursor"         # Cursor editor
+    - "vim"
+    - "nvim"
+    - "emacs"
+    - "sublime_text"
+    - "atom"
+    - "TextEdit"       # macOS
+    
+  # Network and file transfer
+  network:
+    - "ssh"
+    - "scp"
+    - "rsync"
+    - "sftp"
+    - "curl"
+    - "wget"
+    - "git"
+    
+  # User-defined critical processes (add your own here)
+  custom: []
+
 # Cleanup Thresholds (in days)
 cleanup:
   downloads_age: 30
