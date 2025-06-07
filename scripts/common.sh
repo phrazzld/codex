@@ -767,3 +767,271 @@ check_emacs_unsaved_work() {
     
     return 1  # No backup files found
 }
+
+# === User Presence Detection Functions ===
+# Detect if user is actively using the system before disruptive operations
+
+# Main user presence detection function
+check_user_presence() {
+    local enabled="$(get_config 'user_presence.enabled' 'true')"
+    
+    if [[ "$enabled" != "true" ]]; then
+        log_info "User presence detection disabled"
+        return 0  # Assume present when disabled
+    fi
+    
+    log_info "Checking user presence..."
+    
+    local presence_indicators=()
+    local absence_indicators=()
+    local uncertain_indicators=()
+    
+    # Check each detection method
+    if [[ "$(get_config 'user_presence.methods.idle_time' 'true')" == "true" ]]; then
+        case $(check_system_idle_time) in
+            0) presence_indicators+=("system active (low idle time)") ;;
+            1) absence_indicators+=("system idle for extended period") ;;
+            2) uncertain_indicators+=("unable to determine idle time") ;;
+        esac
+    fi
+    
+    if [[ "$(get_config 'user_presence.methods.active_sessions' 'true')" == "true" ]]; then
+        case $(check_active_sessions) in
+            0) presence_indicators+=("active terminal/SSH sessions") ;;
+            1) absence_indicators+=("no active sessions found") ;;
+            2) uncertain_indicators+=("session detection inconclusive") ;;
+        esac
+    fi
+    
+    if [[ "$(get_config 'user_presence.methods.recent_files' 'true')" == "true" ]]; then
+        case $(check_recent_file_activity) in
+            0) presence_indicators+=("recent file modifications detected") ;;
+            1) absence_indicators+=("no recent file activity") ;;
+            2) uncertain_indicators+=("file activity detection uncertain") ;;
+        esac
+    fi
+    
+    if [[ "$(get_config 'user_presence.methods.running_processes' 'true')" == "true" ]]; then
+        case $(check_interactive_processes) in
+            0) presence_indicators+=("interactive processes running") ;;
+            1) absence_indicators+=("no recent interactive processes") ;;
+            2) uncertain_indicators+=("process detection uncertain") ;;
+        esac
+    fi
+    
+    # Analyze results
+    local total_indicators=$((${#presence_indicators[@]} + ${#absence_indicators[@]}))
+    local presence_score=${#presence_indicators[@]}
+    
+    # Log findings
+    if [[ ${#presence_indicators[@]} -gt 0 ]]; then
+        log_info "User presence indicators found:"
+        for indicator in "${presence_indicators[@]}"; do
+            log_info "  ✓ $indicator"
+        done
+    fi
+    
+    if [[ ${#absence_indicators[@]} -gt 0 ]]; then
+        log_info "User absence indicators found:"
+        for indicator in "${absence_indicators[@]}"; do
+            log_info "  ✗ $indicator"
+        done
+    fi
+    
+    if [[ ${#uncertain_indicators[@]} -gt 0 ]]; then
+        log_warn "Uncertain presence indicators:"
+        for indicator in "${uncertain_indicators[@]}"; do
+            log_warn "  ? $indicator"
+        done
+    fi
+    
+    # Determine presence
+    local assume_present_on_error="$(get_config 'user_presence.fallback.assume_present_on_error' 'true')"
+    local prompt_on_uncertainty="$(get_config 'user_presence.fallback.prompt_on_uncertainty' 'true')"
+    
+    if [[ $total_indicators -eq 0 ]]; then
+        log_warn "No presence detection methods available"
+        if [[ "$assume_present_on_error" == "true" ]]; then
+            log_info "Assuming user is present (safer default)"
+            return 0
+        else
+            return 1
+        fi
+    fi
+    
+    # Calculate presence confidence
+    local presence_percentage=$((presence_score * 100 / total_indicators))
+    log_info "User presence confidence: ${presence_percentage}% ($presence_score/$total_indicators indicators)"
+    
+    # Decision logic
+    if [[ $presence_percentage -ge 75 ]]; then
+        log_info "High confidence: User is present"
+        return 0  # User present
+    elif [[ $presence_percentage -le 25 ]]; then
+        log_info "High confidence: User is away"
+        return 1  # User absent
+    else
+        log_warn "Uncertain user presence (${presence_percentage}% confidence)"
+        if [[ "$prompt_on_uncertainty" == "true" ]]; then
+            log_info "Will prompt user due to uncertain presence"
+            return 2  # Uncertain - should prompt
+        elif [[ "$assume_present_on_error" == "true" ]]; then
+            log_info "Assuming user is present due to uncertainty"
+            return 0  # Assume present
+        else
+            log_info "Assuming user is absent due to uncertainty"
+            return 1  # Assume absent
+        fi
+    fi
+}
+
+# Check system idle time
+check_system_idle_time() {
+    local max_idle_minutes="$(get_config 'user_presence.thresholds.max_idle_minutes' '15')"
+    local os="$(detect_os)"
+    local idle_seconds=0
+    
+    case "$os" in
+        macos)
+            # Use ioreg to get idle time on macOS
+            idle_seconds=$(ioreg -c IOHIDSystem | awk '/HIDIdleTime/ {print int($NF/1000000000); exit}' 2>/dev/null || echo 0)
+            ;;
+        linux)
+            # Use various methods to detect idle time on Linux
+            if command -v xprintidle >/dev/null 2>&1; then
+                idle_seconds=$(($(xprintidle) / 1000))
+            elif [[ -n "$DISPLAY" ]] && command -v xset >/dev/null 2>&1; then
+                idle_seconds=$(xset q | grep timeout | awk '{print $2}' || echo 0)
+            else
+                log_warn "Cannot determine idle time on Linux (no xprintidle or xset)"
+                return 2
+            fi
+            ;;
+        *)
+            log_warn "Idle time detection not supported on $os"
+            return 2
+            ;;
+    esac
+    
+    # Ensure idle_seconds is a valid integer
+    if ! [[ "$idle_seconds" =~ ^[0-9]+$ ]]; then
+        log_warn "Invalid idle time value: $idle_seconds"
+        return 2
+    fi
+    
+    local idle_minutes=$((idle_seconds / 60))
+    log_info "System idle time: ${idle_minutes} minutes"
+    
+    if [[ $idle_minutes -gt $max_idle_minutes ]]; then
+        log_info "System idle for $idle_minutes minutes (> $max_idle_minutes minute threshold)"
+        return 1  # User appears absent
+    else
+        log_info "System active (idle for only $idle_minutes minutes)"
+        return 0  # User appears present
+    fi
+}
+
+# Check for active terminal/SSH sessions
+check_active_sessions() {
+    local active_sessions=()
+    
+    # Check for active SSH sessions
+    local current_tty=$(tty 2>/dev/null | sed 's|/dev/||' || echo "unknown")
+    local ssh_sessions=$(who | grep -E 'pts|tty' | grep -v "$current_tty" | wc -l | xargs)
+    if [[ "$ssh_sessions" =~ ^[0-9]+$ ]] && [[ $ssh_sessions -gt 0 ]]; then
+        active_sessions+=("$ssh_sessions SSH/terminal sessions")
+    fi
+    
+    # Check for screen/tmux sessions
+    local screen_sessions=$(screen -ls 2>/dev/null | grep -c "Attached\|Detached" || echo 0)
+    if [[ "$screen_sessions" =~ ^[0-9]+$ ]] && [[ $screen_sessions -gt 0 ]]; then
+        active_sessions+=("$screen_sessions screen sessions")
+    fi
+    
+    local tmux_sessions=$(tmux list-sessions 2>/dev/null | wc -l | xargs || echo 0)
+    if [[ "$tmux_sessions" =~ ^[0-9]+$ ]] && [[ $tmux_sessions -gt 0 ]]; then
+        active_sessions+=("$tmux_sessions tmux sessions")
+    fi
+    
+    if [[ ${#active_sessions[@]} -gt 0 ]]; then
+        log_info "Active sessions detected: ${active_sessions[*]}"
+        return 0  # User present
+    else
+        log_info "No active sessions detected"
+        return 1  # User absent
+    fi
+}
+
+# Check for recent file activity in development directories
+check_recent_file_activity() {
+    local recent_minutes="$(get_config 'user_presence.thresholds.recent_file_minutes' '30')"
+    local dev_dir="$(expand_path "$(get_config 'user.dev_dir' '$HOME/Development')")"
+    local home_dir="$(expand_path "$(get_config 'user.home_dir' '$HOME')")"
+    
+    local search_dirs=("$dev_dir" "$home_dir/Documents" "$home_dir/Desktop")
+    local recent_files=0
+    
+    for dir in "${search_dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            local count
+            count=$(find "$dir" -type f -mmin -"$recent_minutes" 2>/dev/null | head -10 | wc -l)
+            recent_files=$((recent_files + count))
+        fi
+    done
+    
+    if [[ $recent_files -gt 0 ]]; then
+        log_info "Found $recent_files files modified in last $recent_minutes minutes"
+        return 0  # User present
+    else
+        log_info "No files modified in last $recent_minutes minutes"
+        return 1  # User absent
+    fi
+}
+
+# Check for interactive user processes
+check_interactive_processes() {
+    local process_minutes="$(get_config 'user_presence.thresholds.process_check_minutes' '5')"
+    local interactive_processes=()
+    
+    # Look for recently started interactive processes
+    local current_time=$(date +%s)
+    local threshold_time=$((current_time - process_minutes * 60))
+    
+    # Check for shell processes, editors, browsers started recently
+    local interactive_patterns=("bash" "zsh" "fish" "vim" "emacs" "code" "chrome" "firefox" "safari")
+    
+    for pattern in "${interactive_patterns[@]}"; do
+        # Get processes with start time (macOS specific for now)
+        local os="$(detect_os)"
+        if [[ "$os" == "macos" ]]; then
+            local recent_pids
+            recent_pids=$(ps -eo pid,lstart,comm | grep "$pattern" | while read -r pid lstart comm; do
+                # Convert lstart to epoch time (simplified)
+                local start_epoch
+                start_epoch=$(date -j -f "%a %b %d %H:%M:%S %Y" "$lstart" "+%s" 2>/dev/null || echo 0)
+                if [[ $start_epoch -gt $threshold_time ]]; then
+                    echo "$pid"
+                fi
+            done)
+            
+            if [[ -n "$recent_pids" ]]; then
+                local count
+                count=$(echo "$recent_pids" | wc -l)
+                interactive_processes+=("$count recent $pattern processes")
+            fi
+        else
+            # Fallback: just check if processes are running
+            if pgrep "$pattern" >/dev/null 2>&1; then
+                interactive_processes+=("$pattern processes running")
+            fi
+        fi
+    done
+    
+    if [[ ${#interactive_processes[@]} -gt 0 ]]; then
+        log_info "Interactive processes detected: ${interactive_processes[*]}"
+        return 0  # User present
+    else
+        log_info "No recent interactive processes detected"
+        return 1  # User absent
+    fi
+}

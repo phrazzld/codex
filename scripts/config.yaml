@@ -113,6 +113,29 @@ notification_methods:
   timeout_seconds: 30  # Default timeout for interactive prompts
   fallback_to_terminal: true  # Fallback to terminal if desktop fails
 
+# User Presence Detection
+# Detect if user is actively using the system before disruptive operations
+user_presence:
+  enabled: true  # Enable user presence checking
+  
+  # Detection methods to use (all are enabled by default)
+  methods:
+    idle_time: true        # Check system idle time
+    active_sessions: true  # Check for active SSH/terminal sessions
+    recent_files: true     # Check for recently modified files in dev directories
+    running_processes: true # Check for interactive user processes
+    
+  # Thresholds for presence detection
+  thresholds:
+    max_idle_minutes: 15      # Consider user away if idle > 15 minutes
+    recent_file_minutes: 30   # Files modified in last 30 minutes indicate activity
+    process_check_minutes: 5  # Check for processes started in last 5 minutes
+    
+  # Behavior when user presence is uncertain
+  fallback:
+    assume_present_on_error: true  # If detection fails, assume user is present (safer)
+    prompt_on_uncertainty: true    # Prompt user if presence is unclear
+
 # Cross-platform commands
 commands:
   macos:
