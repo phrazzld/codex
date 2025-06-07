@@ -1,0 +1,58 @@
+# System Maintenance Configuration
+# Safe, cross-platform, user-configurable settings
+
+# User Environment (auto-detected if not specified)
+user:
+  home_dir: "${HOME}"
+  dev_dir: "${HOME}/Development"
+  backup_dir: "${HOME}/.system-maintenance/backups"
+  log_dir: "${HOME}/.system-maintenance/logs"
+
+# Safety Settings
+safety:
+  always_backup: true
+  max_single_delete_gb: 10  # Require extra confirmation above this
+  require_confirmation: true
+  dry_run_default: false
+  backup_retention_days: 30
+
+# Cleanup Thresholds (in days)
+cleanup:
+  downloads_age: 30
+  node_modules_stale_age: 90
+  cache_retention: 7
+  log_retention: 30
+
+# Package Managers
+package_managers:
+  npm:
+    enabled: true
+    cache_cmd: "npm cache clean --force"
+  yarn:
+    enabled: true  
+    cache_cmd: "yarn cache clean"
+  pnpm:
+    enabled: true
+    cache_cmd: "pnpm store prune"
+
+# System-specific settings
+system:
+  reboot:
+    enabled: true
+    max_uptime_days: 7
+    warning_minutes: 5
+  memory:
+    purge_enabled: true
+    swap_threshold_mb: 1024
+
+# Cross-platform commands
+commands:
+  macos:
+    memory_purge: "sudo purge"
+    notification: "osascript -e 'display dialog \"{message}\" with title \"{title}\"'"
+  linux:
+    memory_purge: "sudo sync && echo 3 | sudo tee /proc/sys/vm/drop_caches"
+    notification: "notify-send \"{title}\" \"{message}\""
+  windows:
+    memory_purge: "powershell Clear-RecycleBin -Force"
+    notification: "powershell Add-Type -AssemblyName System.Windows.Forms; [System.Windows.Forms.MessageBox]::Show('{message}', '{title}')"
