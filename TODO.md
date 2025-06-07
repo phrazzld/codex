@@ -17,7 +17,7 @@
 - [ ] Create database connection checking (postgres, mysql, redis)
 - [ ] Add Docker container status verification
 - [ ] Implement large file transfer detection (copying, uploading)
-- [ ] Add IDE/editor process detection (VS Code, vim sessions with unsaved files)
+- [x] Add IDE/editor process detection (VS Code, vim sessions with unsaved files)
 - [ ] Create build process detection (npm run, cargo build, etc.)
 
 ## Configuration Improvements
