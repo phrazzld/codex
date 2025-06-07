@@ -505,3 +505,265 @@ confirm_with_timeout() {
     
     [[ "$choice" == "Yes" ]]
 }
+
+# === Process Detection Functions ===
+# Check for running critical processes that might indicate active work
+
+# Get all critical processes from configuration as a flat array
+get_critical_processes() {
+    local category="${1:-all}"  # all, databases, development, containers, editors, network, custom
+    local processes=()
+    
+    # Helper function to extract array from config using yq
+    extract_config_array() {
+        local config_key="$1"
+        if command -v yq >/dev/null 2>&1; then
+            yq eval ".${config_key}[]" "$CONFIG_FILE" 2>/dev/null
+        else
+            # Fallback: extract using grep (basic YAML parsing)
+            local section_key=$(echo "$config_key" | cut -d'.' -f1)
+            local array_key=$(echo "$config_key" | cut -d'.' -f2)
+            
+            # Find the section and extract the array items
+            awk "
+                /^${section_key}:/ { in_section=1; next }
+                /^[a-zA-Z]/ && in_section { in_section=0 }
+                in_section && /^  ${array_key}:/ { in_array=1; next }
+                in_section && /^  [a-zA-Z]/ && in_array { in_array=0 }
+                in_array && /^    - \".*\"/ { 
+                    gsub(/^    - \"/, \"\"); 
+                    gsub(/\"$/, \"\"); 
+                    print 
+                }
+                in_array && /^    - .*/ { 
+                    gsub(/^    - /, \"\"); 
+                    print 
+                }
+            " "$CONFIG_FILE" 2>/dev/null || echo ""
+        fi
+    }
+    
+    if [[ "$category" == "all" || "$category" == "databases" ]]; then
+        while IFS= read -r process; do
+            [[ -n "$process" ]] && processes+=("$process")
+        done < <(extract_config_array "critical_processes.databases")
+    fi
+    
+    if [[ "$category" == "all" || "$category" == "development" ]]; then
+        while IFS= read -r process; do
+            [[ -n "$process" ]] && processes+=("$process")
+        done < <(extract_config_array "critical_processes.development")
+    fi
+    
+    if [[ "$category" == "all" || "$category" == "containers" ]]; then
+        while IFS= read -r process; do
+            [[ -n "$process" ]] && processes+=("$process")
+        done < <(extract_config_array "critical_processes.containers")
+    fi
+    
+    if [[ "$category" == "all" || "$category" == "editors" ]]; then
+        while IFS= read -r process; do
+            [[ -n "$process" ]] && processes+=("$process")
+        done < <(extract_config_array "critical_processes.editors")
+    fi
+    
+    if [[ "$category" == "all" || "$category" == "network" ]]; then
+        while IFS= read -r process; do
+            [[ -n "$process" ]] && processes+=("$process")
+        done < <(extract_config_array "critical_processes.network")
+    fi
+    
+    if [[ "$category" == "all" || "$category" == "custom" ]]; then
+        while IFS= read -r process; do
+            [[ -n "$process" ]] && processes+=("$process")
+        done < <(extract_config_array "critical_processes.custom")
+    fi
+    
+    printf '%s\n' "${processes[@]}"
+}
+
+# Check if any critical processes are running
+check_critical_processes() {
+    local category="${1:-all}"
+    local running_processes=()
+    
+    # Get list of critical processes for category  
+    local critical_processes=()
+    while IFS= read -r process; do
+        [[ -n "$process" ]] && critical_processes+=("$process")
+    done < <(get_critical_processes "$category")
+    
+    if [[ ${#critical_processes[@]} -eq 0 ]]; then
+        log_warn "No critical processes defined for category: $category"
+        return 0
+    fi
+    
+    # Check each critical process
+    for process in "${critical_processes[@]}"; do
+        if pgrep -f "$process" >/dev/null 2>&1; then
+            running_processes+=("$process")
+        fi
+    done
+    
+    # Report results
+    if [[ ${#running_processes[@]} -gt 0 ]]; then
+        log_warn "Found ${#running_processes[@]} critical $category processes running:"
+        for process in "${running_processes[@]}"; do
+            local pids
+            pids=$(pgrep -f "$process" | head -5 | xargs)
+            log_warn "  - $process (PIDs: $pids)"
+        done
+        return 1  # Critical processes found
+    else
+        log_info "No critical $category processes detected"
+        return 0  # No critical processes
+    fi
+}
+
+# Advanced IDE/editor detection with unsaved file checking
+check_critical_editors() {
+    local editors_running=()
+    local unsaved_work_detected=false
+    
+    log_info "Checking for running editors and unsaved work..."
+    
+    # Get editor processes from configuration
+    local editor_processes=()
+    while IFS= read -r process; do
+        [[ -n "$process" ]] && editor_processes+=("$process")
+    done < <(get_critical_processes "editors")
+    
+    # Check each editor
+    for editor in "${editor_processes[@]}"; do
+        if pgrep -f "$editor" >/dev/null 2>&1; then
+            editors_running+=("$editor")
+            log_info "Detected running editor: $editor"
+            
+            # Check for unsaved work based on editor type
+            case "$editor" in
+                "code"|"cursor")
+                    # VS Code / Cursor: Check for backup files or workspace state
+                    if check_vscode_unsaved_work; then
+                        unsaved_work_detected=true
+                        log_warn "  - VS Code/Cursor may have unsaved work"
+                    fi
+                    ;;
+                "vim"|"nvim")
+                    # Vim: Check for swap files
+                    if check_vim_unsaved_work; then
+                        unsaved_work_detected=true
+                        log_warn "  - Vim/Neovim may have unsaved work"
+                    fi
+                    ;;
+                "emacs")
+                    # Emacs: Check for backup/auto-save files
+                    if check_emacs_unsaved_work; then
+                        unsaved_work_detected=true
+                        log_warn "  - Emacs may have unsaved work"
+                    fi
+                    ;;
+                *)
+                    # Generic editor: Just warn about running process
+                    log_warn "  - $editor is running (cannot detect unsaved work)"
+                    ;;
+            esac
+        fi
+    done
+    
+    # Summary
+    if [[ ${#editors_running[@]} -gt 0 ]]; then
+        log_warn "Found ${#editors_running[@]} editor(s) running: ${editors_running[*]}"
+        if [[ "$unsaved_work_detected" == "true" ]]; then
+            log_warn "⚠️  Potential unsaved work detected - proceed with caution"
+            return 2  # Editors with potential unsaved work
+        else
+            log_info "No unsaved work detected, but editors are running"
+            return 1  # Editors running but no unsaved work detected
+        fi
+    else
+        log_info "No critical editors detected"
+        return 0  # No editors running
+    fi
+}
+
+# VS Code unsaved work detection
+check_vscode_unsaved_work() {
+    # Check for VS Code backup/workspace files that might indicate unsaved work
+    local vscode_dirs=(
+        "$HOME/Library/Application Support/Code/User/workspaceStorage"
+        "$HOME/Library/Application Support/Cursor/User/workspaceStorage"
+        "$HOME/.vscode"
+        "$HOME/.cursor"
+    )
+    
+    for dir in "${vscode_dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            # Look for recent backup files (modified in last 60 minutes)
+            if find "$dir" -name "*.json" -o -name "*.backup" -mmin -60 2>/dev/null | head -1 | grep -q .; then
+                return 0  # Found potential unsaved work
+            fi
+        fi
+    done
+    
+    return 1  # No unsaved work detected
+}
+
+# Vim unsaved work detection
+check_vim_unsaved_work() {
+    # Check for vim swap files in common locations
+    local swap_patterns=(
+        "*.swp"
+        "*.swo" 
+        "*.swn"
+        ".*.swp"
+        ".*.swo"
+        ".*.swn"
+    )
+    
+    local search_dirs=(
+        "$HOME"
+        "$HOME/.vim"
+        "$HOME/.config/nvim"
+        "$(get_config 'user.dev_dir' '$HOME/Development')"
+        "/tmp"
+    )
+    
+    for dir in "${search_dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            for pattern in "${swap_patterns[@]}"; do
+                if find "$dir" -name "$pattern" -mmin -60 2>/dev/null | head -1 | grep -q .; then
+                    return 0  # Found swap files
+                fi
+            done
+        fi
+    done
+    
+    return 1  # No swap files found
+}
+
+# Emacs unsaved work detection  
+check_emacs_unsaved_work() {
+    # Check for emacs backup and auto-save files
+    local backup_patterns=(
+        "*~"     # Backup files
+        "#*#"    # Auto-save files
+        ".#*"    # Lock files
+    )
+    
+    local search_dirs=(
+        "$HOME"
+        "$(get_config 'user.dev_dir' '$HOME/Development')"
+    )
+    
+    for dir in "${search_dirs[@]}"; do
+        if [[ -d "$dir" ]]; then
+            for pattern in "${backup_patterns[@]}"; do
+                if find "$dir" -name "$pattern" -mmin -60 2>/dev/null | head -1 | grep -q .; then
+                    return 0  # Found backup/auto-save files
+                fi
+            done
+        fi
+    done
+    
+    return 1  # No backup files found
+}
