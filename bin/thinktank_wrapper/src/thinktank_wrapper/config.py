@@ -12,15 +12,15 @@ MODELS_ALL: List[str] = [
     # OpenAI Models
     "gpt-4.1",
     "o4-mini",
-    
+
     # Gemini Models
     "gemini-2.5-pro-preview-06-05",
     "gemini-2.5-flash-preview-05-20",
-    
+
     # OpenRouter Models
     "openrouter/deepseek/deepseek-chat-v3-0324",
     "openrouter/deepseek/deepseek-prover-v2",
-    "openrouter/deepseek/deepseek-r1",
+    "openrouter/deepseek/deepseek-r1-0528",
     "openrouter/x-ai/grok-3-beta",
     "openrouter/x-ai/grok-3-mini-beta",
     "openrouter/meta-llama/llama-4-maverick",
@@ -31,11 +31,11 @@ MODELS_ALL: List[str] = [
 MODELS_HIGH_CONTEXT: List[str] = [
     # OpenAI Models
     "gpt-4.1",
-    
+
     # Gemini Models
     "gemini-2.5-pro-preview-05-06",
     "gemini-2.5-flash-preview-05-20",
-    
+
     # OpenRouter Models
     "openrouter/meta-llama/llama-4-maverick",
     "openrouter/meta-llama/llama-4-scout",

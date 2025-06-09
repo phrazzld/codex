@@ -5,7 +5,8 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
 ## Workflow
 
 **1. Select Task**
-- Find first `[ ]` ticket where all `depends-on:` tasks are `[x]` completed
+- Find first `[~]` ticket -- an in progress ticket -- and complete it.
+- If there are no in progress tickets, find first `[ ]` ticket where all `depends-on:` tasks are `[x]` completed
 - Mark as `[~]` in progress
 
 **2. Assess Complexity & Allocate Thinking**
