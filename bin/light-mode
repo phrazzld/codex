@@ -1,0 +1,23 @@
+#!/bin/bash
+
+# Light Mode Script
+# Switches both Alacritty and tmux to Rose Pine Dawn light theme
+# Usage: light-mode
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ALACRITTY_THEME_SCRIPT="$SCRIPT_DIR/alacritty-theme"
+
+if [[ ! -x "$ALACRITTY_THEME_SCRIPT" ]]; then
+    echo "Error: alacritty-theme script not found or not executable at $ALACRITTY_THEME_SCRIPT"
+    exit 1
+fi
+
+echo "Switching to light mode (Rose Pine Dawn)..."
+"$ALACRITTY_THEME_SCRIPT" rose_pine_dawn
+
+if [[ $? -eq 0 ]]; then
+    echo "✓ Light mode activated"
+else
+    echo "✗ Failed to switch to light mode"
+    exit 1
+fi

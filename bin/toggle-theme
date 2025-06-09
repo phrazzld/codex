@@ -1,0 +1,60 @@
+#!/bin/bash
+
+# Theme Toggle Script
+# Switches between Rose Pine light and dark themes for both Alacritty and tmux
+# Usage: toggle-theme
+
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ALACRITTY_THEME_SCRIPT="$SCRIPT_DIR/alacritty-theme"
+
+if [[ ! -x "$ALACRITTY_THEME_SCRIPT" ]]; then
+    echo "Error: alacritty-theme script not found or not executable at $ALACRITTY_THEME_SCRIPT"
+    exit 1
+fi
+
+# Get current theme
+current_theme=$("$ALACRITTY_THEME_SCRIPT")
+current_theme=$(echo "$current_theme" | grep "Current theme:" | cut -d' ' -f3)
+
+# Light themes that should switch to dark
+LIGHT_THEMES=(
+    "rose_pine_dawn"
+    "catppuccin_latte"
+    "gruvbox_light"
+    "solarized_light"
+    "ayu_light"
+    "papercolor_light"
+    "alabaster"
+    "ashes_light"
+    "base16_default_light"
+)
+
+# Check if current theme is light
+is_light=false
+for light_theme in "${LIGHT_THEMES[@]}"; do
+    if [[ "$current_theme" == "$light_theme" ]]; then
+        is_light=true
+        break
+    fi
+done
+
+# Toggle the theme
+if [[ "$is_light" == "true" ]]; then
+    echo "Current theme is light ($current_theme), switching to dark mode..."
+    "$ALACRITTY_THEME_SCRIPT" rose_pine
+    if [[ $? -eq 0 ]]; then
+        echo "✓ Switched to dark mode (Rose Pine)"
+    else
+        echo "✗ Failed to switch to dark mode"
+        exit 1
+    fi
+else
+    echo "Current theme is dark ($current_theme), switching to light mode..."
+    "$ALACRITTY_THEME_SCRIPT" rose_pine_dawn
+    if [[ $? -eq 0 ]]; then
+        echo "✓ Switched to light mode (Rose Pine Dawn)"
+    else
+        echo "✗ Failed to switch to light mode"
+        exit 1
+    fi
+fi

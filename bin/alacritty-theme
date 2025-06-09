@@ -77,55 +77,80 @@ theme_exists() {
     [[ -f "$THEMES_DIR/$theme.toml" ]]
 }
 
-# Oh My Tmux theme color mappings
-declare -A TMUX_THEME_COLORS=(
-    # Rose Pine Dawn
-    ["rose_pine_dawn"]="#faf4ed #f2e9e1 #9893a5 #56949f #ea9d34 #575279 #b4637a #286983 #907aa9"
+# Function to get theme colors (bash 3.2 compatible)
+get_theme_colors() {
+    local theme=$1
+    case "$theme" in
+        "rose_pine_dawn")
+            echo "#faf4ed #f2e9e1 #9893a5 #56949f #ea9d34 #575279 #b4637a #286983 #907aa9"
+            ;;
+        "rose_pine")
+            echo "#191724 #1f1d2e #6e6a86 #31748f #f6c177 #e0def4 #eb6f92 #9ccfd8 #c4a7e7"
+            ;;
+        "rose_pine_moon")
+            echo "#232136 #2a273f #6e6a86 #3e8fb0 #f6c177 #e0def4 #eb6f92 #9ccfd8 #c4a7e7"
+            ;;
+        "tokyo_night")
+            echo "#1a1b26 #24283b #565f89 #7aa2f7 #e0af68 #c0caf5 #f7768e #9ece6a #bb9af7"
+            ;;
+        "tokyo_night_storm")
+            echo "#24283b #414868 #565f89 #7aa2f7 #e0af68 #c0caf5 #f7768e #9ece6a #bb9af7"
+            ;;
+        "catppuccin_latte")
+            echo "#eff1f5 #e6e9ef #9ca0b0 #1e66f5 #df8e1d #4c4f69 #d20f39 #40a02b #8839ef"
+            ;;
+        "catppuccin_mocha")
+            echo "#1e1e2e #313244 #585b70 #89b4fa #f9e2af #cdd6f4 #f38ba8 #a6e3a1 #cba6f7"
+            ;;
+        "dracula")
+            echo "#282a36 #44475a #6272a4 #8be9fd #f1fa8c #f8f8f2 #ff5555 #50fa7b #bd93f9"
+            ;;
+        "nord")
+            echo "#2e3440 #3b4252 #4c566a #81a1c1 #ebcb8b #eceff4 #bf616a #a3be8c #b48ead"
+            ;;
+        "gruvbox_dark")
+            echo "#282828 #3c3836 #665c54 #458588 #fabd2f #ebdbb2 #fb4934 #b8bb26 #d3869b"
+            ;;
+        "gruvbox_light")
+            echo "#fbf1c7 #f2e5bc #a89984 #076678 #b57614 #3c3836 #9d0006 #79740e #8f3f71"
+            ;;
+        *)
+            echo ""
+            ;;
+    esac
+}
+
+# Function to update Rose Pine tmux variant
+update_rose_pine_variant() {
+    local theme=$1
+    local tmux_config="/Users/phaedrus/Development/codex/dotfiles/.tmux.conf"
     
-    # Rose Pine Main
-    ["rose_pine"]="#191724 #1f1d2e #6e6a86 #31748f #f6c177 #e0def4 #eb6f92 #9ccfd8 #c4a7e7"
-    
-    # Rose Pine Moon
-    ["rose_pine_moon"]="#232136 #2a273f #6e6a86 #3e8fb0 #f6c177 #e0def4 #eb6f92 #9ccfd8 #c4a7e7"
-    
-    # Tokyo Night
-    ["tokyo_night"]="#1a1b26 #24283b #565f89 #7aa2f7 #e0af68 #c0caf5 #f7768e #9ece6a #bb9af7"
-    
-    # Tokyo Night Storm
-    ["tokyo_night_storm"]="#24283b #414868 #565f89 #7aa2f7 #e0af68 #c0caf5 #f7768e #9ece6a #bb9af7"
-    
-    # Catppuccin Latte
-    ["catppuccin_latte"]="#eff1f5 #e6e9ef #9ca0b0 #1e66f5 #df8e1d #4c4f69 #d20f39 #40a02b #8839ef"
-    
-    # Catppuccin Mocha
-    ["catppuccin_mocha"]="#1e1e2e #313244 #585b70 #89b4fa #f9e2af #cdd6f4 #f38ba8 #a6e3a1 #cba6f7"
-    
-    # Dracula
-    ["dracula"]="#282a36 #44475a #6272a4 #8be9fd #f1fa8c #f8f8f2 #ff5555 #50fa7b #bd93f9"
-    
-    # Nord
-    ["nord"]="#2e3440 #3b4252 #4c566a #81a1c1 #ebcb8b #eceff4 #bf616a #a3be8c #b48ead"
-    
-    # Gruvbox Dark
-    ["gruvbox_dark"]="#282828 #3c3836 #665c54 #458588 #fabd2f #ebdbb2 #fb4934 #b8bb26 #d3869b"
-    
-    # Gruvbox Light
-    ["gruvbox_light"]="#fbf1c7 #f2e5bc #a89984 #076678 #b57614 #3c3836 #9d0006 #79740e #8f3f71"
-)
+    case "$theme" in
+        "rose_pine_dawn")
+            sed -i '' "s/@rose_pine_variant '[^']*'/@rose_pine_variant 'dawn'/" "$tmux_config"
+            ;;
+        "rose_pine"|"rose_pine_moon")
+            local variant="main"
+            [[ "$theme" == "rose_pine_moon" ]] && variant="moon"
+            sed -i '' "s/@rose_pine_variant '[^']*'/@rose_pine_variant '$variant'/" "$tmux_config"
+            ;;
+    esac
+}
 
 # Function to update oh-my-tmux theme colors
 update_tmux_theme() {
     local theme=$1
     local config_file="/Users/phaedrus/.tmux.conf.local"
     
-    # Check if we have colors for this theme
-    if [[ -z "${TMUX_THEME_COLORS[$theme]}" ]]; then
+    # Get colors for this theme
+    local theme_colors=$(get_theme_colors "$theme")
+    if [[ -z "$theme_colors" ]]; then
         echo "No tmux theme colors found for $theme"
         return 1
     fi
     
     # Parse color values
-    local colors=(${TMUX_THEME_COLORS[$theme]})
+    local colors=($theme_colors)
     local bg="${colors[0]}"         # background
     local surface="${colors[1]}"    # surface
     local muted="${colors[2]}"      # muted
@@ -191,10 +216,18 @@ apply_theme() {
         exit 1
     fi
     
+    # Update Rose Pine tmux variant if applicable
+    update_rose_pine_variant "$theme"
+    
     # Update tmux theme to match
     update_tmux_theme "$theme"
+    
+    # Reload tmux config if tmux is running
+    if tmux info &>/dev/null; then
+        tmux source-file ~/.tmux.conf 2>/dev/null
+    fi
 
-    echo "Applied $theme theme to Alacritty"
+    echo "Applied $theme theme to Alacritty and tmux"
 }
 
 # Function to list curated themes
