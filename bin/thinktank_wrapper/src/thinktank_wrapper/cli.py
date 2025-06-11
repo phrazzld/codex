@@ -71,6 +71,11 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         action="store_true",
         help="Include DEVELOPMENT_PHILOSOPHY*.md files automatically",
     )
+    context_group.add_argument(
+        config.INCLUDE_LEYLINE_ARG,
+        action="store_true",
+        help="Include all leyline documents from docs/leyline/ directory automatically",
+    )
     
     # Execution options
     execution_group = parser.add_argument_group("Execution Options")

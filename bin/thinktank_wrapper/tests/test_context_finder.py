@@ -72,6 +72,7 @@ def test_find_context_files(mock_glance_files: List[Path], mock_codex_dir: Path,
     result = find_context_files(
         include_glance=True,
         include_philosophy=True,
+        include_leyline=False,
         explicit_paths=[str(test_file)]
     )
     

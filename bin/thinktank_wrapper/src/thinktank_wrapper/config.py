@@ -12,6 +12,7 @@ MODELS_ALL: List[str] = [
     # OpenAI Models
     "gpt-4.1",
     "o4-mini",
+    "o3",
 
     # Gemini Models
     "gemini-2.5-pro-preview-06-05",
@@ -63,6 +64,7 @@ LIST_TEMPLATES_ARG: str = "--list-templates"
 MODEL_SET_ARG: str = "--model-set"
 INCLUDE_GLANCE_ARG: str = "--include-glance"
 INCLUDE_PHILOSOPHY_ARG: str = "--include-philosophy"
+INCLUDE_LEYLINE_ARG: str = "--include-leyline"
 DRY_RUN_ARG: str = "--dry-run"
 INSTRUCTIONS_ARG: str = "--instructions"
 INJECT_ARG: str = "--inject"

@@ -96,9 +96,42 @@ def find_philosophy_files() -> List[str]:
     return sorted(result)
 
 
+def find_leyline_files() -> List[str]:
+    """Find all leyline documents in the docs/leyline directory.
+    
+    Returns:
+        A list of absolute paths to leyline .md files found.
+    """
+    result: Set[str] = set()
+    
+    # Get the CODEX_DIR environment variable
+    codex_dir = os.environ.get("CODEX_DIR")
+    if not codex_dir:
+        logger.warning("CODEX_DIR environment variable not set, cannot find leyline files")
+        return []
+    
+    # Construct the leyline directory path
+    leyline_dir = pathlib.Path(codex_dir) / "docs" / "leyline"
+    if not leyline_dir.exists() or not leyline_dir.is_dir():
+        logger.warning(f"Leyline directory not found: {leyline_dir}")
+        return []
+    
+    # Search for all .md files recursively in the leyline directory
+    for leyline_path in leyline_dir.rglob("*.md"):
+        if leyline_path.is_file():
+            result.add(str(leyline_path.absolute()))
+    
+    # Log the result
+    logger.debug(f"Found {len(result)} leyline files in {leyline_dir}")
+    
+    # Sort the results for deterministic behavior
+    return sorted(result)
+
+
 def find_context_files(
     include_glance: bool, 
     include_philosophy: bool, 
+    include_leyline: bool,
     explicit_paths: List[str]
 ) -> List[str]:
     """Find all context files based on flags and explicit paths.
@@ -106,6 +139,7 @@ def find_context_files(
     Args:
         include_glance: Whether to include glance.md files.
         include_philosophy: Whether to include DEVELOPMENT_PHILOSOPHY*.md files.
+        include_leyline: Whether to include leyline documents from docs/leyline/.
         explicit_paths: Explicit file/directory paths to include as context.
         
     Returns:
@@ -124,6 +158,12 @@ def find_context_files(
         philosophy_files = find_philosophy_files()
         result.update(philosophy_files)
         logger.info(f"Found {len(philosophy_files)} philosophy files")
+    
+    # Find leyline files if requested
+    if include_leyline:
+        leyline_files = find_leyline_files()
+        result.update(leyline_files)
+        logger.info(f"Found {len(leyline_files)} leyline files")
     
     # Add explicit paths if they exist
     valid_explicit_paths = []

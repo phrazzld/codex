@@ -15,22 +15,40 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
   - **Minimal**: Trivial fixes, typos, obvious changes → just execute
   - **Low**: Single-file changes, clear requirements → **think** briefly about approach
   - **Medium**: Multi-file changes, some ambiguity → **think hard** about design and plan thoroughly
-  - **High**: Architectural changes, cross-cutting concerns → **ultrathink** - brainstorm multiple solutions, evaluate tradeoffs, risk analysis, comprehensive planning
+  - **High**: Architectural changes, cross-cutting concerns → **engage thinktank** for comprehensive analysis
 
-**3. Plan & Implement**
+**3. For High Complexity: Engage Thinktank**
+- **Investigate context**: Thoroughly examine the codebase to identify the most relevant files and directories for the task
+  - Read the ticket carefully to understand all affected areas
+  - Use search tools to find related code, tests, documentation, and configuration
+  - Identify key modules, interfaces, and dependencies that will be impacted
+  - Locate existing patterns and architectural precedents to follow
+- **Create instructions**: Generate `execute-instructions.md` with detailed context about:
+  - The specific task requirements and acceptance criteria
+  - Relevant architectural constraints and design principles
+  - Key files and directories that need consideration
+  - Expected implementation approach and testing strategy
+- **Run thinktank**: Execute comprehensive analysis:
+  ```bash
+  thinktank-wrapper --instructions execute-instructions.md --model-set all_context --include-philosophy --include-leyline --include-glance [list of relevant files and directories]
+  ```
+- **Synthesize results**: Review thinktank outputs and create implementation plan
+
+**4. Plan & Implement**
 - Follow `DEVELOPMENT_PHILOSOPHY.md`, leyline documents, and relevant language appendices
 - For medium+ complexity: write failing tests first, implement to make them pass
+- For high complexity: implement according to thinktank analysis and synthesis
 - Never mock internal collaborators - refactor for testability instead
 - Create planning artifacts proportional to complexity
 
-**4. Validate**
+**5. Validate**
 - Format, lint, test - resolve all issues
 - Ensure clean conventional commit that passes pre-commit hooks
 
-**5. Finalize**
+**6. Finalize**
 - Mark ticket `[x]` complete
 - Push clean commit
-- Clean up any planning files
+- Clean up any planning files and thinktank outputs
 
 ## Key Principles
 - Maintain acyclic dependencies

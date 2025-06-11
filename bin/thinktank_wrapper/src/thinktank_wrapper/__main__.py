@@ -60,12 +60,14 @@ def main(args: Optional[List[str]] = None) -> int:
         context_files = context_finder.find_context_files(
             include_glance=parsed_args.include_glance,
             include_philosophy=parsed_args.include_philosophy,
+            include_leyline=parsed_args.include_leyline,
             explicit_paths=parsed_args.context_paths,
         )
         parsed_args.context_files = context_files
         logger.info(f"Found {len(context_files)} context files", extra={
             "include_glance": parsed_args.include_glance,
             "include_philosophy": parsed_args.include_philosophy,
+            "include_leyline": parsed_args.include_leyline,
             "explicit_paths_count": len(parsed_args.context_paths),
         })
         

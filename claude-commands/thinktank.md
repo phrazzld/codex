@@ -4,5 +4,5 @@ Create an `instructions.md` file that creates a strong, well articulated, clear 
 
 Then, run the following command exactly:
 ```bash
-thinktank-wrapper --instructions instructions.md --model-set high_context --include-philosophy --include-glance ./
+thinktank-wrapper --instructions instructions.md --model-set high_context --include-philosophy --include-leyline --include-glance ./
 ```

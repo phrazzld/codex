@@ -29,6 +29,7 @@ def mock_parse_args():
         args.inject = None
         args.include_glance = True
         args.include_philosophy = True
+        args.include_leyline = False
         args.context_paths = ["/path/to/file.md"]
         args.dry_run = False
         
