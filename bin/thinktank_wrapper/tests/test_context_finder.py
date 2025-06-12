@@ -71,12 +71,11 @@ def test_find_context_files(mock_glance_files: List[Path], mock_codex_dir: Path,
     # Call the function
     result = find_context_files(
         include_glance=True,
-        include_philosophy=True,
         include_leyline=False,
         explicit_paths=[str(test_file)]
     )
     
-    # Assert the result contains the glance files, philosophy files, and explicit path
+    # Assert the result contains the glance files and explicit path
     expected_files = [
         str(test_file.absolute()),
     ]
@@ -85,13 +84,67 @@ def test_find_context_files(mock_glance_files: List[Path], mock_codex_dir: Path,
     for glance_file in mock_glance_files:
         expected_files.append(str(glance_file.absolute()))
     
-    # Add the mock philosophy files
-    expected_files.append(str((mock_codex_dir / "docs" / "DEVELOPMENT_PHILOSOPHY.md").absolute()))
-    expected_files.append(
-        str((mock_codex_dir / "docs" / "DEVELOPMENT_PHILOSOPHY_APPENDIX_TYPESCRIPT.md").absolute())
-    )
-    
     # Sort both lists for comparison
+    assert sorted(result) == sorted(expected_files)
+
+
+def test_find_leyline_files_fallback_to_philosophy(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """Test that find_leyline_files falls back to philosophy files when no leyline directory exists."""
+    # Create a temporary codex directory structure
+    codex_dir = tmp_path / "codex"
+    docs_dir = codex_dir / "docs"
+    docs_dir.mkdir(parents=True)
+    
+    # Create philosophy files but no leyline directory
+    philosophy_file1 = docs_dir / "DEVELOPMENT_PHILOSOPHY.md"
+    philosophy_file1.write_text("Main philosophy")
+    philosophy_file2 = docs_dir / "DEVELOPMENT_PHILOSOPHY_APPENDIX_GO.md"
+    philosophy_file2.write_text("Go appendix")
+    
+    # Set CODEX_DIR environment variable
+    monkeypatch.setenv("CODEX_DIR", str(codex_dir))
+    
+    # Call find_leyline_files
+    result = find_leyline_files()
+    
+    # Assert it found the philosophy files as fallback
+    expected_files = [
+        str(philosophy_file1.absolute()),
+        str(philosophy_file2.absolute()),
+    ]
+    assert sorted(result) == sorted(expected_files)
+
+
+def test_find_leyline_files_with_leyline_directory(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):
+    """Test that find_leyline_files finds leyline files when directory exists."""
+    # Create a temporary codex directory structure
+    codex_dir = tmp_path / "codex"
+    docs_dir = codex_dir / "docs"
+    leyline_dir = docs_dir / "leyline"
+    leyline_dir.mkdir(parents=True)
+    
+    # Create leyline files
+    leyline_file1 = leyline_dir / "index.md"
+    leyline_file1.write_text("Leyline index")
+    leyline_file2 = leyline_dir / "tenets" / "simplicity.md"
+    leyline_file2.parent.mkdir()
+    leyline_file2.write_text("Simplicity tenet")
+    
+    # Also create philosophy files (should be ignored when leyline exists)
+    philosophy_file = docs_dir / "DEVELOPMENT_PHILOSOPHY.md"
+    philosophy_file.write_text("Philosophy")
+    
+    # Set CODEX_DIR environment variable
+    monkeypatch.setenv("CODEX_DIR", str(codex_dir))
+    
+    # Call find_leyline_files
+    result = find_leyline_files()
+    
+    # Assert it found only the leyline files, not philosophy
+    expected_files = [
+        str(leyline_file1.absolute()),
+        str(leyline_file2.absolute()),
+    ]
     assert sorted(result) == sorted(expected_files)
 
 

@@ -54,7 +54,7 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
     model_group.add_argument(
         config.MODEL_SET_ARG,
         choices=list(config.MODEL_SETS.keys()),
-        default=config.DEFAULT_MODEL_SET,
+        default=None,
         help=f"Select model set (default: {config.DEFAULT_MODEL_SET})",
         metavar="<set_name>",
     )
@@ -67,14 +67,9 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         help="Include glance.md files automatically",
     )
     context_group.add_argument(
-        config.INCLUDE_PHILOSOPHY_ARG,
-        action="store_true",
-        help="Include DEVELOPMENT_PHILOSOPHY*.md files automatically",
-    )
-    context_group.add_argument(
         config.INCLUDE_LEYLINE_ARG,
         action="store_true",
-        help="Include all leyline documents from docs/leyline/ directory automatically",
+        help="Include leyline documents from docs/leyline/; if not found, falls back to DEVELOPMENT_PHILOSOPHY*.md files in docs/",
     )
     
     # Execution options
@@ -83,6 +78,18 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         config.DRY_RUN_ARG,
         action="store_true",
         help="Print the final thinktank command instead of executing it",
+    )
+    execution_group.add_argument(
+        "--token-threshold",
+        type=int,
+        default=config.LLM_CONTEXT_THRESHOLD,
+        help=f"Token count threshold for model selection (default: {config.LLM_CONTEXT_THRESHOLD})",
+        metavar="<tokens>",
+    )
+    execution_group.add_argument(
+        "--disable-token-counting",
+        action="store_true",
+        help="Disable automatic token counting and model selection",
     )
     
     # Backward compatibility

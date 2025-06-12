@@ -5,6 +5,7 @@ the thinktank-wrapper CLI application. These configurations match the
 behavior of the original Bash wrapper script.
 """
 
+import os
 from typing import Dict, List
 
 # ALL MODELS - Comprehensive set of models for thorough analysis
@@ -63,7 +64,6 @@ TEMPLATE_ARG: str = "--template"
 LIST_TEMPLATES_ARG: str = "--list-templates"
 MODEL_SET_ARG: str = "--model-set"
 INCLUDE_GLANCE_ARG: str = "--include-glance"
-INCLUDE_PHILOSOPHY_ARG: str = "--include-philosophy"
 INCLUDE_LEYLINE_ARG: str = "--include-leyline"
 DRY_RUN_ARG: str = "--dry-run"
 INSTRUCTIONS_ARG: str = "--instructions"
@@ -72,3 +72,8 @@ INJECT_ARG: str = "--inject"
 # Template context marker constants
 CONTEXT_BEGIN_MARKER: str = "<!-- BEGIN:CONTEXT -->"
 CONTEXT_END_MARKER: str = "<!-- END:CONTEXT -->"
+
+# Token counting configuration
+LLM_CONTEXT_THRESHOLD: int = int(os.environ.get("LLM_CONTEXT_THRESHOLD", "200000"))
+TOKEN_COUNT_PROVIDER: str = os.environ.get("TOKEN_COUNT_PROVIDER", "openai")
+ENABLE_TOKEN_COUNTING: bool = os.environ.get("ENABLE_TOKEN_COUNTING", "true").lower() == "true"

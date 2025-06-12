@@ -30,7 +30,7 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
   - Expected implementation approach and testing strategy
 - **Run thinktank**: Execute comprehensive analysis:
   ```bash
-  thinktank-wrapper --instructions execute-instructions.md --model-set all_context --include-philosophy --include-leyline --include-glance [list of relevant files and directories]
+  thinktank-wrapper --instructions execute-instructions.md --model-set all --include-leyline --include-glance [list of relevant files and directories]
   ```
 - **Synthesize results**: Review thinktank outputs and create implementation plan
 

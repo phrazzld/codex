@@ -37,7 +37,7 @@ EOF
 
 # Run thinktank analysis
 echo "Running philosophy alignment analysis with high_context model set..."
-thinktank-wrapper --template align --inject ALIGN-CONTEXT.md --model-set high_context --include-philosophy --include-leyline --include-glance ./
+thinktank-wrapper --template align --inject ALIGN-CONTEXT.md --model-set high_context --include-leyline --include-glance ./
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)

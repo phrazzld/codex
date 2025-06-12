@@ -38,7 +38,7 @@ EOF
 
 # Step 3: Generate Size Optimization Backlog Items
 echo "Running thinktank analysis with high_context model set..."
-thinktank-wrapper --template shrink --inject SHRINK-CONTEXT.md --model-set high_context --include-philosophy --include-leyline --include-glance ./
+thinktank-wrapper --template shrink --inject SHRINK-CONTEXT.md --model-set high_context --include-leyline --include-glance ./
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)

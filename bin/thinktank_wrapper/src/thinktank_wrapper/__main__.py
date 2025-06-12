@@ -59,17 +59,73 @@ def main(args: Optional[List[str]] = None) -> int:
         # Find context files based on flags and explicit paths
         context_files = context_finder.find_context_files(
             include_glance=parsed_args.include_glance,
-            include_philosophy=parsed_args.include_philosophy,
             include_leyline=parsed_args.include_leyline,
             explicit_paths=parsed_args.context_paths,
         )
         parsed_args.context_files = context_files
         logger.info(f"Found {len(context_files)} context files", extra={
             "include_glance": parsed_args.include_glance,
-            "include_philosophy": parsed_args.include_philosophy,
             "include_leyline": parsed_args.include_leyline,
             "explicit_paths_count": len(parsed_args.context_paths),
         })
+        
+        # Perform token counting and dynamic model selection if enabled
+        disable_counting = getattr(parsed_args, "disable_token_counting", False)
+        if config.ENABLE_TOKEN_COUNTING and not disable_counting:
+            try:
+                # Lazy import tokenizer to avoid breaking when optional deps missing
+                from thinktank_wrapper import tokenizer
+                
+                # Initialize token counter
+                token_counter = tokenizer.TokenCounter(provider=config.TOKEN_COUNT_PROVIDER)
+                
+                # Count tokens in all context files
+                total_tokens, errors = token_counter.estimate_model_tokens(context_files)
+                
+                # Output token count to stderr to avoid polluting stdout
+                print(f"TOKEN_COUNT: {total_tokens}", file=sys.stderr)
+                
+                # Log any errors
+                if errors:
+                    for error in errors:
+                        logger.warning(f"Token counting error: {error}")
+                
+                # Dynamic model selection based on threshold
+                threshold = getattr(parsed_args, "token_threshold", config.LLM_CONTEXT_THRESHOLD)
+                original_model_set = parsed_args.model_set
+                
+                # Only perform dynamic selection if user didn't explicitly set model-set
+                if original_model_set is None:
+                    if total_tokens <= threshold:
+                        parsed_args.model_set = "all"
+                        logger.info(f"Selected model set 'all' (tokens: {total_tokens} <= threshold: {threshold})")
+                    else:
+                        parsed_args.model_set = "high_context"
+                        logger.info(f"Selected model set 'high_context' (tokens: {total_tokens} > threshold: {threshold})")
+                    
+                    # Output model selection info to stderr
+                    print(f"Using model set: {parsed_args.model_set} (threshold: {threshold})", file=sys.stderr)
+                else:
+                    # User explicitly set model-set, respect their choice
+                    logger.info(f"Using explicitly set model set: {original_model_set}")
+                
+                # Set default if still None
+                if parsed_args.model_set is None:
+                    parsed_args.model_set = config.DEFAULT_MODEL_SET
+                    
+            except ImportError as e:
+                logger.warning(f"Token counting module not available: {e}")
+                # Continue without token counting
+            except (ValueError, TypeError, AttributeError) as e:
+                logger.error(f"Token counting configuration error: {e}", exc_info=True)
+                # Continue with original model set selection
+            except Exception as e:
+                logger.error(f"Unexpected error during token counting: {e}", exc_info=True)
+                # Continue with original model set selection
+        
+        # Ensure model_set has a value (use default if still None)
+        if parsed_args.model_set is None:
+            parsed_args.model_set = config.DEFAULT_MODEL_SET
         
         # Load template content if --template is provided
         template_content = None
