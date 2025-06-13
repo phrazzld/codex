@@ -61,6 +61,16 @@ FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
 
 echo "Generating philosophy-alignment code review for $FILE_COUNT files..."
 
+# Update glance files first (may take several minutes for large codebases)
+if [ "$SKIP_GLANCE_UPDATE" != "1" ]; then
+    echo "Updating glance context files (this may take up to 10+ minutes for large codebases)..."
+    if glance ./ >/dev/null 2>&1; then
+        echo "✓ Glance context files updated successfully"
+    else
+        echo "⚠ Warning: Failed to update glance files, proceeding with existing context"
+    fi
+fi
+
 # Create context file
 cat > REVIEW-CONTEXT.md << EOF
 # Code Review Context

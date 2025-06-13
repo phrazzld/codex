@@ -20,6 +20,15 @@ if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
     usage
 fi
 
+# Update glance files first (may take several minutes for large codebases)
+echo "Updating glance context files (this may take up to 10+ minutes for large codebases)..."
+if glance ./ >/dev/null 2>&1; then
+    echo "✓ Glance context files updated successfully"
+else
+    echo "⚠ Warning: Failed to update glance files, proceeding with existing context"
+fi
+
+echo ""
 echo "Running two-pass code review..."
 
 # Track success/failure of each pass
@@ -28,7 +37,7 @@ PHILOSOPHY_SUCCESS=0
 
 # Pass 1: Diff-focused review
 echo "Pass 1: Running diff-focused review..."
-if tt-review-diff "$@"; then
+if SKIP_GLANCE_UPDATE=1 tt-review-diff "$@"; then
     DIFF_SUCCESS=1
     echo "✓ Diff review completed successfully"
 else
@@ -39,7 +48,7 @@ echo ""
 
 # Pass 2: Philosophy-alignment review
 echo "Pass 2: Running philosophy-alignment review..."
-if tt-review-philosophy "$@"; then
+if SKIP_GLANCE_UPDATE=1 tt-review-philosophy "$@"; then
     PHILOSOPHY_SUCCESS=1
     echo "✓ Philosophy review completed successfully"
 else
