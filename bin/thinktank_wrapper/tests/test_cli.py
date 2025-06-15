@@ -98,6 +98,39 @@ def test_parse_args_instructions():
     assert args.instructions == "/path/to/instructions.md"
 
 
+def test_parse_args_no_gitignore():
+    """Test that parse_args handles --no-gitignore correctly."""
+    # Test default behavior (gitignore enabled)
+    args_default, _ = cli.parse_args([])
+    assert not hasattr(args_default, 'no_gitignore') or not args_default.no_gitignore
+    
+    # Test with --no-gitignore flag
+    args_no_git, _ = cli.parse_args(["--no-gitignore"])
+    assert hasattr(args_no_git, 'no_gitignore') and args_no_git.no_gitignore
+
+
+def test_parse_args_token_threshold():
+    """Test that parse_args handles --token-threshold correctly."""
+    # Test default behavior
+    args_default, _ = cli.parse_args([])
+    assert args_default.token_threshold == config.LLM_CONTEXT_THRESHOLD
+    
+    # Test with custom threshold
+    args_custom, _ = cli.parse_args(["--token-threshold", "50000"])
+    assert args_custom.token_threshold == 50000
+
+
+def test_parse_args_disable_token_counting():
+    """Test that parse_args handles --disable-token-counting correctly."""
+    # Test default behavior
+    args_default, _ = cli.parse_args([])
+    assert not hasattr(args_default, 'disable_token_counting') or not args_default.disable_token_counting
+    
+    # Test with flag enabled
+    args_disabled, _ = cli.parse_args(["--disable-token-counting"])
+    assert hasattr(args_disabled, 'disable_token_counting') and args_disabled.disable_token_counting
+
+
 def test_parse_args_inject():
     """Test that parse_args handles --inject correctly."""
     # Call the function with --inject

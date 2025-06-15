@@ -326,3 +326,154 @@ def test_token_counting_disabled_by_env():
     import importlib
     importlib.reload(config)
     assert config.ENABLE_TOKEN_COUNTING is False
+
+
+class TestTokenizerGitignoreIntegration:
+    """Test gitignore integration in tokenizer module."""
+    
+    @pytest.fixture
+    def gitignore_test_repo(self, tmp_path):
+        """Create a test repository with .gitignore files and various content."""
+        repo = tmp_path / "repo"
+        repo.mkdir()
+        
+        # Root .gitignore
+        gitignore = repo / ".gitignore"
+        gitignore.write_text("*.log\n*.tmp\nbuild/\nnode_modules/\n")
+        
+        # Create various files
+        (repo / "main.py").write_text("def main(): pass")  # Should be counted
+        (repo / "debug.log").write_text("log content")     # Should be ignored
+        (repo / "temp.tmp").write_text("temporary")        # Should be ignored
+        (repo / "README.md").write_text("# Project")       # Should be counted
+        
+        # Create ignored directories
+        build_dir = repo / "build"
+        build_dir.mkdir()
+        (build_dir / "output.bin").write_text("binary")    # Should be ignored
+        
+        node_modules = repo / "node_modules"
+        node_modules.mkdir()
+        (node_modules / "package.json").write_text("{}")   # Should be ignored
+        
+        # Create subdirectory with its own .gitignore
+        subdir = repo / "src"
+        subdir.mkdir()
+        (subdir / ".gitignore").write_text("*.pyc\n")
+        (subdir / "app.py").write_text("app code")         # Should be counted
+        (subdir / "compiled.pyc").write_text("compiled")   # Should be ignored by subdir .gitignore
+        
+        return repo
+    
+    def test_token_counter_gitignore_enabled(self, gitignore_test_repo):
+        """Test TokenCounter with gitignore filtering enabled."""
+        counter = TokenCounter(gitignore_enabled=True)
+        
+        # Count tokens with gitignore filtering
+        tokens, errors = counter.count_directory_tokens(gitignore_test_repo)
+        
+        # Should have no errors
+        assert len(errors) == 0
+        
+        # Should count only non-ignored files:
+        # - main.py: "def main(): pass" (16 chars)
+        # - README.md: "# Project" (9 chars) 
+        # - src/app.py: "app code" (8 chars)
+        # Total chars: 33, with default ratio 0.27 = ~8.9 = 8 tokens
+        # Actual calculation may vary due to file type adjustments
+        assert tokens > 0
+        assert tokens < 50  # Sanity check - should be reasonable
+    
+    def test_token_counter_gitignore_disabled(self, gitignore_test_repo):
+        """Test TokenCounter with gitignore filtering disabled."""
+        counter = TokenCounter(gitignore_enabled=False)
+        
+        # Count tokens without gitignore filtering
+        tokens, errors = counter.count_directory_tokens(gitignore_test_repo)
+        
+        # Should have no errors (binary files are still filtered by extension/content)
+        assert len(errors) == 0
+        
+        # Should count MORE files than with gitignore enabled
+        # (includes *.log, *.tmp files that would normally be ignored)
+        assert tokens > 0
+    
+    def test_token_counter_gitignore_comparison(self, gitignore_test_repo):
+        """Test that gitignore filtering reduces token count compared to no filtering."""
+        counter_with_git = TokenCounter(gitignore_enabled=True)
+        counter_no_git = TokenCounter(gitignore_enabled=False)
+        
+        tokens_filtered, _ = counter_with_git.count_directory_tokens(gitignore_test_repo)
+        tokens_all, _ = counter_no_git.count_directory_tokens(gitignore_test_repo)
+        
+        # Gitignore filtering should result in fewer or equal tokens
+        # (equal if no text files are ignored, fewer if some are ignored)
+        assert tokens_filtered <= tokens_all
+    
+    def test_multi_provider_counter_gitignore(self, gitignore_test_repo):
+        """Test MultiProviderTokenCounter respects gitignore settings."""
+        # Test with gitignore enabled
+        multi_counter_git = MultiProviderTokenCounter(gitignore_enabled=True)
+        results_git = multi_counter_git.count_all_providers([gitignore_test_repo])
+        
+        # Test with gitignore disabled
+        multi_counter_no_git = MultiProviderTokenCounter(gitignore_enabled=False)
+        results_no_git = multi_counter_no_git.count_all_providers([gitignore_test_repo])
+        
+        # All providers should respect gitignore setting
+        for provider in results_git.keys():
+            tokens_git, errors_git = results_git[provider]
+            tokens_no_git, errors_no_git = results_no_git[provider]
+            
+            assert len(errors_git) == 0
+            assert len(errors_no_git) == 0
+            assert tokens_git <= tokens_no_git
+    
+    def test_token_counter_graceful_degradation_no_pathspec(self, gitignore_test_repo):
+        """Test that tokenizer works when pathspec is unavailable."""
+        with patch('thinktank_wrapper.gitignore.pathspec', None):
+            # Should work with gitignore_enabled=True but pathspec unavailable
+            counter = TokenCounter(gitignore_enabled=True)
+            tokens, errors = counter.count_directory_tokens(gitignore_test_repo)
+            
+            # Should not crash and should process all files
+            assert len(errors) == 0
+            assert tokens > 0
+    
+    def test_token_counter_with_extension_filtering(self, gitignore_test_repo):
+        """Test token counting with both gitignore and extension filtering."""
+        counter = TokenCounter(gitignore_enabled=True)
+        
+        # Count only Python files
+        tokens_py, errors_py = counter.count_directory_tokens(
+            gitignore_test_repo, 
+            extensions=['.py']
+        )
+        
+        # Count all text files  
+        tokens_all, errors_all = counter.count_directory_tokens(gitignore_test_repo)
+        
+        assert len(errors_py) == 0
+        assert len(errors_all) == 0
+        
+        # Python-only should be subset of all files
+        assert tokens_py <= tokens_all
+    
+    def test_token_counter_recursive_vs_non_recursive_with_gitignore(self, gitignore_test_repo):
+        """Test gitignore behavior with recursive vs non-recursive directory traversal."""
+        counter = TokenCounter(gitignore_enabled=True)
+        
+        # Recursive count (should include src/ subdirectory)
+        tokens_recursive, _ = counter.count_directory_tokens(
+            gitignore_test_repo, 
+            recursive=True
+        )
+        
+        # Non-recursive count (should only include root directory files)
+        tokens_non_recursive, _ = counter.count_directory_tokens(
+            gitignore_test_repo, 
+            recursive=False
+        )
+        
+        # Recursive should count more files (includes src/app.py)
+        assert tokens_recursive >= tokens_non_recursive

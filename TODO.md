@@ -13,7 +13,7 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 - [x] Integrate gitignore checking in `tokenizer.py` when processing directories
 - [x] Add `--no-gitignore` flag to bypass gitignore (similar to ripgrep)
 - [x] Handle nested .gitignore files correctly
-- [ ] Add tests for gitignore functionality
+- [x] Add tests for gitignore functionality
 
 ### 2. Implement Binary File Detection
 **Problem**: Attempts to read binary files as UTF-8, causing errors or nonsense token counts
