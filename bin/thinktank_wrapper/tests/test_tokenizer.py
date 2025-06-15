@@ -502,6 +502,302 @@ def test_token_counting_disabled_by_env():
     assert config.ENABLE_TOKEN_COUNTING is False
 
 
+class TestBinaryFileHandlingComprehensive:
+    """Comprehensive tests for binary file handling in real-world scenarios."""
+    
+    @pytest.fixture
+    def comprehensive_binary_test_files(self, tmp_path):
+        """Create a comprehensive set of test files for binary detection testing."""
+        files = {}
+        
+        # Real binary file patterns
+        
+        # 1. Executable files with real headers
+        elf_file = tmp_path / "linux_executable"
+        elf_file.write_bytes(b'\x7fELF\x02\x01\x01\x00' + b'\x00' * 56 + b'Hello World')
+        files['elf_executable'] = elf_file
+        
+        pe_file = tmp_path / "windows_app.exe"  
+        pe_file.write_bytes(b'MZ' + b'\x00' * 58 + b'This program cannot be run in DOS mode')
+        files['pe_executable'] = pe_file
+        
+        # 2. Image files with real headers
+        png_file = tmp_path / "test_image.png"
+        png_file.write_bytes(b'\x89PNG\r\n\x1a\n' + b'\x00' * 20 + b'image data')
+        files['png_image'] = png_file
+        
+        jpeg_file = tmp_path / "photo.jpg"
+        jpeg_file.write_bytes(b'\xff\xd8\xff\xe0' + b'JFIF' + b'\x00' * 100)
+        files['jpeg_image'] = jpeg_file
+        
+        # 3. Archive files
+        zip_file = tmp_path / "archive.zip" 
+        zip_file.write_bytes(b'PK\x03\x04' + b'\x00' * 26 + b'archive content')
+        files['zip_archive'] = zip_file
+        
+        # 4. Audio files
+        mp3_file = tmp_path / "song.mp3"
+        mp3_file.write_bytes(b'ID3' + b'\x03\x00\x00\x00' + b'\x00' * 100)
+        files['mp3_audio'] = mp3_file
+        
+        # 5. Font files
+        ttf_file = tmp_path / "font.ttf"
+        ttf_file.write_bytes(b'\x00\x01\x00\x00' + b'\x00' * 20 + b'font data')
+        files['ttf_font'] = ttf_file
+        
+        # 6. Mixed content files (mostly text with some binary)
+        mixed_file = tmp_path / "mixed_content.dat"
+        mixed_content = b'Text content at start\n' + b'\x00\x01\x02' + b'more text\n' + b'\xff\xfe'
+        mixed_file.write_bytes(mixed_content)
+        files['mixed_content'] = mixed_file
+        
+        # 7. Large text file (performance test)
+        large_text = tmp_path / "large_text.log"
+        large_content = "This is a test line.\n" * 10000  # ~200KB of text
+        large_text.write_text(large_content)
+        files['large_text'] = large_text
+        
+        # 8. Text files that might be confused for binary
+        script_no_ext = tmp_path / "install_script"
+        script_no_ext.write_text("#!/bin/bash\necho 'Installing application...'\n")
+        files['script_no_ext'] = script_no_ext
+        
+        json_no_ext = tmp_path / "config_file"
+        json_no_ext.write_text('{"version": "1.0", "settings": {"debug": true}}')
+        files['json_no_ext'] = json_no_ext
+        
+        # 9. Files with misleading extensions
+        text_with_bin_ext = tmp_path / "actually_text.bin"
+        text_with_bin_ext.write_text("This file has a .bin extension but contains only text")
+        files['text_with_bin_ext'] = text_with_bin_ext
+        
+        binary_with_txt_ext = tmp_path / "actually_binary.txt"
+        binary_with_txt_ext.write_bytes(b'Binary data: \x00\x01\x02\xff\xfe\xfd')
+        files['binary_with_txt_ext'] = binary_with_txt_ext
+        
+        # 10. Empty and minimal files
+        empty_with_binary_ext = tmp_path / "empty.exe"
+        empty_with_binary_ext.write_bytes(b'')
+        files['empty_binary_ext'] = empty_with_binary_ext
+        
+        minimal_binary = tmp_path / "minimal.bin"
+        minimal_binary.write_bytes(b'\x00')  # Just a null byte
+        files['minimal_binary'] = minimal_binary
+        
+        return files
+    
+    def test_real_binary_file_detection(self, comprehensive_binary_test_files):
+        """Test detection of real binary file formats."""
+        # Real binary files should be detected correctly
+        assert is_binary_file(comprehensive_binary_test_files['elf_executable'])
+        assert is_binary_file(comprehensive_binary_test_files['pe_executable'])
+        assert is_binary_file(comprehensive_binary_test_files['png_image'])
+        assert is_binary_file(comprehensive_binary_test_files['jpeg_image'])
+        assert is_binary_file(comprehensive_binary_test_files['zip_archive'])
+        assert is_binary_file(comprehensive_binary_test_files['mp3_audio'])
+        assert is_binary_file(comprehensive_binary_test_files['ttf_font'])
+    
+    def test_mixed_content_detection(self, comprehensive_binary_test_files):
+        """Test detection of files with mixed text/binary content."""
+        # Mixed content with null bytes should be detected as binary
+        assert is_binary_file(comprehensive_binary_test_files['mixed_content'])
+        
+        # Binary content with text extension should still be detected as binary
+        assert is_binary_file(comprehensive_binary_test_files['binary_with_txt_ext'])
+    
+    def test_text_file_edge_cases(self, comprehensive_binary_test_files):
+        """Test text files that might be misidentified."""
+        # Large text files should not be detected as binary
+        assert not is_binary_file(comprehensive_binary_test_files['large_text'])
+        
+        # Scripts without extensions should not be detected as binary
+        assert not is_binary_file(comprehensive_binary_test_files['script_no_ext'])
+        
+        # JSON files without extensions should not be detected as binary
+        assert not is_binary_file(comprehensive_binary_test_files['json_no_ext'])
+    
+    def test_misleading_extensions(self, comprehensive_binary_test_files):
+        """Test files with misleading extensions."""
+        # Text with binary extension - extension check should win
+        # (.bin is not in BINARY_EXTENSIONS, so should fall through to content detection)
+        text_bin_result = is_binary_file(comprehensive_binary_test_files['text_with_bin_ext'])
+        # This depends on whether .bin is in BINARY_EXTENSIONS
+        if '.bin' in BINARY_EXTENSIONS:
+            assert text_bin_result  # Extension would win
+        else:
+            assert not text_bin_result  # Content analysis would win
+    
+    def test_empty_file_edge_cases(self, comprehensive_binary_test_files):
+        """Test empty files with various extensions."""
+        # Empty file with binary extension should be detected based on extension
+        empty_binary = comprehensive_binary_test_files['empty_binary_ext']
+        assert is_binary_file(empty_binary)  # .exe is in BINARY_EXTENSIONS
+        
+        # Minimal binary file should be detected as binary
+        assert is_binary_file(comprehensive_binary_test_files['minimal_binary'])
+    
+    def test_detection_method_precedence(self, comprehensive_binary_test_files):
+        """Test that detection methods are applied in correct order."""
+        # Test a file where we can verify the precedence
+        test_file = comprehensive_binary_test_files['pe_executable']  # .exe extension + binary content
+        
+        # Extension should be checked first and return True
+        ext_result = is_binary_by_extension(test_file)
+        assert ext_result  # .exe should be in BINARY_EXTENSIONS
+        
+        # Full detection should also return True (via extension, not content)
+        full_result = is_binary_file(test_file)
+        assert full_result
+    
+    def test_performance_with_large_files(self, comprehensive_binary_test_files):
+        """Test performance characteristics with larger files."""
+        large_file = comprehensive_binary_test_files['large_text']
+        
+        # Should complete quickly (content analysis stops at first 8KB)
+        import time
+        start = time.time()
+        result = is_binary_file(large_file)
+        elapsed = time.time() - start
+        
+        assert not result  # Should be detected as text
+        assert elapsed < 1.0  # Should complete quickly (less than 1 second)
+    
+    def test_tokenizer_integration_with_comprehensive_files(self, comprehensive_binary_test_files):
+        """Test TokenCounter integration with various binary file types."""
+        counter = TokenCounter()
+        
+        # Binary files should return 0 tokens
+        binary_files = [
+            'elf_executable', 'pe_executable', 'png_image', 'jpeg_image',
+            'zip_archive', 'mp3_audio', 'ttf_font', 'mixed_content'
+        ]
+        
+        for file_key in binary_files:
+            file_path = comprehensive_binary_test_files[file_key]
+            tokens, error = counter.count_file_tokens(file_path)
+            assert tokens == 0, f"Binary file {file_key} should have 0 tokens"
+            assert error is None, f"Binary file {file_key} should not generate errors"
+        
+        # Text files should return > 0 tokens
+        text_files = ['large_text', 'script_no_ext', 'json_no_ext']
+        
+        for file_key in text_files:
+            file_path = comprehensive_binary_test_files[file_key]
+            tokens, error = counter.count_file_tokens(file_path)
+            assert tokens > 0, f"Text file {file_key} should have > 0 tokens"
+            assert error is None, f"Text file {file_key} should not generate errors"
+    
+    def test_directory_scanning_with_mixed_content(self, comprehensive_binary_test_files):
+        """Test directory scanning with mixed binary and text files."""
+        counter = TokenCounter()
+        
+        # Get the directory containing all test files
+        test_dir = list(comprehensive_binary_test_files.values())[0].parent
+        
+        # Count tokens in the directory
+        total_tokens, errors = counter.count_directory_tokens(test_dir, recursive=False)
+        
+        # Should have no errors
+        assert len(errors) == 0
+        
+        # Should have some tokens (from text files) but not from binary files
+        assert total_tokens > 0
+        
+        # Manually verify by counting expected text files
+        expected_text_files = ['large_text', 'script_no_ext', 'json_no_ext']
+        manual_total = 0
+        for file_key in expected_text_files:
+            file_path = comprehensive_binary_test_files[file_key]
+            tokens, error = counter.count_file_tokens(file_path)
+            if error is None:
+                manual_total += tokens
+        
+        # Directory count should be close to manual count
+        # (might differ due to other files in directory, but should be in same ballpark)
+        assert total_tokens >= manual_total
+    
+    def test_mime_type_accuracy_on_real_files(self, comprehensive_binary_test_files):
+        """Test MIME type detection accuracy on real file formats."""
+        if not MAGIC_AVAILABLE:
+            pytest.skip("python-magic not available")
+        
+        # Test specific file format MIME detection
+        test_cases = [
+            ('png_image', True),    # Should detect as binary
+            ('jpeg_image', True),   # Should detect as binary
+            ('script_no_ext', False),  # Should detect as text (script)
+            ('json_no_ext', False),    # Should detect as text (JSON)
+        ]
+        
+        for file_key, expected_binary in test_cases:
+            file_path = comprehensive_binary_test_files[file_key]
+            mime_result = is_binary_by_mime_type(file_path)
+            
+            if mime_result is not None:  # Only test if MIME detection worked
+                assert mime_result == expected_binary, f"MIME detection failed for {file_key}"
+    
+    def test_error_handling_edge_cases(self, tmp_path):
+        """Test error handling for various edge cases."""
+        # Test with directory instead of file
+        test_dir = tmp_path / "test_directory"
+        test_dir.mkdir()
+        assert not is_binary_file(test_dir)
+        
+        # Test with non-existent file
+        assert not is_binary_file(tmp_path / "nonexistent.file")
+        
+        # Test with file that has read permission issues (if possible)
+        restricted_file = tmp_path / "restricted.bin"
+        restricted_file.write_bytes(b"binary content")
+        
+        try:
+            # Try to make file unreadable (may not work on all systems)
+            restricted_file.chmod(0o000)
+            
+            # Should handle gracefully
+            result = is_binary_file(restricted_file)
+            assert isinstance(result, bool)  # Should return bool, not crash
+            
+        except (OSError, PermissionError):
+            # Skip if we can't modify permissions
+            pass
+        finally:
+            # Restore permissions for cleanup
+            try:
+                restricted_file.chmod(0o644)
+            except (OSError, PermissionError):
+                pass
+    
+    def test_chunk_size_parameter(self, comprehensive_binary_test_files):
+        """Test that chunk_size parameter works correctly."""
+        large_binary_file = comprehensive_binary_test_files['mixed_content']
+        
+        # Test with different chunk sizes
+        result_small = is_binary_file(large_binary_file, chunk_size=10)
+        result_large = is_binary_file(large_binary_file, chunk_size=8192)
+        
+        # Both should return True (has null bytes near beginning)
+        assert result_small
+        assert result_large
+        
+        # Create a file with null byte far from beginning
+        late_binary = comprehensive_binary_test_files['large_text'].parent / "late_binary.txt"
+        content = b"A" * 1000 + b"\x00" + b"B" * 1000  # Null byte at position 1000
+        late_binary.write_bytes(content)
+        
+        try:
+            # Small chunk size might miss the null byte
+            result_small_chunk = is_binary_file(late_binary, chunk_size=100)
+            # Large chunk size should find it  
+            result_large_chunk = is_binary_file(late_binary, chunk_size=2000)
+            
+            assert not result_small_chunk  # Might miss the null byte
+            assert result_large_chunk      # Should find the null byte
+            
+        finally:
+            late_binary.unlink()
+
+
 class TestTokenizerGitignoreIntegration:
     """Test gitignore integration in tokenizer module."""
     

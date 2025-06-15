@@ -23,7 +23,7 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 - [x] Add mime-type detection as fallback
 - [ ] Log skipped binary files in verbose mode
 - [ ] Add `--include-binary` flag to force processing (with warning)
-- [ ] Add tests for binary file handling
+- [x] Add tests for binary file handling
 
 ### 3. Fix Hardcoded Model Selection
 **Problem**: tt-plan hardcodes `--model-set high_context`
