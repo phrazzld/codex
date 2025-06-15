@@ -10,6 +10,7 @@ from thinktank_wrapper.context_finder import (
     find_context_files,
     find_glance_files,
     find_philosophy_files,
+    find_leyline_files,
     validate_paths,
 )
 
@@ -162,3 +163,154 @@ def test_validate_paths(temp_dir: Path):
     
     # Assert the result contains only the valid path
     assert result == [str(test_file.absolute())]
+
+
+class TestGitignoreIntegration:
+    """Test gitignore filtering integration in context finder."""
+
+    def test_find_glance_files_with_gitignore_filtering(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        """Test that find_glance_files respects gitignore when enabled."""
+        # Create a repository structure with .gitignore
+        repo_dir = tmp_path / "repo"
+        repo_dir.mkdir()
+        
+        # Create .gitignore
+        gitignore = repo_dir / ".gitignore"
+        gitignore.write_text("ignored/\n*.log\n")
+        
+        # Create glance.md files - some should be ignored
+        (repo_dir / "glance.md").write_text("# Root glance")
+        
+        ignored_dir = repo_dir / "ignored"
+        ignored_dir.mkdir()
+        (ignored_dir / "glance.md").write_text("# Ignored glance")
+        
+        kept_dir = repo_dir / "src"
+        kept_dir.mkdir()
+        (kept_dir / "glance.md").write_text("# Src glance")
+        
+        # Change to repo directory
+        monkeypatch.chdir(repo_dir)
+        
+        # Test with gitignore enabled (default)
+        result_filtered = find_glance_files([str(repo_dir)], gitignore_enabled=True)
+        result_no_filter = find_glance_files([str(repo_dir)], gitignore_enabled=False)
+        
+        # With gitignore: should exclude ignored/ files
+        expected_filtered = [
+            str((repo_dir / "glance.md").absolute()),
+            str((kept_dir / "glance.md").absolute()),
+        ]
+        assert sorted(result_filtered) == sorted(expected_filtered)
+        
+        # Without gitignore: should include all files
+        expected_all = expected_filtered + [str((ignored_dir / "glance.md").absolute())]
+        assert sorted(result_no_filter) == sorted(expected_all)
+
+    def test_find_leyline_files_with_gitignore_filtering(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        """Test that find_leyline_files respects gitignore when enabled."""
+        # Create a repository structure with leyline docs
+        repo_dir = tmp_path / "repo"
+        docs_dir = repo_dir / "docs"
+        leyline_dir = docs_dir / "leyline"
+        leyline_dir.mkdir(parents=True)
+        
+        # Create .gitignore that ignores temp files
+        gitignore = repo_dir / ".gitignore"
+        gitignore.write_text("*.tmp\ntemp/\n")
+        
+        # Create leyline files - some should be ignored
+        (leyline_dir / "index.md").write_text("# Index")
+        (leyline_dir / "temp.tmp").write_text("# Temp file")  # Should be ignored
+        
+        temp_dir = leyline_dir / "temp"
+        temp_dir.mkdir()
+        (temp_dir / "ignored.md").write_text("# Ignored")  # Should be ignored
+        
+        # Change to repo directory 
+        monkeypatch.chdir(repo_dir)
+        
+        # Test with gitignore enabled
+        result_filtered = find_leyline_files(gitignore_enabled=True)
+        result_no_filter = find_leyline_files(gitignore_enabled=False)
+        
+        # With gitignore: should exclude .tmp files and temp/ directory
+        expected_filtered = [str((leyline_dir / "index.md").absolute())]
+        assert sorted(result_filtered) == sorted(expected_filtered)
+        
+        # Without gitignore: should include all files
+        expected_all = [
+            str((leyline_dir / "index.md").absolute()),
+            str((leyline_dir / "temp.tmp").absolute()),
+            str((temp_dir / "ignored.md").absolute()),
+        ]
+        assert sorted(result_no_filter) == sorted(expected_all)
+
+    def test_find_context_files_gitignore_integration(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        """Test that find_context_files properly passes gitignore setting through."""
+        # Create repository structure
+        repo_dir = tmp_path / "repo"
+        repo_dir.mkdir()
+        
+        # Create .gitignore
+        gitignore = repo_dir / ".gitignore"
+        gitignore.write_text("*.log\n")
+        
+        # Create glance file that should be ignored
+        (repo_dir / "debug.log").write_text("log content")
+        (repo_dir / "glance.md").write_text("# Glance")
+        
+        # Create explicit file that should be ignored
+        ignored_file = repo_dir / "test.log" 
+        ignored_file.write_text("test log")
+        
+        # Change to repo directory
+        monkeypatch.chdir(repo_dir)
+        
+        # Test with gitignore enabled
+        result_filtered = find_context_files(
+            include_glance=True,
+            include_leyline=False,
+            explicit_paths=[str(ignored_file)],
+            gitignore_enabled=True
+        )
+        
+        # Test with gitignore disabled
+        result_no_filter = find_context_files(
+            include_glance=True,
+            include_leyline=False,
+            explicit_paths=[str(ignored_file)],
+            gitignore_enabled=False
+        )
+        
+        # With gitignore: should exclude .log files
+        expected_filtered = [str((repo_dir / "glance.md").absolute())]
+        assert sorted(result_filtered) == sorted(expected_filtered)
+        
+        # Without gitignore: should include all files
+        expected_all = [
+            str((repo_dir / "glance.md").absolute()),
+            str(ignored_file.absolute()),
+        ]
+        assert sorted(result_no_filter) == sorted(expected_all)
+
+    def test_gitignore_graceful_degradation(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch):
+        """Test that gitignore filtering gracefully degrades when pathspec is unavailable."""
+        # Mock pathspec as unavailable
+        import thinktank_wrapper.context_finder as cf_module
+        
+        # Create a repository structure
+        repo_dir = tmp_path / "repo"
+        repo_dir.mkdir()
+        (repo_dir / "glance.md").write_text("# Glance")
+        
+        # Change to repo directory
+        monkeypatch.chdir(repo_dir)
+        
+        # Test that it works even when pathspec is unavailable
+        # (The GitignoreFilter will be disabled but no errors should occur)
+        result = find_glance_files([str(repo_dir)], gitignore_enabled=True)
+        
+        # Should still find the glance file
+        expected = [str((repo_dir / "glance.md").absolute())]
+        assert result == expected

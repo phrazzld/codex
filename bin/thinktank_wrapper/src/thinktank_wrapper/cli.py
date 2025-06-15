@@ -71,6 +71,11 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         action="store_true",
         help="Include leyline documents from docs/leyline/; if not found, falls back to DEVELOPMENT_PHILOSOPHY*.md files in docs/",
     )
+    context_group.add_argument(
+        "--no-gitignore",
+        action="store_true", 
+        help="Disable gitignore filtering when finding context files",
+    )
     
     # Execution options
     execution_group = parser.add_argument_group("Execution Options")

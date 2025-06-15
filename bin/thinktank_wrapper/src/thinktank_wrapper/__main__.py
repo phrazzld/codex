@@ -57,10 +57,13 @@ def main(args: Optional[List[str]] = None) -> int:
         cli.validate_args(parsed_args)
         
         # Find context files based on flags and explicit paths
+        # Gitignore is enabled by default, disabled by --no-gitignore flag
+        gitignore_enabled = not getattr(parsed_args, 'no_gitignore', False)
         context_files = context_finder.find_context_files(
             include_glance=parsed_args.include_glance,
             include_leyline=parsed_args.include_leyline,
             explicit_paths=parsed_args.context_paths,
+            gitignore_enabled=gitignore_enabled,
         )
         parsed_args.context_files = context_files
         logger.info(f"Found {len(context_files)} context files", extra={

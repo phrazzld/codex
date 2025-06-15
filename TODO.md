@@ -9,7 +9,7 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 **Problem**: Currently processes all files, including those in .gitignore (node_modules, build artifacts, etc.)
 **Solution**:
 - [x] Add gitignore parsing library (e.g., `pathspec` or `gitignore-parser`)
-- [ ] Integrate gitignore checking in `context_finder.py` when collecting files
+- [x] Integrate gitignore checking in `context_finder.py` when collecting files
 - [ ] Integrate gitignore checking in `tokenizer.py` when processing directories
 - [ ] Add `--no-gitignore` flag to bypass gitignore (similar to ripgrep)
 - [ ] Handle nested .gitignore files correctly

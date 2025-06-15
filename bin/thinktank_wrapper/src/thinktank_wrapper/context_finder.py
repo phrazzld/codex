@@ -7,19 +7,21 @@ and DEVELOPMENT_PHILOSOPHY*.md based on command-line flags.
 import logging
 import os
 import pathlib
-from typing import List, Set
+from typing import List, Optional, Set
 
 from thinktank_wrapper import config
+from thinktank_wrapper.gitignore import GitignoreFilter
 
 logger = logging.getLogger(__name__)
 
 
-def find_glance_files(search_paths: List[str]) -> List[str]:
+def find_glance_files(search_paths: List[str], gitignore_enabled: bool = True) -> List[str]:
     """Find glance.md files in the provided search paths.
     
     Args:
         search_paths: List of paths to search in. If empty, the current
             working directory is used.
+        gitignore_enabled: Whether to respect .gitignore rules when finding files.
             
     Returns:
         A list of absolute paths to glance.md files found.
@@ -29,6 +31,18 @@ def find_glance_files(search_paths: List[str]) -> List[str]:
     # If no explicit search paths are provided, use the current working directory
     if not search_paths:
         search_paths = [os.getcwd()]
+    
+    # Set up gitignore filtering if enabled
+    gitignore_filter: Optional[GitignoreFilter] = None
+    if gitignore_enabled:
+        try:
+            gitignore_filter = GitignoreFilter(os.getcwd())
+            if not gitignore_filter.is_enabled():
+                logger.debug("Gitignore filtering requested but pathspec not available")
+                gitignore_filter = None
+        except Exception as e:
+            logger.warning(f"Failed to initialize gitignore filtering: {e}")
+            gitignore_filter = None
     
     # Log the search paths
     logger.debug(f"Searching for glance.md files in {len(search_paths)} paths")
@@ -43,7 +57,12 @@ def find_glance_files(search_paths: List[str]) -> List[str]:
         
         # If the path is a file (not a directory), check if it's a glance.md file
         if path.is_file() and path.name.lower() == "glance.md":
-            result.add(str(path.absolute()))
+            abs_path = str(path.absolute())
+            # Apply gitignore filtering if enabled
+            if gitignore_filter is None or not gitignore_filter.should_ignore(abs_path):
+                result.add(abs_path)
+            else:
+                logger.debug(f"Gitignore filtered out glance file: {abs_path}")
             continue
         
         # Otherwise, search for glance.md files in the directory (up to MAX_GLANCE_DEPTH levels deep)
@@ -57,7 +76,12 @@ def find_glance_files(search_paths: List[str]) -> List[str]:
                 depth = len(rel_path.parts)
                 
                 if depth <= config.MAX_GLANCE_DEPTH:
-                    result.add(str(glance_path.absolute()))
+                    abs_path = str(glance_path.absolute())
+                    # Apply gitignore filtering if enabled
+                    if gitignore_filter is None or not gitignore_filter.should_ignore(abs_path):
+                        result.add(abs_path)
+                    else:
+                        logger.debug(f"Gitignore filtered out glance file: {abs_path}")
     
     # Sort the results for deterministic behavior
     return sorted(result)
@@ -91,16 +115,31 @@ def find_philosophy_files() -> List[str]:
     return sorted(result)
 
 
-def find_leyline_files() -> List[str]:
+def find_leyline_files(gitignore_enabled: bool = True) -> List[str]:
     """Find leyline documents with fallback to philosophy documents.
     
     First tries to find leyline documents in docs/leyline/ in the current working directory.
     If none are found, falls back to DEVELOPMENT_PHILOSOPHY*.md files in the same docs directory.
     
+    Args:
+        gitignore_enabled: Whether to respect .gitignore rules when finding files.
+    
     Returns:
         A list of absolute paths to leyline or philosophy .md files found.
     """
     result: Set[str] = set()
+    
+    # Set up gitignore filtering if enabled
+    gitignore_filter: Optional[GitignoreFilter] = None
+    if gitignore_enabled:
+        try:
+            gitignore_filter = GitignoreFilter(os.getcwd())
+            if not gitignore_filter.is_enabled():
+                logger.debug("Gitignore filtering requested but pathspec not available")
+                gitignore_filter = None
+        except Exception as e:
+            logger.warning(f"Failed to initialize gitignore filtering: {e}")
+            gitignore_filter = None
     
     # Look in current working directory
     current_dir = pathlib.Path(os.getcwd())
@@ -111,7 +150,12 @@ def find_leyline_files() -> List[str]:
         # Search for all .md files recursively in the leyline directory
         for leyline_path in leyline_dir.rglob("*.md"):
             if leyline_path.is_file():
-                result.add(str(leyline_path.absolute()))
+                abs_path = str(leyline_path.absolute())
+                # Apply gitignore filtering if enabled
+                if gitignore_filter is None or not gitignore_filter.should_ignore(abs_path):
+                    result.add(abs_path)
+                else:
+                    logger.debug(f"Gitignore filtered out leyline file: {abs_path}")
         
         if result:
             logger.info(f"Found {len(result)} leyline files in {leyline_dir}")
@@ -124,7 +168,12 @@ def find_leyline_files() -> List[str]:
         philosophy_pattern = "DEVELOPMENT_PHILOSOPHY*.md"
         for philosophy_path in docs_dir.glob(philosophy_pattern):
             if philosophy_path.is_file():
-                result.add(str(philosophy_path.absolute()))
+                abs_path = str(philosophy_path.absolute())
+                # Apply gitignore filtering if enabled
+                if gitignore_filter is None or not gitignore_filter.should_ignore(abs_path):
+                    result.add(abs_path)
+                else:
+                    logger.debug(f"Gitignore filtered out philosophy file: {abs_path}")
         
         logger.info(f"Found {len(result)} philosophy files as fallback in {docs_dir}")
     else:
@@ -137,7 +186,8 @@ def find_leyline_files() -> List[str]:
 def find_context_files(
     include_glance: bool, 
     include_leyline: bool,
-    explicit_paths: List[str]
+    explicit_paths: List[str],
+    gitignore_enabled: bool = True
 ) -> List[str]:
     """Find all context files based on flags and explicit paths.
     
@@ -145,6 +195,7 @@ def find_context_files(
         include_glance: Whether to include glance.md files.
         include_leyline: Whether to include leyline documents (with philosophy fallback).
         explicit_paths: Explicit file/directory paths to include as context.
+        gitignore_enabled: Whether to respect .gitignore rules when finding files.
         
     Returns:
         A list of absolute paths to context files.
@@ -153,22 +204,42 @@ def find_context_files(
     
     # Find glance files if requested
     if include_glance:
-        glance_files = find_glance_files(explicit_paths)
+        glance_files = find_glance_files(explicit_paths, gitignore_enabled=gitignore_enabled)
         result.update(glance_files)
         logger.info(f"Found {len(glance_files)} glance.md files")
     
     # Find leyline files (with philosophy fallback) if requested
     if include_leyline:
-        leyline_files = find_leyline_files()
+        leyline_files = find_leyline_files(gitignore_enabled=gitignore_enabled)
         result.update(leyline_files)
         # Note: logging is already handled in find_leyline_files()
     
     # Add explicit paths if they exist
+    # Set up gitignore filtering for explicit paths
+    gitignore_filter: Optional[GitignoreFilter] = None
+    if gitignore_enabled:
+        try:
+            gitignore_filter = GitignoreFilter(os.getcwd())
+            if not gitignore_filter.is_enabled():
+                gitignore_filter = None
+        except Exception as e:
+            logger.warning(f"Failed to initialize gitignore filtering for explicit paths: {e}")
+            gitignore_filter = None
+    
     valid_explicit_paths = []
     for path_str in explicit_paths:
         path = pathlib.Path(path_str)
         if path.exists():
-            valid_explicit_paths.append(str(path.absolute()))
+            abs_path = str(path.absolute())
+            # Only apply gitignore filtering to files, not directories
+            if path.is_file():
+                if gitignore_filter is None or not gitignore_filter.should_ignore(abs_path):
+                    valid_explicit_paths.append(abs_path)
+                else:
+                    logger.debug(f"Gitignore filtered out explicit file: {abs_path}")
+            else:
+                # Always include directories - they'll be processed by thinktank
+                valid_explicit_paths.append(abs_path)
         else:
             logger.warning(f"Explicit path does not exist: {path_str}")
     
