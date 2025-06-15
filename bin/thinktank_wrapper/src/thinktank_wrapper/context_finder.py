@@ -64,21 +64,16 @@ def find_glance_files(search_paths: List[str]) -> List[str]:
 
 
 def find_philosophy_files() -> List[str]:
-    """Find DEVELOPMENT_PHILOSOPHY*.md files in the codex docs directory.
+    """Find DEVELOPMENT_PHILOSOPHY*.md files in the current working directory's docs folder.
     
     Returns:
         A list of absolute paths to philosophy files found.
     """
     result: Set[str] = set()
     
-    # Get the CODEX_DIR environment variable
-    codex_dir = os.environ.get("CODEX_DIR")
-    if not codex_dir:
-        logger.warning("CODEX_DIR environment variable not set, cannot find philosophy files")
-        return []
-    
-    # Construct the docs directory path
-    docs_dir = pathlib.Path(codex_dir) / "docs"
+    # Look in current working directory's docs folder
+    current_dir = pathlib.Path(os.getcwd())
+    docs_dir = current_dir / "docs"
     if not docs_dir.exists() or not docs_dir.is_dir():
         logger.warning(f"Docs directory not found: {docs_dir}")
         return []
@@ -99,22 +94,19 @@ def find_philosophy_files() -> List[str]:
 def find_leyline_files() -> List[str]:
     """Find leyline documents with fallback to philosophy documents.
     
-    First tries to find leyline documents in docs/leyline/. If none are found,
-    falls back to DEVELOPMENT_PHILOSOPHY*.md files as a fallback.
+    First tries to find leyline documents in docs/leyline/ in the current working directory.
+    If none are found, falls back to DEVELOPMENT_PHILOSOPHY*.md files in the same docs directory.
     
     Returns:
         A list of absolute paths to leyline or philosophy .md files found.
     """
     result: Set[str] = set()
     
-    # Get the CODEX_DIR environment variable
-    codex_dir = os.environ.get("CODEX_DIR")
-    if not codex_dir:
-        logger.warning("CODEX_DIR environment variable not set, cannot find leyline or philosophy files")
-        return []
+    # Look in current working directory
+    current_dir = pathlib.Path(os.getcwd())
+    leyline_dir = current_dir / "docs" / "leyline"
     
     # First try: Look for leyline documents
-    leyline_dir = pathlib.Path(codex_dir) / "docs" / "leyline"
     if leyline_dir.exists() and leyline_dir.is_dir():
         # Search for all .md files recursively in the leyline directory
         for leyline_path in leyline_dir.rglob("*.md"):
@@ -127,7 +119,7 @@ def find_leyline_files() -> List[str]:
     
     # Fallback: Look for philosophy documents if no leyline files found
     logger.info("No leyline files found, falling back to philosophy documents")
-    docs_dir = pathlib.Path(codex_dir) / "docs"
+    docs_dir = current_dir / "docs"
     if docs_dir.exists() and docs_dir.is_dir():
         philosophy_pattern = "DEVELOPMENT_PHILOSOPHY*.md"
         for philosophy_path in docs_dir.glob(philosophy_pattern):
