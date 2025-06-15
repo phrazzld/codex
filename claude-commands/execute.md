@@ -10,6 +10,10 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
 - Mark as `[~]` in progress
 
 **2. Assess Complexity & Allocate Thinking**
+- **Leyline Pre-Processing**: Based on the selected ticket's domain and requirements:
+  - Identify relevant tenets (e.g., Modularity for component work, Testability for new features, Simplicity for refactoring)
+  - Query applicable bindings (language-specific, testing patterns, architecture guidelines)
+  - Internalize how these principles will guide implementation approach
 - **Analyze** the ticket's scope, risk, architectural impact, and design decisions required
 - **Scale thinking budget** based on complexity:
   - **Minimal**: Trivial fixes, typos, obvious changes → just execute

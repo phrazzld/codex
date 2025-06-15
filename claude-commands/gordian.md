@@ -20,6 +20,10 @@ Identify opportunities for radical simplification and creative destruction in th
   ```
 
 ## 2. Generate Gordian Opportunities
+- **Leyline Pre-Processing**: Focus on simplification-oriented principles:
+  - Query tenets emphasizing simplicity, orthogonality, and eliminating complexity
+  - Identify bindings that enforce minimalism and clean architecture
+  - Internalize radical simplification patterns from the leyline knowledge base
 - ***Think very hard*** about radical simplification opportunities by:
   - **Existence justification**: Challenge why each component/abstraction exists - could it be eliminated entirely?
   - **Radical simplification**: Identify opportunities to replace complex systems with dramatically simpler solutions

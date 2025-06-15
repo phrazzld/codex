@@ -8,6 +8,10 @@ Generate a detailed task breakdown from a high-level implementation plan into a 
 - Find relevant development philosophy and leyline documents.
 
 ## 2. Generate Task Breakdown
+- **Leyline Pre-Processing**: Query principles for task decomposition:
+  - Tenets related to modularity, incremental delivery, and testability
+  - Bindings for task organization and dependency management
+  - Synthesize guidelines for creating atomic, well-structured tasks
 - Create `TICKET-CONTEXT.md` with the plan details:
   ```markdown
   # Plan Details

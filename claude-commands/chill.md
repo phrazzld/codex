@@ -9,6 +9,10 @@
 - Revisit `DEVELOPMENT_PHILOSOPHY.md`, any appendix philosophy files, and leyline documents.
 
 ## 3. Self-Assessment
+- **Leyline Pre-Processing**: Query reflection and quality principles:
+  - Tenets for self-evaluation and course correction methodologies
+  - Bindings that define quality standards and best practices
+  - Internalize frameworks for assessing alignment with development philosophy
 - ***Think deeply*** about current approach:
     - Aligned with requirements?
     - Follows standards/principles?

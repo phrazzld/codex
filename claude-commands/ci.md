@@ -14,6 +14,10 @@ Check the CI status for the current PR and generate actionable resolution tasks 
 - Include build information, error logs, failed steps, and affected components
 
 ## 3. Generate Resolution Plan
+- **Leyline Pre-Processing**: Query failure analysis principles:
+  - Tenets related to quality gates, automation, and systematic problem-solving
+  - Bindings for CI/CD practices and failure remediation patterns
+  - Internalize debugging methodologies and root cause analysis approaches
 - **Think very hard** about the CI failure and its root causes:
   - Analyze the error messages and stack traces in detail
   - Identify the specific components or tests that are failing

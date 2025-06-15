@@ -12,6 +12,10 @@ Create an organized, expanded, and prioritized issue backlog based on comprehens
 - Read `DEVELOPMENT_PHILOSOPHY.md` and leyline documents to anchor new backlog items in project principles.
 
 ## 2. Generate Enhanced GitHub Issues with Thinktank
+- **Leyline Pre-Processing**: Query relevant leyline documents for grooming context:
+  - Tenets related to product value, continuous delivery, and maintainability
+  - Bindings for project organization and quality standards
+  - Synthesize principles that guide prioritization and task decomposition
 - Create `GROOM-CONTEXT.md` with grooming criteria and current issues information:
   ```markdown
   # Backlog Grooming Context

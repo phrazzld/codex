@@ -17,6 +17,10 @@ Generate creative technical brainstorming for a GitHub issue, exploring multiple
 - Create `WHITEBOARD-CONTEXT.md` containing the selected GitHub issue details
 
 ## 3. Generate Ideas
+- **Leyline Pre-Processing**: Gather creative problem-solving context:
+  - Query tenets that encourage innovation and alternative approaches
+  - Identify bindings that provide architectural flexibility patterns
+  - Internalize principles for evaluating solution trade-offs and complexity
 - ***Think very hard*** about creative technical brainstorming by exploring the full solution spectrum:
   - **Deep problem analysis**: Clarify the core problem beyond literal description, identify essential vs accidental complexity, challenge unstated assumptions
   - **Solution spectrum exploration**: Generate comprehensive range of solutions including:

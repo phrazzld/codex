@@ -20,6 +20,10 @@ Analyze the codebase against our development philosophy and leyline documents an
   ```
 
 ## 2. Generate Philosophy-Aligned Improvement Items
+- **Leyline Pre-Processing**: Before analyzing alignment:
+  - Dynamically query leyline tenets and bindings based on codebase characteristics
+  - Focus on principles relevant to identified components and patterns
+  - Internalize both philosophical foundations and practical implementation guidelines
 - **Think very hard** about the codebase alignment with our development philosophy and leyline documents:
   - Read and internalize `DEVELOPMENT_PHILOSOPHY.md`, all language-specific appendices, and leyline documents
   - Systematically analyze each major component/module against our core principles:

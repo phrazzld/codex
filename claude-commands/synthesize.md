@@ -13,6 +13,10 @@ Read every file in the thinktank directory completely. Pay attention to:
 - Gaps that some models addressed while others missed
 
 ## STRATEGIZE
+- **Leyline Pre-Processing**: Apply synthesis principles from leyline documents:
+  - Query tenets for decision-making frameworks and quality standards
+  - Identify bindings that guide synthesis methodology and conflict resolution
+  - Internalize principles for creating superior, actionable outputs
 Before writing, ultrathink:
 - What are the strongest, most actionable insights across all files?
 - Where do models complement each other vs. contradict?

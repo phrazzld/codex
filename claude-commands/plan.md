@@ -15,6 +15,10 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
 - Select an important issue ready for implementation, prioritizing those with higher priority labels if available.
 
 ## 2. Generate Plan with Deep Analysis
+- **Leyline Pre-Processing**: Based on selected issue characteristics:
+  - Query tenets relevant to the planning domain (architecture, design, testing)
+  - Identify bindings that constrain or guide the implementation approach
+  - Internalize quality standards and architectural patterns from leyline documents
 - Create `PLAN-CONTEXT.md` with the selected GitHub issue details:
   ```markdown
   # Task Description
