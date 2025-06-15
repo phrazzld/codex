@@ -19,7 +19,7 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 **Problem**: Attempts to read binary files as UTF-8, causing errors or nonsense token counts
 **Solution**:
 - [x] Add binary file detection before reading (check first 8KB for null bytes)
-- [ ] Create a list of known binary extensions to skip (.exe, .dll, .so, .dylib, .jar, .zip, .tar, .gz, .png, .jpg, .jpeg, .gif, .pdf, .ico, .wav, .mp3, .mp4, .avi, .mov, .ttf, .woff, .eot)
+- [x] Create a list of known binary extensions to skip (.exe, .dll, .so, .dylib, .jar, .zip, .tar, .gz, .png, .jpg, .jpeg, .gif, .pdf, .ico, .wav, .mp3, .mp4, .avi, .mov, .ttf, .woff, .eot)
 - [ ] Add mime-type detection as fallback
 - [ ] Log skipped binary files in verbose mode
 - [ ] Add `--include-binary` flag to force processing (with warning)

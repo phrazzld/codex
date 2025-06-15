@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from thinktank_wrapper.tokenizer import TokenCounter, MultiProviderTokenCounter, is_binary_file
+from thinktank_wrapper.tokenizer import TokenCounter, MultiProviderTokenCounter, is_binary_file, is_binary_by_extension, BINARY_EXTENSIONS
 
 
 @pytest.fixture
@@ -61,6 +61,19 @@ def binary_test_files(tmp_path):
     pseudobinary_file.write_text("This looks binary but has no null bytes")
     files['pseudobinary'] = pseudobinary_file
     
+    # Files with known binary extensions
+    exe_file = tmp_path / "app.exe"
+    exe_file.write_bytes(b"This is a fake exe file")
+    files['exe'] = exe_file
+    
+    pyc_file = tmp_path / "module.pyc"
+    pyc_file.write_bytes(b"Compiled Python bytecode")
+    files['pyc'] = pyc_file
+    
+    png_file = tmp_path / "image.png"
+    png_file.write_bytes(b"PNG image data")
+    files['png'] = png_file
+    
     return files
 
 
@@ -90,6 +103,64 @@ class TestBinaryFileDetection:
     def test_is_binary_file_nonexistent(self):
         """Test that non-existent files return False."""
         assert not is_binary_file("/non/existent/file.bin")
+    
+    def test_is_binary_file_with_known_extensions(self, binary_test_files):
+        """Test that files with known binary extensions are detected."""
+        # Files with binary extensions should be detected as binary
+        assert is_binary_file(binary_test_files['exe'])
+        assert is_binary_file(binary_test_files['pyc'])
+        assert is_binary_file(binary_test_files['png'])
+        
+        # Text files should not be detected as binary
+        assert not is_binary_file(binary_test_files['text'])
+
+
+class TestBinaryExtensionDetection:
+    """Test extension-based binary file detection."""
+    
+    def test_is_binary_by_extension_known_extensions(self):
+        """Test detection of known binary extensions."""
+        # Test various binary extensions
+        assert is_binary_by_extension("file.exe")
+        assert is_binary_by_extension("library.dll")
+        assert is_binary_by_extension("archive.zip")
+        assert is_binary_by_extension("image.png")
+        assert is_binary_by_extension("audio.mp3")
+        assert is_binary_by_extension("module.pyc")
+        assert is_binary_by_extension("app.class")
+        
+        # Test case insensitivity
+        assert is_binary_by_extension("FILE.EXE")
+        assert is_binary_by_extension("Image.PNG")
+    
+    def test_is_binary_by_extension_text_extensions(self):
+        """Test that text file extensions are not detected as binary."""
+        assert not is_binary_by_extension("script.py")
+        assert not is_binary_by_extension("document.txt")
+        assert not is_binary_by_extension("config.json")
+        assert not is_binary_by_extension("readme.md")
+        assert not is_binary_by_extension("style.css")
+        assert not is_binary_by_extension("script.js")
+    
+    def test_is_binary_by_extension_unknown_extensions(self):
+        """Test that unknown extensions are not detected as binary."""
+        assert not is_binary_by_extension("file.unknownext")
+        assert not is_binary_by_extension("file.xyz")
+        assert not is_binary_by_extension("file")  # No extension
+    
+    def test_binary_extensions_completeness(self):
+        """Test that BINARY_EXTENSIONS contains expected categories."""
+        # Check that we have extensions from major categories
+        assert '.exe' in BINARY_EXTENSIONS  # Executables
+        assert '.zip' in BINARY_EXTENSIONS  # Archives
+        assert '.png' in BINARY_EXTENSIONS  # Images
+        assert '.mp3' in BINARY_EXTENSIONS  # Audio
+        assert '.pdf' in BINARY_EXTENSIONS  # Documents
+        assert '.pyc' in BINARY_EXTENSIONS  # Compiled code
+        
+        # Check case consistency (all should be lowercase)
+        for ext in BINARY_EXTENSIONS:
+            assert ext == ext.lower(), f"Extension {ext} should be lowercase"
 
 
 class TestTokenCounter:

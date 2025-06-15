@@ -39,17 +39,62 @@ FILE_TYPE_ADJUSTMENTS = {
     ".html": 1.20,    # HTML similar to XML
 }
 
+# Known binary file extensions to skip during tokenization
+# These are file types that should never be processed as text
+BINARY_EXTENSIONS = {
+    # Executables and libraries
+    '.exe', '.dll', '.so', '.dylib', '.a', '.lib', '.o', '.obj',
+    # Archives and compressed files
+    '.zip', '.tar', '.gz', '.bz2', '.xz', '.7z', '.rar', '.jar', '.war', '.ear',
+    # Images
+    '.png', '.jpg', '.jpeg', '.gif', '.bmp', '.tiff', '.ico', '.svg', '.webp',
+    # Audio and video
+    '.mp3', '.wav', '.flac', '.aac', '.ogg', '.mp4', '.avi', '.mov', '.mkv', '.webm',
+    # Documents and fonts
+    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx', '.ttf', '.otf', '.woff', '.woff2', '.eot',
+    # Database files
+    '.db', '.sqlite', '.sqlite3', '.mdb',
+    # Compiled Python
+    '.pyc', '.pyo', '.pyd',
+    # Java compiled
+    '.class',
+    # Other binary formats
+    '.bin', '.dat', '.dump', '.img', '.iso', '.dmg',
+}
 
-def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192) -> bool:
-    """Check if a file is binary by looking for null bytes in the first chunk.
+
+def is_binary_by_extension(file_path: Union[str, Path]) -> bool:
+    """Check if a file is likely binary based on its extension.
     
     Args:
         file_path: Path to the file to check
-        chunk_size: Number of bytes to read for detection (default 8KB)
+        
+    Returns:
+        True if the file extension indicates it's binary, False otherwise
+    """
+    path = Path(file_path)
+    return path.suffix.lower() in BINARY_EXTENSIONS
+
+
+def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192) -> bool:
+    """Check if a file is binary by extension first, then by content analysis.
+    
+    This function uses a two-stage approach for efficiency:
+    1. Fast extension-based check for known binary types
+    2. Content analysis (null byte detection) for unknown extensions
+    
+    Args:
+        file_path: Path to the file to check
+        chunk_size: Number of bytes to read for content detection (default 8KB)
         
     Returns:
         True if the file appears to be binary, False otherwise
     """
+    # Fast path: check extension first
+    if is_binary_by_extension(file_path):
+        return True
+    
+    # Slower path: analyze file content for unknown extensions
     path = Path(file_path)
     
     try:
