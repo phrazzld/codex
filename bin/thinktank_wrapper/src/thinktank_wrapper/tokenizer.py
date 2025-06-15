@@ -36,6 +36,81 @@ from .gitignore import GitignoreFilter
 logger = logging.getLogger(__name__)
 
 
+def detect_file_encoding(file_path: Union[str, Path]) -> Optional[str]:
+    """Attempt to detect the encoding of a file.
+    
+    Args:
+        file_path: Path to the file to analyze
+        
+    Returns:
+        Detected encoding name, or None if detection failed
+    """
+    path = Path(file_path)
+    
+    try:
+        # Read a sample of the file to detect encoding
+        with open(path, 'rb') as f:
+            sample = f.read(8192)  # Read first 8KB
+        
+        if not sample:
+            return 'utf-8'  # Empty file, assume UTF-8
+        
+        # Try common encodings in order of likelihood
+        encodings_to_try = [
+            'utf-8', 'utf-8-sig',  # UTF-8 with and without BOM
+            'latin1', 'cp1252',    # Windows/Western European
+            'iso-8859-1',          # Latin-1
+            'utf-16', 'utf-32',    # Other Unicode encodings
+        ]
+        
+        for encoding in encodings_to_try:
+            try:
+                sample.decode(encoding)
+                return encoding
+            except UnicodeDecodeError:
+                continue
+        
+        # If nothing worked, it's likely binary
+        return None
+        
+    except (OSError, IOError):
+        return None
+
+
+def get_encoding_error_message(file_path: Union[str, Path], error: UnicodeDecodeError) -> str:
+    """Generate a user-friendly error message for encoding issues.
+    
+    Args:
+        file_path: Path to the file that couldn't be decoded
+        error: The UnicodeDecodeError that occurred
+        
+    Returns:
+        A user-friendly error message with actionable guidance
+    """
+    path = Path(file_path)
+    
+    # Try to detect the actual encoding
+    detected_encoding = detect_file_encoding(file_path)
+    
+    if detected_encoding is None:
+        return (
+            f"Unable to read '{path.name}': The file appears to contain binary data. "
+            f"If this should be a text file, it may be corrupted or use an unusual encoding."
+        )
+    elif detected_encoding != 'utf-8':
+        return (
+            f"Unable to read '{path.name}': The file uses {detected_encoding} encoding, not UTF-8. "
+            f"Try converting it to UTF-8 with: iconv -f {detected_encoding} -t utf-8 \"{path}\" > \"{path}.utf8\""
+        )
+    else:
+        # UTF-8 detection succeeded but reading failed - might be corrupted
+        return (
+            f"Unable to read '{path.name}': The file has UTF-8 encoding issues. "
+            f"It may be corrupted or contain mixed encodings. "
+            f"Try: file \"{path}\" to get more information about the file type."
+        )
+
+
 def get_file_access_error_message(file_path: Union[str, Path], error: Exception) -> str:
     """Generate a user-friendly error message for file access issues.
     
@@ -454,8 +529,13 @@ class TokenCounter:
             return 0, None
         
         try:
-            # Read file content
-            content = path.read_text(encoding='utf-8', errors='ignore')
+            # First try UTF-8 (strict mode)
+            try:
+                content = path.read_text(encoding='utf-8')
+            except UnicodeDecodeError as e:
+                # If UTF-8 fails, try to detect encoding and provide helpful error
+                error_message = get_encoding_error_message(file_path, e)
+                return 0, error_message
             
             # Get base token count
             base_tokens = self.count_text_tokens(content)
@@ -474,8 +554,6 @@ class TokenCounter:
         except (PermissionError, FileNotFoundError, IsADirectoryError, OSError, IOError) as e:
             error_message = get_file_access_error_message(file_path, e)
             return 0, error_message
-        except UnicodeDecodeError as e:
-            return 0, f"Unable to read '{path.name}': Text encoding error. The file may contain binary data or use an unsupported encoding."
         except Exception as e:
             # Catch any other unexpected errors
             return 0, f"Unexpected error reading '{path.name}': {str(e)}. Please report this issue."

@@ -12,7 +12,7 @@ from pathlib import Path
 from typing import List, Optional, Union
 
 from thinktank_wrapper import config
-from thinktank_wrapper.tokenizer import get_file_access_error_message
+from thinktank_wrapper.tokenizer import get_file_access_error_message, get_encoding_error_message
 
 
 class TemplateNotFoundError(Exception):
@@ -143,8 +143,5 @@ def inject_context(template_content: str, context_file_path: Optional[str]) -> s
         error_message = get_file_access_error_message(context_file_path, e)
         raise ValueError(f"Failed to read context file: {error_message}") from e
     except UnicodeDecodeError as e:
-        context_path = Path(context_file_path)
-        raise ValueError(
-            f"Failed to read context file '{context_path.name}': Text encoding error. "
-            f"The file may contain binary data or use an unsupported encoding."
-        ) from e
+        error_message = get_encoding_error_message(context_file_path, e)
+        raise ValueError(f"Failed to read context file: {error_message}") from e

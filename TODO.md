@@ -20,7 +20,7 @@
 ### Better Error Messages (Nice to Have)  
 **Problem**: Some error messages could be clearer
 - [x] Improve file permission error messages
-- [ ] Better encoding error handling
+- [~] Better encoding error handling
 - [ ] Add `--verbose` flag for debugging (partially exists)
 
 ### Simple Configuration (Nice to Have)

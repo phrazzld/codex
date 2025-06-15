@@ -1443,3 +1443,175 @@ class TestErrorMessages:
         assert error is not None
         assert "File not found" in error
         assert "does_not_exist.txt" in error
+
+
+class TestEncodingHandling:
+    """Test improved encoding detection and error handling."""
+    
+    def test_detect_file_encoding_utf8(self, tmp_path):
+        """Test encoding detection for UTF-8 files."""
+        from thinktank_wrapper.tokenizer import detect_file_encoding
+        
+        # Create UTF-8 file
+        utf8_file = tmp_path / "utf8.txt"
+        utf8_file.write_text("Hello world! 🌍", encoding='utf-8')
+        
+        detected = detect_file_encoding(utf8_file)
+        assert detected == 'utf-8'
+    
+    def test_detect_file_encoding_latin1(self, tmp_path):
+        """Test encoding detection for Latin-1 files."""
+        from thinktank_wrapper.tokenizer import detect_file_encoding
+        
+        # Create Latin-1 file
+        latin1_file = tmp_path / "latin1.txt"
+        latin1_content = "Café résumé naïve".encode('latin1')
+        latin1_file.write_bytes(latin1_content)
+        
+        detected = detect_file_encoding(latin1_file)
+        assert detected in ['latin1', 'cp1252', 'iso-8859-1']  # Any of these are acceptable
+    
+    def test_detect_file_encoding_binary(self, tmp_path):
+        """Test encoding detection for binary files."""
+        from thinktank_wrapper.tokenizer import detect_file_encoding
+        
+        # Create binary file
+        binary_file = tmp_path / "binary.bin"
+        binary_file.write_bytes(b'\xff\xfe\x00\x00\x80\x90\xa0\xb0')
+        
+        detected = detect_file_encoding(binary_file)
+        assert detected is None  # Should detect as binary
+    
+    def test_detect_file_encoding_empty(self, tmp_path):
+        """Test encoding detection for empty files."""
+        from thinktank_wrapper.tokenizer import detect_file_encoding
+        
+        # Create empty file
+        empty_file = tmp_path / "empty.txt"
+        empty_file.touch()
+        
+        detected = detect_file_encoding(empty_file)
+        assert detected == 'utf-8'  # Default for empty files
+    
+    def test_get_encoding_error_message_binary_detection(self, tmp_path):
+        """Test encoding error message for binary files."""
+        from thinktank_wrapper.tokenizer import get_encoding_error_message
+        
+        # Create a binary file
+        binary_file = tmp_path / "binary.dat"
+        binary_file.write_bytes(b'\xff\xfe\x00\x00\x80\x90\xa0\xb0')
+        
+        fake_error = UnicodeDecodeError('utf-8', b'\xff\xfe', 0, 1, 'invalid start byte')
+        message = get_encoding_error_message(binary_file, fake_error)
+        
+        assert "binary.dat" in message
+        assert "binary data" in message
+        assert "corrupted" in message or "unusual encoding" in message
+    
+    def test_get_encoding_error_message_different_encoding(self, tmp_path):
+        """Test encoding error message for files with different encodings."""
+        from thinktank_wrapper.tokenizer import get_encoding_error_message
+        
+        # Create a Latin-1 file
+        latin1_file = tmp_path / "latin1.txt"
+        latin1_content = "Café résumé".encode('latin1')
+        latin1_file.write_bytes(latin1_content)
+        
+        fake_error = UnicodeDecodeError('utf-8', latin1_content, 3, 4, 'invalid continuation byte')
+        message = get_encoding_error_message(latin1_file, fake_error)
+        
+        assert "latin1.txt" in message
+        assert "encoding" in message.lower()
+        assert "iconv" in message  # Should suggest conversion command
+    
+    def test_get_encoding_error_message_corrupted_utf8(self, tmp_path):
+        """Test encoding error message for corrupted UTF-8 files."""
+        from thinktank_wrapper.tokenizer import get_encoding_error_message
+        
+        # Create a file that starts as UTF-8 but becomes corrupted
+        utf8_file = tmp_path / "corrupted.txt"
+        content = "Valid UTF-8 start".encode('utf-8') + b'\xff\xfe\x00'
+        utf8_file.write_bytes(content)
+        
+        fake_error = UnicodeDecodeError('utf-8', content, 17, 18, 'invalid start byte')
+        message = get_encoding_error_message(utf8_file, fake_error)
+        
+        assert "corrupted.txt" in message
+        assert "UTF-8 encoding issues" in message
+        assert "corrupted" in message or "mixed encodings" in message
+        assert "file" in message  # Should suggest using file command
+    
+    def test_token_counter_encoding_error_handling(self, tmp_path):
+        """Test TokenCounter handles encoding errors gracefully."""
+        # Create a file with non-UTF-8 content
+        non_utf8_file = tmp_path / "latin1.txt"
+        non_utf8_content = "Café résumé naïve".encode('latin1')
+        non_utf8_file.write_bytes(non_utf8_content)
+        
+        counter = TokenCounter("openai")
+        tokens, error = counter.count_file_tokens(non_utf8_file)
+        
+        # Should return 0 tokens and a helpful error message
+        assert tokens == 0
+        assert error is not None
+        assert "latin1.txt" in error
+        assert "encoding" in error.lower()
+        # Should provide conversion guidance for detected encoding
+        assert "iconv" in error or "encoding issues" in error
+    
+    def test_token_counter_with_utf8_bom(self, tmp_path):
+        """Test TokenCounter handles UTF-8 with BOM correctly."""
+        # Create UTF-8 file with BOM
+        utf8_bom_file = tmp_path / "utf8_bom.txt"
+        content = "Hello world"
+        utf8_bom_file.write_bytes(b'\xef\xbb\xbf' + content.encode('utf-8'))  # BOM + content
+        
+        counter = TokenCounter("openai")
+        tokens, error = counter.count_file_tokens(utf8_bom_file)
+        
+        # Should successfully read the file (BOM should be handled)
+        assert error is None
+        assert tokens > 0
+    
+    def test_token_counter_encoding_vs_binary_detection(self, tmp_path):
+        """Test that encoding errors are handled differently from binary detection."""
+        # Create a text file with encoding issues (not binary)
+        encoding_issue_file = tmp_path / "bad_encoding.txt"
+        # This is valid Latin-1 but invalid UTF-8
+        encoding_issue_file.write_bytes("Café".encode('latin1'))
+        
+        # Create a clearly binary file
+        binary_file = tmp_path / "clearly_binary.bin"
+        binary_file.write_bytes(b'\x00\x01\x02\x03\xff\xfe\xfd\xfc')
+        
+        counter = TokenCounter("openai")
+        
+        # Encoding issue should give encoding error
+        tokens1, error1 = counter.count_file_tokens(encoding_issue_file)
+        assert tokens1 == 0
+        assert error1 is not None
+        assert "encoding" in error1.lower()
+        
+        # Binary file should be skipped without error (handled by binary detection)
+        tokens2, error2 = counter.count_file_tokens(binary_file)
+        assert tokens2 == 0
+        assert error2 is None  # Binary files are silently skipped
+    
+    def test_encoding_detection_performance(self, tmp_path):
+        """Test that encoding detection doesn't read entire large files."""
+        from thinktank_wrapper.tokenizer import detect_file_encoding
+        
+        # Create a large file
+        large_file = tmp_path / "large.txt"
+        # Write a large amount of data (much more than the 8KB sample)
+        content = "This is a test line.\n" * 10000  # ~200KB
+        large_file.write_text(content, encoding='utf-8')
+        
+        # Detection should be fast even for large files
+        import time
+        start = time.time()
+        detected = detect_file_encoding(large_file)
+        elapsed = time.time() - start
+        
+        assert detected == 'utf-8'
+        assert elapsed < 1.0  # Should complete quickly (less than 1 second)
