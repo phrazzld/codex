@@ -35,6 +35,55 @@ from .gitignore import GitignoreFilter
 
 logger = logging.getLogger(__name__)
 
+
+def should_process_file_extension(file_path: Union[str, Path], 
+                                include_extensions: Optional[List[str]] = None,
+                                exclude_extensions: Optional[List[str]] = None) -> bool:
+    """Check if a file should be processed based on extension filtering rules.
+    
+    Args:
+        file_path: Path to the file to check
+        include_extensions: If provided, only process files with these extensions
+        exclude_extensions: If provided, skip files with these extensions
+        
+    Returns:
+        True if the file should be processed, False otherwise
+        
+    Note:
+        include_extensions and exclude_extensions are mutually exclusive.
+        If neither is provided, all files are processed (no filtering).
+    """
+    path = Path(file_path)
+    file_extension = path.suffix.lower()
+    
+    # If include_extensions is specified, only process files with those extensions
+    if include_extensions is not None:
+        # Normalize extensions to lowercase and ensure they start with '.'
+        normalized_includes = []
+        for ext in include_extensions:
+            ext = ext.lower()
+            if not ext.startswith('.'):
+                ext = '.' + ext
+            normalized_includes.append(ext)
+        
+        return file_extension in normalized_includes
+    
+    # If exclude_extensions is specified, skip files with those extensions  
+    if exclude_extensions is not None:
+        # Normalize extensions to lowercase and ensure they start with '.'
+        normalized_excludes = []
+        for ext in exclude_extensions:
+            ext = ext.lower()
+            if not ext.startswith('.'):
+                ext = '.' + ext
+            normalized_excludes.append(ext)
+        
+        return file_extension not in normalized_excludes
+    
+    # If no filtering specified, process all files
+    return True
+
+
 # Token approximation ratios based on empirical analysis
 # These are conservative estimates to ensure we don't exceed context windows
 TOKEN_CHAR_RATIOS = {
@@ -224,18 +273,23 @@ def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192, use_mime
 class TokenCounter:
     """Provides token counting functionality for multiple LLM providers."""
     
-    def __init__(self, provider: str = "default", gitignore_enabled: bool = True, verbose: bool = False):
+    def __init__(self, provider: str = "default", gitignore_enabled: bool = True, verbose: bool = False,
+                 include_extensions: Optional[List[str]] = None, exclude_extensions: Optional[List[str]] = None):
         """Initialize the TokenCounter with a specific provider.
         
         Args:
             provider: The LLM provider name (openai, anthropic, google, openrouter)
             gitignore_enabled: Whether to respect .gitignore rules when processing directories
             verbose: Whether to enable verbose logging for skipped files
+            include_extensions: If provided, only process files with these extensions
+            exclude_extensions: If provided, skip files with these extensions
         """
         self.provider = provider.lower()
         self.base_ratio = TOKEN_CHAR_RATIOS.get(self.provider, TOKEN_CHAR_RATIOS["default"])
         self.gitignore_enabled = gitignore_enabled
         self.verbose = verbose
+        self.include_extensions = include_extensions
+        self.exclude_extensions = exclude_extensions
         self._tiktoken_encoding = None
         self._anthropic_client = None
         
@@ -376,14 +430,12 @@ class TokenCounter:
             return 0, f"Error reading file {file_path}: {str(e)}"
     
     def count_directory_tokens(self, dir_path: Union[str, Path], 
-                             recursive: bool = True,
-                             extensions: Optional[List[str]] = None) -> Tuple[int, List[str]]:
+                             recursive: bool = True) -> Tuple[int, List[str]]:
         """Count tokens in all files in a directory.
         
         Args:
             dir_path: Path to the directory
             recursive: Whether to search recursively
-            extensions: List of file extensions to include (e.g., ['.py', '.js'])
             
         Returns:
             Tuple of (total_token_count, list_of_errors)
@@ -424,7 +476,9 @@ class TokenCounter:
                 continue
                 
             # Check extension filter
-            if extensions and file_path.suffix.lower() not in extensions:
+            if not should_process_file_extension(file_path, self.include_extensions, self.exclude_extensions):
+                if self.verbose:
+                    logger.debug(f"Extension filtered out file: {file_path.name}")
                 continue
             
             # Apply gitignore filtering if enabled
@@ -475,15 +529,24 @@ class TokenCounter:
 class MultiProviderTokenCounter:
     """Manages token counting across multiple providers for comparison."""
     
-    def __init__(self, gitignore_enabled: bool = True, verbose: bool = False):
+    def __init__(self, gitignore_enabled: bool = True, verbose: bool = False,
+                 include_extensions: Optional[List[str]] = None, exclude_extensions: Optional[List[str]] = None):
         """Initialize counters for all supported providers.
         
         Args:
             gitignore_enabled: Whether to respect .gitignore rules when processing directories
             verbose: Whether to enable verbose logging for skipped files
+            include_extensions: If provided, only process files with these extensions
+            exclude_extensions: If provided, skip files with these extensions
         """
         self.counters = {
-            provider: TokenCounter(provider, gitignore_enabled=gitignore_enabled, verbose=verbose)
+            provider: TokenCounter(
+                provider, 
+                gitignore_enabled=gitignore_enabled, 
+                verbose=verbose,
+                include_extensions=include_extensions,
+                exclude_extensions=exclude_extensions
+            )
             for provider in ["openai", "anthropic", "google", "openrouter"]
         }
     

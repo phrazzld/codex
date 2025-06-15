@@ -1187,3 +1187,144 @@ class TestAnthropicTokenizer:
                     assert len(anthropic_errors) == 0
                     # Should use API result with file type adjustment: 20 * 1.15 = 23
                     assert anthropic_tokens == 23
+
+
+class TestExtensionFiltering:
+    """Test file extension filtering functionality."""
+    
+    def test_should_process_file_extension_no_filters(self):
+        """Test that all files are processed when no filters are specified."""
+        from thinktank_wrapper.tokenizer import should_process_file_extension
+        
+        assert should_process_file_extension("test.py")
+        assert should_process_file_extension("test.js")
+        assert should_process_file_extension("test.log")
+        assert should_process_file_extension("test.txt")
+        assert should_process_file_extension("README")  # No extension
+    
+    def test_should_process_file_extension_include_filter(self):
+        """Test include extension filtering."""
+        from thinktank_wrapper.tokenizer import should_process_file_extension
+        
+        include_exts = ['.py', '.js']
+        
+        assert should_process_file_extension("test.py", include_extensions=include_exts)
+        assert should_process_file_extension("test.js", include_extensions=include_exts)
+        assert not should_process_file_extension("test.log", include_extensions=include_exts)
+        assert not should_process_file_extension("test.txt", include_extensions=include_exts)
+        assert not should_process_file_extension("README", include_extensions=include_exts)
+    
+    def test_should_process_file_extension_exclude_filter(self):
+        """Test exclude extension filtering."""
+        from thinktank_wrapper.tokenizer import should_process_file_extension
+        
+        exclude_exts = ['.log', '.tmp']
+        
+        assert should_process_file_extension("test.py", exclude_extensions=exclude_exts)
+        assert should_process_file_extension("test.js", exclude_extensions=exclude_exts)
+        assert not should_process_file_extension("test.log", exclude_extensions=exclude_exts)
+        assert not should_process_file_extension("test.tmp", exclude_extensions=exclude_exts)
+        assert should_process_file_extension("README", exclude_extensions=exclude_exts)
+    
+    def test_should_process_file_extension_normalization(self):
+        """Test that extensions are normalized (case-insensitive, dots added)."""
+        from thinktank_wrapper.tokenizer import should_process_file_extension
+        
+        # Test with extensions provided without dots
+        include_exts = ['py', 'JS']  # No dots, mixed case
+        
+        assert should_process_file_extension("test.py", include_extensions=include_exts)
+        assert should_process_file_extension("test.js", include_extensions=include_exts)
+        assert should_process_file_extension("test.JS", include_extensions=include_exts)
+        assert not should_process_file_extension("test.txt", include_extensions=include_exts)
+    
+    def test_token_counter_with_include_extensions(self, temp_files):
+        """Test TokenCounter with include extension filtering."""
+        counter = TokenCounter("openai", include_extensions=['.py'])
+        
+        # Should only count Python files
+        py_file, _ = temp_files['python'] 
+        tokens, error = counter.count_file_tokens(py_file)
+        assert error is None
+        assert tokens > 0
+        
+        # Directory counting should only include Python files
+        tmp_path = py_file.parent
+        total_tokens, errors = counter.count_directory_tokens(tmp_path)
+        assert len(errors) == 0
+        assert total_tokens == tokens  # Only the Python file
+    
+    def test_token_counter_with_exclude_extensions(self, temp_files):
+        """Test TokenCounter with exclude extension filtering."""
+        counter = TokenCounter("openai", exclude_extensions=['.md', '.json'])
+        
+        # Should count Python files but not markdown or JSON
+        py_file, _ = temp_files['python']
+        tmp_path = py_file.parent
+        
+        total_tokens, errors = counter.count_directory_tokens(tmp_path)
+        assert len(errors) == 0
+        assert total_tokens > 0  # Should count the Python file
+        
+        # Create separate counter without filtering to compare
+        counter_all = TokenCounter("openai")
+        total_tokens_all, _ = counter_all.count_directory_tokens(tmp_path)
+        
+        # Filtered count should be less than unfiltered (excludes .md and .json)
+        assert total_tokens < total_tokens_all
+    
+    def test_multi_provider_token_counter_with_extensions(self, temp_files):
+        """Test MultiProviderTokenCounter with extension filtering."""
+        multi_counter = MultiProviderTokenCounter(include_extensions=['.py'])
+        py_file, _ = temp_files['python']
+        
+        results = multi_counter.count_all_providers([py_file])
+        
+        # All providers should respect the extension filtering
+        for provider, (tokens, errors) in results.items():
+            assert len(errors) == 0
+            assert tokens > 0  # Python file should be counted
+    
+    def test_extension_filtering_case_insensitive(self, tmp_path):
+        """Test that extension filtering is case-insensitive."""
+        # Create files with mixed case extensions
+        py_file = tmp_path / "test.PY"
+        py_file.write_text("print('hello')")
+        
+        JS_file = tmp_path / "test.JS"
+        JS_file.write_text("console.log('hello');")
+        
+        counter = TokenCounter("openai", include_extensions=['.py', '.js'])
+        
+        # Both files should be counted despite case differences
+        py_tokens, py_error = counter.count_file_tokens(py_file)
+        js_tokens, js_error = counter.count_file_tokens(JS_file)
+        
+        assert py_error is None and py_tokens > 0
+        assert js_error is None and js_tokens > 0
+        
+        # Directory count should include both files
+        total_tokens, errors = counter.count_directory_tokens(tmp_path)
+        assert len(errors) == 0
+        assert total_tokens == py_tokens + js_tokens
+    
+    def test_extension_filtering_no_extension_files(self, tmp_path):
+        """Test handling of files without extensions."""
+        # Create files without extensions
+        no_ext_file = tmp_path / "README"
+        no_ext_file.write_text("This is a readme file")
+        
+        makefile = tmp_path / "Makefile"
+        makefile.write_text("all:\n\techo 'building'")
+        
+        # Include filtering should exclude files without extensions
+        counter_include = TokenCounter("openai", include_extensions=['.py'])
+        tokens_include, errors_include = counter_include.count_directory_tokens(tmp_path)
+        assert len(errors_include) == 0
+        assert tokens_include == 0  # No .py files
+        
+        # Exclude filtering should include files without extensions (unless explicitly excluded)
+        counter_exclude = TokenCounter("openai", exclude_extensions=['.log'])
+        tokens_exclude, errors_exclude = counter_exclude.count_directory_tokens(tmp_path)
+        assert len(errors_exclude) == 0
+        assert tokens_exclude > 0  # Should include files without extensions

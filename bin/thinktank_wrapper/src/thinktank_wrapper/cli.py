@@ -77,6 +77,21 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         help="Disable gitignore filtering when finding context files",
     )
     
+    # File extension filtering
+    extension_group = context_group.add_mutually_exclusive_group()
+    extension_group.add_argument(
+        "--include-ext",
+        action="append",
+        metavar="EXT",
+        help="Only process files with these extensions (use multiple times: --include-ext .py --include-ext .js)",
+    )
+    extension_group.add_argument(
+        "--exclude-ext", 
+        action="append",
+        metavar="EXT",
+        help="Skip files with these extensions (use multiple times: --exclude-ext .log --exclude-ext .tmp)",
+    )
+    
     # Execution options
     execution_group = parser.add_argument_group("Execution Options")
     execution_group.add_argument(

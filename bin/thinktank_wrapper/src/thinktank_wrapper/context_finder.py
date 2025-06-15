@@ -11,6 +11,7 @@ from typing import List, Optional, Set
 
 from thinktank_wrapper import config
 from thinktank_wrapper.gitignore import GitignoreFilter
+from thinktank_wrapper.tokenizer import should_process_file_extension
 
 logger = logging.getLogger(__name__)
 
@@ -187,7 +188,9 @@ def find_context_files(
     include_glance: bool, 
     include_leyline: bool,
     explicit_paths: List[str],
-    gitignore_enabled: bool = True
+    gitignore_enabled: bool = True,
+    include_extensions: Optional[List[str]] = None,
+    exclude_extensions: Optional[List[str]] = None
 ) -> List[str]:
     """Find all context files based on flags and explicit paths.
     
@@ -196,6 +199,8 @@ def find_context_files(
         include_leyline: Whether to include leyline documents (with philosophy fallback).
         explicit_paths: Explicit file/directory paths to include as context.
         gitignore_enabled: Whether to respect .gitignore rules when finding files.
+        include_extensions: If provided, only process files with these extensions.
+        exclude_extensions: If provided, skip files with these extensions.
         
     Returns:
         A list of absolute paths to context files.
@@ -231,8 +236,14 @@ def find_context_files(
         path = pathlib.Path(path_str)
         if path.exists():
             abs_path = str(path.absolute())
-            # Only apply gitignore filtering to files, not directories
+            # Only apply filtering to files, not directories
             if path.is_file():
+                # Apply extension filtering
+                if not should_process_file_extension(abs_path, include_extensions, exclude_extensions):
+                    logger.debug(f"Extension filtered out explicit file: {abs_path}")
+                    continue
+                
+                # Apply gitignore filtering  
                 if gitignore_filter is None or not gitignore_filter.should_ignore(abs_path):
                     valid_explicit_paths.append(abs_path)
                 else:
