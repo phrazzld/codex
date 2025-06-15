@@ -79,8 +79,13 @@ def main(args: Optional[List[str]] = None) -> int:
                 # Lazy import tokenizer to avoid breaking when optional deps missing
                 from thinktank_wrapper import tokenizer
                 
-                # Initialize token counter
-                token_counter = tokenizer.TokenCounter(provider=config.TOKEN_COUNT_PROVIDER)
+                # Initialize token counter with gitignore and verbose settings
+                verbose_enabled = getattr(parsed_args, 'verbose', False)
+                token_counter = tokenizer.TokenCounter(
+                    provider=config.TOKEN_COUNT_PROVIDER,
+                    gitignore_enabled=gitignore_enabled,
+                    verbose=verbose_enabled
+                )
                 
                 # Count tokens in all context files
                 total_tokens, errors = token_counter.estimate_model_tokens(context_files)

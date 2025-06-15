@@ -345,12 +345,27 @@ class TestTokenCounter:
         counter = TokenCounter()
         assert counter.provider == "default"
         assert counter.base_ratio == 0.27
+        assert counter.verbose is False  # Default verbose should be False
     
     def test_init_openai_provider(self):
         """Test initialization with OpenAI provider."""
         counter = TokenCounter("openai")
         assert counter.provider == "openai"
         assert counter.base_ratio == 0.25
+    
+    def test_init_with_verbose(self):
+        """Test initialization with verbose parameter."""
+        # Test verbose enabled
+        counter_verbose = TokenCounter(verbose=True)
+        assert counter_verbose.verbose is True
+        
+        # Test verbose explicitly disabled
+        counter_no_verbose = TokenCounter(verbose=False)
+        assert counter_no_verbose.verbose is False
+        
+        # Test default behavior
+        counter_default = TokenCounter()
+        assert counter_default.verbose is False
     
     def test_count_text_tokens_empty(self):
         """Test counting tokens in empty text."""
@@ -409,6 +424,38 @@ class TestTokenCounter:
         tokens, error = counter.count_file_tokens(text_file)
         assert tokens > 0
         assert error is None
+    
+    def test_verbose_binary_file_logging(self, binary_test_files, caplog):
+        """Test that verbose mode logs binary file skipping at INFO level."""
+        import logging
+        
+        # Test with verbose disabled (default)
+        counter_no_verbose = TokenCounter(verbose=False)
+        caplog.clear()
+        with caplog.at_level(logging.INFO):
+            binary_file = binary_test_files['binary']
+            tokens, error = counter_no_verbose.count_file_tokens(binary_file)
+            assert tokens == 0
+            assert error is None
+            
+            # Should not log at INFO level when verbose is disabled
+            info_logs = [record for record in caplog.records if record.levelno >= logging.INFO]
+            binary_skip_logs = [log for log in info_logs if "Skipping binary file" in log.message]
+            assert len(binary_skip_logs) == 0
+        
+        # Test with verbose enabled
+        counter_verbose = TokenCounter(verbose=True)
+        caplog.clear()
+        with caplog.at_level(logging.INFO):
+            tokens, error = counter_verbose.count_file_tokens(binary_file)
+            assert tokens == 0
+            assert error is None
+            
+            # Should log at INFO level when verbose is enabled
+            info_logs = [record for record in caplog.records if record.levelno >= logging.INFO]
+            binary_skip_logs = [log for log in info_logs if "Skipping binary file" in log.message]
+            assert len(binary_skip_logs) == 1
+            assert binary_file.name in binary_skip_logs[0].message
     
     def test_count_directory_tokens(self, temp_files):
         """Test counting tokens in directory."""

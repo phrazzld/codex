@@ -21,7 +21,7 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 - [x] Add binary file detection before reading (check first 8KB for null bytes)
 - [x] Create a list of known binary extensions to skip (.exe, .dll, .so, .dylib, .jar, .zip, .tar, .gz, .png, .jpg, .jpeg, .gif, .pdf, .ico, .wav, .mp3, .mp4, .avi, .mov, .ttf, .woff, .eot)
 - [x] Add mime-type detection as fallback
-- [ ] Log skipped binary files in verbose mode
+- [x] Log skipped binary files in verbose mode
 - [ ] Add `--include-binary` flag to force processing (with warning)
 - [x] Add tests for binary file handling
 

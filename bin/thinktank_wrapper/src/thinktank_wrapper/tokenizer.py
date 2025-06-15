@@ -209,16 +209,18 @@ def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192, use_mime
 class TokenCounter:
     """Provides token counting functionality for multiple LLM providers."""
     
-    def __init__(self, provider: str = "default", gitignore_enabled: bool = True):
+    def __init__(self, provider: str = "default", gitignore_enabled: bool = True, verbose: bool = False):
         """Initialize the TokenCounter with a specific provider.
         
         Args:
             provider: The LLM provider name (openai, anthropic, google, openrouter)
             gitignore_enabled: Whether to respect .gitignore rules when processing directories
+            verbose: Whether to enable verbose logging for skipped files
         """
         self.provider = provider.lower()
         self.base_ratio = TOKEN_CHAR_RATIOS.get(self.provider, TOKEN_CHAR_RATIOS["default"])
         self.gitignore_enabled = gitignore_enabled
+        self.verbose = verbose
         self._tiktoken = None
         self._tiktoken_encoding = None
         
@@ -273,7 +275,10 @@ class TokenCounter:
         
         # Check if file is binary before attempting to read as text
         if is_binary_file(path):
-            logger.debug(f"Skipping binary file: {path.name}")
+            if self.verbose:
+                logger.info(f"Skipping binary file: {path.name}")
+            else:
+                logger.debug(f"Skipping binary file: {path.name}")
             return 0, None
         
         try:
@@ -397,14 +402,15 @@ class TokenCounter:
 class MultiProviderTokenCounter:
     """Manages token counting across multiple providers for comparison."""
     
-    def __init__(self, gitignore_enabled: bool = True):
+    def __init__(self, gitignore_enabled: bool = True, verbose: bool = False):
         """Initialize counters for all supported providers.
         
         Args:
             gitignore_enabled: Whether to respect .gitignore rules when processing directories
+            verbose: Whether to enable verbose logging for skipped files
         """
         self.counters = {
-            provider: TokenCounter(provider, gitignore_enabled=gitignore_enabled)
+            provider: TokenCounter(provider, gitignore_enabled=gitignore_enabled, verbose=verbose)
             for provider in ["openai", "anthropic", "google", "openrouter"]
         }
     

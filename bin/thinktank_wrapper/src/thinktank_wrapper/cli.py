@@ -96,6 +96,11 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         action="store_true",
         help="Disable automatic token counting and model selection",
     )
+    execution_group.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose logging, including details about skipped files",
+    )
     
     # Backward compatibility
     compat_group = parser.add_argument_group("Backward Compatibility")

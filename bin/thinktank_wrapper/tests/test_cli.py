@@ -131,6 +131,17 @@ def test_parse_args_disable_token_counting():
     assert hasattr(args_disabled, 'disable_token_counting') and args_disabled.disable_token_counting
 
 
+def test_parse_args_verbose():
+    """Test that parse_args handles --verbose correctly."""
+    # Test default behavior
+    args_default, _ = cli.parse_args([])
+    assert not hasattr(args_default, 'verbose') or not args_default.verbose
+    
+    # Test with --verbose flag
+    args_verbose, _ = cli.parse_args(["--verbose"])
+    assert hasattr(args_verbose, 'verbose') and args_verbose.verbose
+
+
 def test_parse_args_inject():
     """Test that parse_args handles --inject correctly."""
     # Call the function with --inject
