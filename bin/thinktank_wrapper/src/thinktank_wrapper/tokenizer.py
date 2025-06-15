@@ -9,6 +9,8 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
+from .gitignore import GitignoreFilter
+
 logger = logging.getLogger(__name__)
 
 # Token approximation ratios based on empirical analysis
@@ -111,14 +113,16 @@ def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192) -> bool:
 class TokenCounter:
     """Provides token counting functionality for multiple LLM providers."""
     
-    def __init__(self, provider: str = "default"):
+    def __init__(self, provider: str = "default", gitignore_enabled: bool = True):
         """Initialize the TokenCounter with a specific provider.
         
         Args:
             provider: The LLM provider name (openai, anthropic, google, openrouter)
+            gitignore_enabled: Whether to respect .gitignore rules when processing directories
         """
         self.provider = provider.lower()
         self.base_ratio = TOKEN_CHAR_RATIOS.get(self.provider, TOKEN_CHAR_RATIOS["default"])
+        self.gitignore_enabled = gitignore_enabled
         self._tiktoken = None
         self._tiktoken_encoding = None
         
@@ -221,6 +225,19 @@ class TokenCounter:
         total_tokens = 0
         errors = []
         
+        # Set up gitignore filtering if enabled
+        gitignore_filter: Optional[GitignoreFilter] = None
+        if self.gitignore_enabled:
+            try:
+                # Use the directory being processed as the root for gitignore
+                gitignore_filter = GitignoreFilter(path)
+                if not gitignore_filter.is_enabled():
+                    logger.debug("Gitignore filtering requested but pathspec not available")
+                    gitignore_filter = None
+            except Exception as e:
+                logger.warning(f"Failed to initialize gitignore filtering: {e}")
+                gitignore_filter = None
+        
         # Determine file pattern
         if recursive:
             pattern = "**/*"
@@ -234,6 +251,11 @@ class TokenCounter:
                 
             # Check extension filter
             if extensions and file_path.suffix.lower() not in extensions:
+                continue
+            
+            # Apply gitignore filtering if enabled
+            if gitignore_filter and gitignore_filter.should_ignore(file_path):
+                logger.debug(f"Gitignore filtered out file: {file_path}")
                 continue
             
             tokens, error = self.count_file_tokens(file_path)
@@ -279,10 +301,14 @@ class TokenCounter:
 class MultiProviderTokenCounter:
     """Manages token counting across multiple providers for comparison."""
     
-    def __init__(self):
-        """Initialize counters for all supported providers."""
+    def __init__(self, gitignore_enabled: bool = True):
+        """Initialize counters for all supported providers.
+        
+        Args:
+            gitignore_enabled: Whether to respect .gitignore rules when processing directories
+        """
         self.counters = {
-            provider: TokenCounter(provider)
+            provider: TokenCounter(provider, gitignore_enabled=gitignore_enabled)
             for provider in ["openai", "anthropic", "google", "openrouter"]
         }
     

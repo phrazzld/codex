@@ -10,8 +10,8 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 **Solution**:
 - [x] Add gitignore parsing library (e.g., `pathspec` or `gitignore-parser`)
 - [x] Integrate gitignore checking in `context_finder.py` when collecting files
-- [ ] Integrate gitignore checking in `tokenizer.py` when processing directories
-- [ ] Add `--no-gitignore` flag to bypass gitignore (similar to ripgrep)
+- [x] Integrate gitignore checking in `tokenizer.py` when processing directories
+- [x] Add `--no-gitignore` flag to bypass gitignore (similar to ripgrep)
 - [ ] Handle nested .gitignore files correctly
 - [ ] Add tests for gitignore functionality
 
