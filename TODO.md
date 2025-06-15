@@ -12,7 +12,7 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 - [x] Integrate gitignore checking in `context_finder.py` when collecting files
 - [x] Integrate gitignore checking in `tokenizer.py` when processing directories
 - [x] Add `--no-gitignore` flag to bypass gitignore (similar to ripgrep)
-- [ ] Handle nested .gitignore files correctly
+- [x] Handle nested .gitignore files correctly
 - [ ] Add tests for gitignore functionality
 
 ### 2. Implement Binary File Detection

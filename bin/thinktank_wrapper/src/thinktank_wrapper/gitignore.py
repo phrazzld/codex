@@ -99,7 +99,8 @@ class GitignoreFilter:
         """Check if a file path should be ignored according to .gitignore rules.
         
         This method checks all .gitignore files in the directory hierarchy from
-        the root path up to the file's directory.
+        the root path down to the file's directory, with each .gitignore file
+        matching against paths relative to its own directory.
         
         Args:
             file_path: Path to check (can be absolute or relative to root_path)
@@ -123,24 +124,38 @@ class GitignoreFilter:
             # Path is outside root directory - don't ignore
             return False
         
-        # Check gitignore files from root down to the file's directory
+        # Build list of directories to check, from root to file's parent directory
+        dirs_to_check = []
         current_dir = self.root_path
-        rel_path_str = str(rel_path)
+        dirs_to_check.append(current_dir)
         
-        # Walk up the directory hierarchy
+        # Add each subdirectory in the path
         for part in rel_path.parts[:-1]:  # Exclude the filename itself
             current_dir = current_dir / part
-            spec = self._get_gitignore_spec(current_dir)
-            
-            if spec and spec.match_file(rel_path_str):
-                logger.debug(f"File {rel_path_str} matched gitignore pattern in {current_dir}")
-                return True
+            dirs_to_check.append(current_dir)
         
-        # Check root .gitignore
-        root_spec = self._get_gitignore_spec(self.root_path)
-        if root_spec and root_spec.match_file(rel_path_str):
-            logger.debug(f"File {rel_path_str} matched gitignore pattern in root")
-            return True
+        # Check each directory's .gitignore file
+        # Git processes from deepest to shallowest, with deeper rules taking precedence
+        for i, dir_path in enumerate(dirs_to_check):
+            spec = self._get_gitignore_spec(dir_path)
+            if not spec:
+                continue
+            
+            # Compute path relative to this directory's .gitignore file
+            if i == 0:
+                # Root directory - use full relative path
+                relative_match_path = str(rel_path)
+            else:
+                # Subdirectory - use path relative to this directory
+                try:
+                    relative_match_path = str(path.relative_to(dir_path))
+                except ValueError:
+                    # Shouldn't happen, but skip if it does
+                    continue
+            
+            if spec.match_file(relative_match_path):
+                logger.debug(f"File {relative_match_path} matched gitignore pattern in {dir_path}")
+                return True
         
         return False
     
