@@ -1328,3 +1328,118 @@ class TestExtensionFiltering:
         tokens_exclude, errors_exclude = counter_exclude.count_directory_tokens(tmp_path)
         assert len(errors_exclude) == 0
         assert tokens_exclude > 0  # Should include files without extensions
+
+
+class TestErrorMessages:
+    """Test improved error message functionality."""
+    
+    def test_get_file_access_error_message_permission_error(self, tmp_path):
+        """Test permission error message generation."""
+        from thinktank_wrapper.tokenizer import get_file_access_error_message
+        
+        test_file = tmp_path / "test.txt"
+        error = PermissionError("Permission denied")
+        
+        message = get_file_access_error_message(test_file, error)
+        
+        assert "Permission denied" in message
+        assert "test.txt" in message
+        assert "chmod +r" in message
+        assert "read access" in message
+    
+    def test_get_file_access_error_message_file_not_found(self, tmp_path):
+        """Test file not found error message generation."""
+        from thinktank_wrapper.tokenizer import get_file_access_error_message
+        
+        test_file = tmp_path / "missing.txt"
+        error = FileNotFoundError("No such file or directory")
+        
+        message = get_file_access_error_message(test_file, error)
+        
+        assert "File not found" in message
+        assert str(test_file) in message
+        assert "Check that the file exists" in message
+    
+    def test_get_file_access_error_message_is_directory(self, tmp_path):
+        """Test directory error message generation."""
+        from thinktank_wrapper.tokenizer import get_file_access_error_message
+        
+        test_dir = tmp_path / "testdir"
+        test_dir.mkdir()
+        error = IsADirectoryError("Is a directory")
+        
+        message = get_file_access_error_message(test_dir, error)
+        
+        assert "is a directory" in message
+        assert "testdir" in message
+        assert "Specify a file path" in message
+    
+    def test_get_file_access_error_message_generic_os_error(self, tmp_path):
+        """Test generic OSError message generation."""
+        from thinktank_wrapper.tokenizer import get_file_access_error_message
+        
+        test_file = tmp_path / "test.txt"
+        error = OSError("Generic I/O error")
+        
+        message = get_file_access_error_message(test_file, error)
+        
+        assert "Unable to read" in message
+        assert "test.txt" in message
+        assert "Check file permissions" in message
+    
+    def test_get_file_access_error_message_eacces_errno(self, tmp_path):
+        """Test EACCES errno handling."""
+        from thinktank_wrapper.tokenizer import get_file_access_error_message
+        import errno
+        
+        test_file = tmp_path / "test.txt"
+        error = OSError()
+        error.errno = errno.EACCES
+        
+        message = get_file_access_error_message(test_file, error)
+        
+        assert "Access denied" in message
+        assert "test.txt" in message
+        assert "locked by another process" in message or "restrictive permissions" in message
+    
+    def test_token_counter_permission_error_handling(self, tmp_path):
+        """Test TokenCounter handles permission errors gracefully."""
+        # Create a test file
+        test_file = tmp_path / "test.txt"
+        test_file.write_text("test content")
+        
+        counter = TokenCounter("openai")
+        
+        try:
+            # Make file unreadable
+            test_file.chmod(0o000)
+            
+            tokens, error = counter.count_file_tokens(test_file)
+            
+            # Should return 0 tokens and a user-friendly error
+            assert tokens == 0
+            assert error is not None
+            assert "Permission denied" in error or "Access denied" in error
+            assert "test.txt" in error
+            
+        except (OSError, PermissionError):
+            # Skip test if we can't modify permissions on this system
+            pytest.skip("Cannot modify file permissions on this system")
+        finally:
+            # Restore permissions for cleanup
+            try:
+                test_file.chmod(0o644)
+            except (OSError, PermissionError):
+                pass
+    
+    def test_token_counter_file_not_found_error_handling(self, tmp_path):
+        """Test TokenCounter handles missing files gracefully."""
+        nonexistent_file = tmp_path / "does_not_exist.txt"
+        
+        counter = TokenCounter("openai")
+        tokens, error = counter.count_file_tokens(nonexistent_file)
+        
+        assert tokens == 0
+        assert error is not None
+        assert "File not found" in error
+        assert "does_not_exist.txt" in error

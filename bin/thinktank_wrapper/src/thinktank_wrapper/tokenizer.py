@@ -36,6 +36,51 @@ from .gitignore import GitignoreFilter
 logger = logging.getLogger(__name__)
 
 
+def get_file_access_error_message(file_path: Union[str, Path], error: Exception) -> str:
+    """Generate a user-friendly error message for file access issues.
+    
+    Args:
+        file_path: Path to the file that couldn't be accessed
+        error: The original exception
+        
+    Returns:
+        A user-friendly error message with actionable guidance
+    """
+    path = Path(file_path)
+    
+    if isinstance(error, PermissionError):
+        return (
+            f"Permission denied reading '{path.name}'. "
+            f"Check that you have read access to this file. "
+            f"Try: chmod +r \"{path}\" or run with appropriate permissions."
+        )
+    elif isinstance(error, FileNotFoundError):
+        return f"File not found: '{path}'. Check that the file exists and the path is correct."
+    elif isinstance(error, IsADirectoryError):
+        return f"'{path}' is a directory, not a file. Specify a file path instead."
+    elif isinstance(error, (OSError, IOError)):
+        # More specific OSError cases
+        if hasattr(error, 'errno'):
+            import errno
+            if error.errno == errno.EACCES:
+                return (
+                    f"Access denied to '{path.name}'. "
+                    f"The file may be locked by another process or have restrictive permissions."
+                )
+            elif error.errno == errno.EMFILE or error.errno == errno.ENFILE:
+                return (
+                    f"Too many open files. Close some applications and try again. "
+                    f"File: '{path.name}'"
+                )
+            elif error.errno == errno.ENOSPC:
+                return f"No space left on device while reading '{path.name}'."
+            elif error.errno == errno.EIO:
+                return f"I/O error reading '{path.name}'. The file may be corrupted or on a failing disk."
+    
+    # Generic fallback with the original error but more context
+    return f"Unable to read '{path.name}': {str(error)}. Check file permissions and try again."
+
+
 def should_process_file_extension(file_path: Union[str, Path], 
                                 include_extensions: Optional[List[str]] = None,
                                 exclude_extensions: Optional[List[str]] = None) -> bool:
@@ -426,8 +471,14 @@ class TokenCounter:
             
             return adjusted_tokens, None
             
+        except (PermissionError, FileNotFoundError, IsADirectoryError, OSError, IOError) as e:
+            error_message = get_file_access_error_message(file_path, e)
+            return 0, error_message
+        except UnicodeDecodeError as e:
+            return 0, f"Unable to read '{path.name}': Text encoding error. The file may contain binary data or use an unsupported encoding."
         except Exception as e:
-            return 0, f"Error reading file {file_path}: {str(e)}"
+            # Catch any other unexpected errors
+            return 0, f"Unexpected error reading '{path.name}': {str(e)}. Please report this issue."
     
     def count_directory_tokens(self, dir_path: Union[str, Path], 
                              recursive: bool = True) -> Tuple[int, List[str]]:

@@ -195,4 +195,10 @@ def validate_args(args: argparse.Namespace) -> None:
             raise ValueError(f"Inject file not found: {args.inject}")
         
         if not os.access(args.inject, os.R_OK):
-            raise ValueError(f"Inject file not readable: {args.inject}")
+            from pathlib import Path
+            inject_path = Path(args.inject)
+            raise ValueError(
+                f"Permission denied reading inject file '{inject_path.name}'. "
+                f"Check that you have read access to this file. "
+                f"Try: chmod +r \"{inject_path}\" or run with appropriate permissions."
+            )
