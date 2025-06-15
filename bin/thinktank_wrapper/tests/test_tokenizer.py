@@ -994,3 +994,196 @@ class TestTokenizerGitignoreIntegration:
         
         # Recursive should count more files (includes src/app.py)
         assert tokens_recursive >= tokens_non_recursive
+
+
+class TestAnthropicTokenizer:
+    """Test Anthropic tokenizer integration."""
+    
+    def test_anthropic_tokenizer_initialization_with_api_key(self):
+        """Test TokenCounter initialization with Anthropic provider when API key is available."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                with patch('thinktank_wrapper.tokenizer.anthropic') as mock_anthropic:
+                    mock_client = Mock()
+                    mock_anthropic.Anthropic.return_value = mock_client
+                    
+                    counter = TokenCounter("anthropic")
+                    
+                    assert counter.provider == "anthropic"
+                    assert counter._anthropic_client == mock_client
+                    mock_anthropic.Anthropic.assert_called_once_with(api_key="test-key")
+    
+    def test_anthropic_tokenizer_initialization_without_api_key(self):
+        """Test TokenCounter initialization with Anthropic provider when API key is missing."""
+        with patch.dict(os.environ, {}, clear=True):  # Clear ANTHROPIC_API_KEY
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                counter = TokenCounter("anthropic")
+                
+                assert counter.provider == "anthropic"
+                assert counter._anthropic_client is None
+    
+    def test_anthropic_tokenizer_unavailable(self):
+        """Test TokenCounter initialization when Anthropic library is unavailable."""
+        with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', False):
+            counter = TokenCounter("anthropic")
+            
+            assert counter.provider == "anthropic"
+            assert counter._anthropic_client is None
+    
+    def test_anthropic_token_counting_success(self):
+        """Test successful token counting using Anthropic API."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                with patch('thinktank_wrapper.tokenizer.anthropic') as mock_anthropic:
+                    # Mock the client and response
+                    mock_client = Mock()
+                    mock_response = Mock()
+                    mock_response.input_tokens = 25
+                    mock_client.messages.count_tokens.return_value = mock_response
+                    mock_anthropic.Anthropic.return_value = mock_client
+                    
+                    counter = TokenCounter("anthropic")
+                    
+                    # Test token counting
+                    text = "This is a test message for token counting."
+                    tokens = counter.count_text_tokens(text)
+                    
+                    assert tokens == 25
+                    mock_client.messages.count_tokens.assert_called_once_with(
+                        model="claude-3-haiku-20240307",
+                        messages=[{"role": "user", "content": text}]
+                    )
+    
+    def test_anthropic_token_counting_api_failure(self):
+        """Test fallback to character approximation when Anthropic API fails."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                with patch('thinktank_wrapper.tokenizer.anthropic') as mock_anthropic:
+                    # Mock the client to raise an exception
+                    mock_client = Mock()
+                    mock_client.messages.count_tokens.side_effect = Exception("API Error")
+                    mock_anthropic.Anthropic.return_value = mock_client
+                    
+                    counter = TokenCounter("anthropic")
+                    
+                    # Test token counting falls back to approximation
+                    text = "This is a test message."  # 24 chars
+                    tokens = counter.count_text_tokens(text)
+                    
+                    # Should fall back to character approximation: 24 * 0.24 = 5.76 = 5
+                    assert tokens == 5
+    
+    def test_anthropic_token_counting_malformed_response(self):
+        """Test handling of malformed API response."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                with patch('thinktank_wrapper.tokenizer.anthropic') as mock_anthropic:
+                    # Mock response without input_tokens attribute
+                    mock_client = Mock()
+                    mock_response = Mock(spec=[])  # Empty spec to avoid having input_tokens
+                    mock_client.messages.count_tokens.return_value = mock_response
+                    mock_anthropic.Anthropic.return_value = mock_client
+                    
+                    counter = TokenCounter("anthropic")
+                    
+                    # Test token counting falls back to approximation
+                    text = "This is a test message."  # 24 chars
+                    tokens = counter.count_text_tokens(text)
+                    
+                    # Should fall back to character approximation: 24 * 0.24 = 5.76 = 5
+                    assert tokens == 5
+    
+    def test_anthropic_token_counting_empty_text(self):
+        """Test Anthropic token counting with empty text."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                with patch('thinktank_wrapper.tokenizer.anthropic') as mock_anthropic:
+                    mock_client = Mock()
+                    mock_anthropic.Anthropic.return_value = mock_client
+                    
+                    counter = TokenCounter("anthropic")
+                    
+                    # Test with empty text
+                    assert counter.count_text_tokens("") == 0
+                    assert counter.count_text_tokens(None) == 0
+                    
+                    # API should not be called for empty text
+                    mock_client.messages.count_tokens.assert_not_called()
+    
+    def test_anthropic_vs_tiktoken_precedence(self):
+        """Test that providers use their own tokenizers, not each other's."""
+        text = "def hello_world(): return 'Hello, World!'"
+        
+        # Test OpenAI provider (should use tiktoken if available, not Anthropic)
+        with patch('thinktank_wrapper.tokenizer.TIKTOKEN_AVAILABLE', True):
+            with patch('thinktank_wrapper.tokenizer.tiktoken') as mock_tiktoken:
+                mock_encoding = Mock()
+                mock_encoding.encode.return_value = ["token"] * 10  # 10 tokens
+                mock_tiktoken.get_encoding.return_value = mock_encoding
+                
+                counter_openai = TokenCounter("openai")
+                tokens = counter_openai.count_text_tokens(text)
+                
+                assert tokens == 10
+                assert counter_openai._anthropic_client is None  # Should not initialize Anthropic client
+        
+        # Test Anthropic provider (should use Anthropic API, not tiktoken)
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                with patch('thinktank_wrapper.tokenizer.anthropic') as mock_anthropic:
+                    mock_client = Mock()
+                    mock_response = Mock()
+                    mock_response.input_tokens = 15
+                    mock_client.messages.count_tokens.return_value = mock_response
+                    mock_anthropic.Anthropic.return_value = mock_client
+                    
+                    counter_anthropic = TokenCounter("anthropic")
+                    tokens = counter_anthropic.count_text_tokens(text)
+                    
+                    assert tokens == 15
+                    assert counter_anthropic._tiktoken_encoding is None  # Should not initialize tiktoken
+    
+    def test_anthropic_file_token_counting(self, temp_files):
+        """Test Anthropic token counting integration with file processing."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                with patch('thinktank_wrapper.tokenizer.anthropic') as mock_anthropic:
+                    mock_client = Mock()
+                    mock_response = Mock()
+                    mock_response.input_tokens = 12
+                    mock_client.messages.count_tokens.return_value = mock_response
+                    mock_anthropic.Anthropic.return_value = mock_client
+                    
+                    counter = TokenCounter("anthropic")
+                    
+                    # Test counting tokens in a Python file
+                    py_file, _ = temp_files['python']
+                    tokens, error = counter.count_file_tokens(py_file)
+                    
+                    assert error is None
+                    # Should use API result (12) with file type adjustment (1.15 for .py)
+                    # 12 * 1.15 = 13.8 = 13 tokens
+                    assert tokens == 13
+    
+    def test_multi_provider_anthropic_integration(self, temp_files):
+        """Test MultiProviderTokenCounter includes Anthropic provider."""
+        with patch.dict(os.environ, {"ANTHROPIC_API_KEY": "test-key"}):
+            with patch('thinktank_wrapper.tokenizer.ANTHROPIC_AVAILABLE', True):
+                with patch('thinktank_wrapper.tokenizer.anthropic') as mock_anthropic:
+                    mock_client = Mock()
+                    mock_response = Mock()
+                    mock_response.input_tokens = 20
+                    mock_client.messages.count_tokens.return_value = mock_response
+                    mock_anthropic.Anthropic.return_value = mock_client
+                    
+                    multi_counter = MultiProviderTokenCounter()
+                    py_file, _ = temp_files['python']
+                    
+                    results = multi_counter.count_all_providers([py_file])
+                    
+                    # Check that Anthropic provider is included and uses API
+                    assert "anthropic" in results
+                    anthropic_tokens, anthropic_errors = results["anthropic"]
+                    assert len(anthropic_errors) == 0
+                    # Should use API result with file type adjustment: 20 * 1.15 = 23
+                    assert anthropic_tokens == 23

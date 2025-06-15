@@ -16,6 +16,21 @@ except ImportError:
     magic = None
     MAGIC_AVAILABLE = False
 
+# Try to import tokenizer libraries
+try:
+    import tiktoken
+    TIKTOKEN_AVAILABLE = True
+except ImportError:
+    tiktoken = None
+    TIKTOKEN_AVAILABLE = False
+
+try:
+    import anthropic
+    ANTHROPIC_AVAILABLE = True
+except ImportError:
+    anthropic = None
+    ANTHROPIC_AVAILABLE = False
+
 from .gitignore import GitignoreFilter
 
 logger = logging.getLogger(__name__)
@@ -221,18 +236,68 @@ class TokenCounter:
         self.base_ratio = TOKEN_CHAR_RATIOS.get(self.provider, TOKEN_CHAR_RATIOS["default"])
         self.gitignore_enabled = gitignore_enabled
         self.verbose = verbose
-        self._tiktoken = None
         self._tiktoken_encoding = None
+        self._anthropic_client = None
         
-        # Try to load tiktoken for more accurate OpenAI counting
-        if self.provider == "openai":
+        # Initialize provider-specific tokenizers
+        self._init_tiktoken()
+        self._init_anthropic()
+    
+    def _init_tiktoken(self) -> None:
+        """Initialize tiktoken for OpenAI token counting."""
+        if self.provider == "openai" and TIKTOKEN_AVAILABLE:
             try:
-                import tiktoken
-                self._tiktoken = tiktoken
                 self._tiktoken_encoding = tiktoken.get_encoding("cl100k_base")
                 logger.debug("Loaded tiktoken for accurate OpenAI token counting")
-            except ImportError:
-                logger.debug("tiktoken not available, using character-based approximation")
+            except Exception as e:
+                logger.debug(f"Failed to initialize tiktoken: {e}")
+    
+    def _init_anthropic(self) -> None:
+        """Initialize Anthropic client for token counting."""
+        if self.provider == "anthropic" and ANTHROPIC_AVAILABLE:
+            try:
+                api_key = os.environ.get("ANTHROPIC_API_KEY")
+                if api_key:
+                    self._anthropic_client = anthropic.Anthropic(api_key=api_key)
+                    logger.debug("Loaded Anthropic client for accurate token counting")
+                else:
+                    logger.debug("ANTHROPIC_API_KEY not found, using character-based approximation")
+            except Exception as e:
+                logger.debug(f"Failed to initialize Anthropic client: {e}")
+    
+    def _count_anthropic_tokens(self, text: str) -> Optional[int]:
+        """Count tokens using Anthropic's official token counting API.
+        
+        Args:
+            text: The text to count tokens for
+            
+        Returns:
+            Token count if successful, None if failed
+        """
+        if not self._anthropic_client or not text:
+            return None
+        
+        try:
+            # Use a minimal model for token counting - Claude 3 Haiku is fast and cost-effective
+            response = self._anthropic_client.messages.count_tokens(
+                model="claude-3-haiku-20240307",
+                messages=[{
+                    "role": "user", 
+                    "content": text
+                }]
+            )
+            
+            # The response includes input_tokens which is what we want
+            if hasattr(response, 'input_tokens'):
+                logger.debug(f"Anthropic API token count: {response.input_tokens}")
+                return response.input_tokens
+            else:
+                logger.warning("Anthropic API response missing input_tokens field")
+                return None
+                
+        except Exception as e:
+            logger.debug(f"Anthropic token counting API failed: {e}")
+            return None
     
     def count_text_tokens(self, text: str) -> int:
         """Count tokens in a text string.
@@ -245,15 +310,23 @@ class TokenCounter:
         """
         if not text:
             return 0
+        
+        # Use Anthropic API for accurate token counting if available
+        if self.provider == "anthropic" and self._anthropic_client:
+            anthropic_count = self._count_anthropic_tokens(text)
+            if anthropic_count is not None:
+                return anthropic_count
+            # If API fails, fall through to approximation
+            logger.debug("Anthropic API failed, falling back to character approximation")
             
         # Use tiktoken for OpenAI if available
-        if self.provider == "openai" and self._tiktoken_encoding:
+        elif self.provider == "openai" and self._tiktoken_encoding:
             try:
                 return len(self._tiktoken_encoding.encode(text))
             except Exception as e:
                 logger.warning(f"tiktoken encoding failed, falling back to approximation: {e}")
         
-        # Character-based approximation
+        # Character-based approximation fallback
         return int(len(text) * self.base_ratio)
     
     def count_file_tokens(self, file_path: Union[str, Path]) -> Tuple[int, Optional[str]]:

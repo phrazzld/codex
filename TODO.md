@@ -22,7 +22,7 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 - [x] Create a list of known binary extensions to skip (.exe, .dll, .so, .dylib, .jar, .zip, .tar, .gz, .png, .jpg, .jpeg, .gif, .pdf, .ico, .wav, .mp3, .mp4, .avi, .mov, .ttf, .woff, .eot)
 - [x] Add mime-type detection as fallback
 - [x] Log skipped binary files in verbose mode
-- [ ] Add `--include-binary` flag to force processing (with warning)
+- [x] Add `--include-binary` flag to force processing (with warning) [SKIPPED - not needed]
 - [x] Add tests for binary file handling
 
 ### 3. Fix Hardcoded Model Selection
@@ -30,12 +30,12 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 **Solution**:
 - [x] Update tt-plan to use dynamic model selection based on token count
 - [x] Remove hardcoded `--model-set high_context` from line 28
-- [ ] Test tt-plan with various file sizes to ensure proper model selection
+- [x] Test tt-plan with various file sizes to ensure proper model selection
 
 ### 4. Improve Token Counting Accuracy
 **Problem**: Character-based approximation may be inaccurate for some file types
 **Solution**:
-- [ ] Add support for more tokenizer libraries (anthropic-tokenizer for Claude models)
+- [x] Add support for more tokenizer libraries (anthropic-tokenizer for Claude models)
 - [ ] Implement file-type specific token counting strategies
 - [ ] Add caching for token counts to improve performance on large codebases
 - [ ] Add `--token-cache` flag to enable/disable caching
