@@ -9,6 +9,13 @@ import os
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple, Union
 
+try:
+    import magic
+    MAGIC_AVAILABLE = True
+except ImportError:
+    magic = None
+    MAGIC_AVAILABLE = False
+
 from .gitignore import GitignoreFilter
 
 logger = logging.getLogger(__name__)
@@ -78,36 +85,125 @@ def is_binary_by_extension(file_path: Union[str, Path]) -> bool:
     return path.suffix.lower() in BINARY_EXTENSIONS
 
 
-def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192) -> bool:
-    """Check if a file is binary by extension first, then by content analysis.
+def is_binary_by_mime_type(file_path: Union[str, Path]) -> Optional[bool]:
+    """Check if a file is binary based on its MIME type using python-magic.
     
-    This function uses a two-stage approach for efficiency:
+    This function provides content-based MIME type detection as a fallback
+    when extension and null-byte detection are insufficient.
+    
+    Args:
+        file_path: Path to the file to check
+        
+    Returns:
+        True if MIME type indicates binary, False if text, None if undetermined or unavailable
+    """
+    if not MAGIC_AVAILABLE:
+        logger.debug("python-magic not available, skipping MIME type detection")
+        return None
+    
+    path = Path(file_path)
+    
+    if not path.exists() or not path.is_file():
+        return None
+    
+    try:
+        # Get MIME type of the file
+        mime_type = magic.from_file(str(path), mime=True)
+        
+        if not mime_type:
+            return None
+        
+        # Text MIME types - definitely not binary
+        text_types = {
+            'text/',           # text/plain, text/html, text/csv, etc.
+            'application/json',
+            'application/xml',
+            'application/javascript',
+            'application/x-yaml',
+            'application/x-sh',
+            'application/x-python',
+            'application/x-perl',
+            'application/x-ruby',
+        }
+        
+        # Check if it's a text type
+        mime_lower = mime_type.lower()
+        if any(mime_lower.startswith(text_type) for text_type in text_types):
+            logger.debug(f"File {path.name} detected as text via MIME type: {mime_type}")
+            return False
+        
+        # Binary MIME types - definitely binary
+        binary_types = {
+            'application/octet-stream',  # Generic binary
+            'application/pdf',
+            'application/zip',
+            'application/gzip',
+            'application/x-tar',
+            'application/x-executable',
+            'application/x-sharedlib',
+            'application/x-archive',
+            'image/',                    # image/png, image/jpeg, etc.
+            'audio/',                    # audio/mp3, audio/wav, etc.  
+            'video/',                    # video/mp4, video/avi, etc.
+            'font/',                     # font/ttf, font/woff, etc.
+        }
+        
+        # Check if it's a binary type
+        if any(mime_lower.startswith(binary_type) for binary_type in binary_types):
+            logger.debug(f"File {path.name} detected as binary via MIME type: {mime_type}")
+            return True
+        
+        # For other types, we're uncertain
+        logger.debug(f"File {path.name} has uncertain MIME type: {mime_type}")
+        return None
+        
+    except Exception as e:
+        logger.debug(f"MIME type detection failed for {path.name}: {e}")
+        return None
+
+
+def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192, use_mime_type: bool = True) -> bool:
+    """Check if a file is binary using a three-stage approach for accuracy.
+    
+    This function uses a three-stage approach for efficiency and accuracy:
     1. Fast extension-based check for known binary types
-    2. Content analysis (null byte detection) for unknown extensions
+    2. Content analysis (null byte detection) for unknown extensions  
+    3. MIME type detection as fallback (optional, requires python-magic)
     
     Args:
         file_path: Path to the file to check
         chunk_size: Number of bytes to read for content detection (default 8KB)
+        use_mime_type: Whether to use MIME type detection as fallback (default True)
         
     Returns:
         True if the file appears to be binary, False otherwise
     """
-    # Fast path: check extension first
+    # Stage 1: Fast path - check extension first
     if is_binary_by_extension(file_path):
         return True
     
-    # Slower path: analyze file content for unknown extensions
+    # Stage 2: Content analysis - analyze file content for unknown extensions
     path = Path(file_path)
     
     try:
         with open(path, 'rb') as f:
             chunk = f.read(chunk_size)
             # Check for null bytes which are common in binary files
-            return b'\x00' in chunk
+            if b'\x00' in chunk:
+                return True
     except (OSError, IOError):
         # If we can't read the file, assume it's not binary
         # This will let the normal file reading logic handle the error
         return False
+    
+    # Stage 3: MIME type detection fallback (optional)
+    if use_mime_type:
+        mime_result = is_binary_by_mime_type(file_path)
+        if mime_result is not None:
+            return mime_result
+    
+    # If all detection methods are inconclusive, assume it's text
+    return False
 
 
 class TokenCounter:

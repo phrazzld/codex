@@ -6,7 +6,15 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from thinktank_wrapper.tokenizer import TokenCounter, MultiProviderTokenCounter, is_binary_file, is_binary_by_extension, BINARY_EXTENSIONS
+from thinktank_wrapper.tokenizer import (
+    TokenCounter, 
+    MultiProviderTokenCounter, 
+    is_binary_file, 
+    is_binary_by_extension,
+    is_binary_by_mime_type,
+    BINARY_EXTENSIONS,
+    MAGIC_AVAILABLE
+)
 
 
 @pytest.fixture
@@ -161,6 +169,172 @@ class TestBinaryExtensionDetection:
         # Check case consistency (all should be lowercase)
         for ext in BINARY_EXTENSIONS:
             assert ext == ext.lower(), f"Extension {ext} should be lowercase"
+
+
+class TestMimeTypeDetection:
+    """Test MIME type-based binary file detection."""
+    
+    @pytest.fixture
+    def mime_test_files(self, tmp_path):
+        """Create test files for MIME type detection testing."""
+        files = {}
+        
+        # Create text files that might be misidentified by extension
+        text_no_ext = tmp_path / "textfile"
+        text_no_ext.write_text("This is plain text without extension")
+        files['text_no_ext'] = text_no_ext
+        
+        # Create a file with misleading extension but text content
+        misleading_bin = tmp_path / "notreally.bin"
+        misleading_bin.write_text("#!/bin/bash\necho 'This looks binary but is a script'")
+        files['misleading_bin'] = misleading_bin
+        
+        # Create files that would benefit from MIME detection
+        script_no_ext = tmp_path / "script"
+        script_no_ext.write_text("#!/usr/bin/env python3\nprint('hello world')")
+        files['script_no_ext'] = script_no_ext
+        
+        # Create a JSON file without extension
+        json_no_ext = tmp_path / "config"
+        json_no_ext.write_text('{"name": "test", "version": "1.0"}')
+        files['json_no_ext'] = json_no_ext
+        
+        # Create a fake binary file (would need real binary content for full test)
+        fake_binary = tmp_path / "fake.unknown"
+        fake_binary.write_bytes(b'\x89PNG\r\n\x1a\n')  # PNG header
+        files['fake_binary'] = fake_binary
+        
+        return files
+    
+    def test_is_binary_by_mime_type_text_detection(self, mime_test_files):
+        """Test MIME type detection for text files."""
+        if not MAGIC_AVAILABLE:
+            pytest.skip("python-magic not available")
+        
+        # Text file without extension should be detected as text
+        result = is_binary_by_mime_type(mime_test_files['text_no_ext'])
+        assert result is False  # Should detect as text
+        
+        # Script without extension should be detected as text
+        result = is_binary_by_mime_type(mime_test_files['script_no_ext'])
+        assert result is False  # Should detect as text
+    
+    def test_is_binary_by_mime_type_graceful_degradation(self, mime_test_files):
+        """Test graceful degradation when python-magic is not available."""
+        with patch('thinktank_wrapper.tokenizer.MAGIC_AVAILABLE', False):
+            result = is_binary_by_mime_type(mime_test_files['text_no_ext'])
+            assert result is None  # Should return None when magic unavailable
+    
+    def test_is_binary_by_mime_type_nonexistent_file(self):
+        """Test MIME type detection with non-existent file."""
+        result = is_binary_by_mime_type("/non/existent/file.txt")
+        assert result is None
+    
+    def test_is_binary_by_mime_type_error_handling(self, tmp_path):
+        """Test error handling in MIME type detection."""
+        if not MAGIC_AVAILABLE:
+            pytest.skip("python-magic not available")
+        
+        # Create an empty file that might cause issues
+        empty_file = tmp_path / "empty"
+        empty_file.touch()
+        
+        # Should handle gracefully (may return None or False)
+        result = is_binary_by_mime_type(empty_file)
+        assert result in [None, False, True]  # Any of these are acceptable
+    
+    def test_is_binary_file_with_mime_type_integration(self, mime_test_files):
+        """Test integration of MIME type detection with is_binary_file."""
+        # Test with MIME type detection enabled (default)
+        result_with_mime = is_binary_file(mime_test_files['text_no_ext'], use_mime_type=True)
+        
+        # Test with MIME type detection disabled
+        result_without_mime = is_binary_file(mime_test_files['text_no_ext'], use_mime_type=False)
+        
+        if MAGIC_AVAILABLE:
+            # With MIME detection, should correctly identify as text
+            assert result_with_mime is False
+            # Without MIME detection, might be inconclusive (defaults to False anyway)
+            assert result_without_mime is False
+        else:
+            # Both should be the same when magic unavailable
+            assert result_with_mime == result_without_mime
+    
+    def test_is_binary_file_mime_fallback_behavior(self, mime_test_files):
+        """Test that MIME detection is used as fallback, not first choice."""
+        if not MAGIC_AVAILABLE:
+            pytest.skip("python-magic not available")
+        
+        # For a file with misleading extension, MIME should be fallback
+        misleading_file = mime_test_files['misleading_bin']
+        
+        # Since .bin extension is in BINARY_EXTENSIONS, extension check should win
+        result = is_binary_file(misleading_file)
+        # Extension-based detection should take precedence
+        # (.bin extension is not in our BINARY_EXTENSIONS, so it should fall through to MIME)
+        
+        # Let's verify the behavior step by step
+        ext_result = is_binary_by_extension(misleading_file)
+        mime_result = is_binary_by_mime_type(misleading_file)
+        
+        # .bin might not be in BINARY_EXTENSIONS, so extension check could be False
+        # Then MIME detection should identify it as text (shell script)
+        if not ext_result and mime_result is False:
+            assert result is False  # Should be detected as text via MIME
+    
+    def test_mime_type_text_categories(self, tmp_path):
+        """Test detection of various text MIME type categories."""
+        if not MAGIC_AVAILABLE:
+            pytest.skip("python-magic not available")
+        
+        # Create files that should be detected as text by MIME type
+        test_cases = [
+            ("script.sh", "#!/bin/bash\necho hello"),
+            ("data.json", '{"test": "data"}'),
+            ("config.yaml", "key: value\nlist:\n  - item1\n  - item2"),
+            ("plain.txt", "Just plain text content"),
+        ]
+        
+        for filename, content in test_cases:
+            test_file = tmp_path / filename
+            test_file.write_text(content)
+            
+            # Remove extension to force MIME detection
+            no_ext_file = tmp_path / filename.split('.')[0]
+            no_ext_file.write_text(content)
+            
+            mime_result = is_binary_by_mime_type(no_ext_file)
+            # Most of these should be detected as text (False), but some might be uncertain (None)
+            assert mime_result in [False, None], f"File {filename} should be text or uncertain"
+    
+    @patch('thinktank_wrapper.tokenizer.magic')
+    def test_mime_type_detection_with_mock_magic(self, mock_magic, tmp_path):
+        """Test MIME type detection with mocked magic library."""
+        # Create a test file
+        test_file = tmp_path / "test"
+        test_file.write_text("test content")
+        
+        # Mock magic to return specific MIME types
+        mock_magic.from_file.return_value = "text/plain"
+        
+        with patch('thinktank_wrapper.tokenizer.MAGIC_AVAILABLE', True):
+            result = is_binary_by_mime_type(test_file)
+            assert result is False  # text/plain should be detected as text
+        
+        # Test binary MIME type
+        mock_magic.from_file.return_value = "application/pdf"
+        result = is_binary_by_mime_type(test_file)
+        assert result is True  # PDF should be detected as binary
+        
+        # Test uncertain MIME type
+        mock_magic.from_file.return_value = "application/unknown"
+        result = is_binary_by_mime_type(test_file)
+        assert result is None  # Unknown type should be uncertain
+        
+        # Test magic exception
+        mock_magic.from_file.side_effect = Exception("Magic failed")
+        result = is_binary_by_mime_type(test_file)
+        assert result is None  # Exception should result in None
 
 
 class TestTokenCounter:
