@@ -40,6 +40,29 @@ FILE_TYPE_ADJUSTMENTS = {
 }
 
 
+def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192) -> bool:
+    """Check if a file is binary by looking for null bytes in the first chunk.
+    
+    Args:
+        file_path: Path to the file to check
+        chunk_size: Number of bytes to read for detection (default 8KB)
+        
+    Returns:
+        True if the file appears to be binary, False otherwise
+    """
+    path = Path(file_path)
+    
+    try:
+        with open(path, 'rb') as f:
+            chunk = f.read(chunk_size)
+            # Check for null bytes which are common in binary files
+            return b'\x00' in chunk
+    except (OSError, IOError):
+        # If we can't read the file, assume it's not binary
+        # This will let the normal file reading logic handle the error
+        return False
+
+
 class TokenCounter:
     """Provides token counting functionality for multiple LLM providers."""
     
@@ -102,6 +125,11 @@ class TokenCounter:
         
         if not path.is_file():
             return 0, f"Not a file: {file_path}"
+        
+        # Check if file is binary before attempting to read as text
+        if is_binary_file(path):
+            logger.debug(f"Skipping binary file: {path.name}")
+            return 0, None
         
         try:
             # Read file content

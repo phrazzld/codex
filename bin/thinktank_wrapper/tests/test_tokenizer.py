@@ -6,7 +6,7 @@ from unittest.mock import Mock, patch
 
 import pytest
 
-from thinktank_wrapper.tokenizer import TokenCounter, MultiProviderTokenCounter
+from thinktank_wrapper.tokenizer import TokenCounter, MultiProviderTokenCounter, is_binary_file
 
 
 @pytest.fixture
@@ -33,6 +33,63 @@ def temp_files(tmp_path):
     files['json'] = (json_file, json_content)
     
     return files
+
+
+@pytest.fixture
+def binary_test_files(tmp_path):
+    """Create temporary test files including binary files."""
+    files = {}
+    
+    # Text file
+    text_file = tmp_path / "text.txt"
+    text_file.write_text("This is a plain text file.")
+    files['text'] = text_file
+    
+    # Binary file with null bytes
+    binary_file = tmp_path / "binary.bin"
+    binary_content = b"Binary content\x00with null bytes\x00and more data"
+    binary_file.write_bytes(binary_content)
+    files['binary'] = binary_file
+    
+    # Empty file
+    empty_file = tmp_path / "empty.txt"
+    empty_file.write_text("")
+    files['empty'] = empty_file
+    
+    # File that looks binary but isn't (no null bytes)
+    pseudobinary_file = tmp_path / "pseudo.dat"
+    pseudobinary_file.write_text("This looks binary but has no null bytes")
+    files['pseudobinary'] = pseudobinary_file
+    
+    return files
+
+
+class TestBinaryFileDetection:
+    """Test binary file detection functionality."""
+    
+    def test_is_binary_file_with_text(self, binary_test_files):
+        """Test that text files are not detected as binary."""
+        text_file = binary_test_files['text']
+        assert not is_binary_file(text_file)
+    
+    def test_is_binary_file_with_binary(self, binary_test_files):
+        """Test that binary files are correctly detected."""
+        binary_file = binary_test_files['binary']
+        assert is_binary_file(binary_file)
+    
+    def test_is_binary_file_with_empty(self, binary_test_files):
+        """Test that empty files are not detected as binary."""
+        empty_file = binary_test_files['empty']
+        assert not is_binary_file(empty_file)
+    
+    def test_is_binary_file_with_pseudobinary(self, binary_test_files):
+        """Test that files without null bytes are not detected as binary."""
+        pseudobinary_file = binary_test_files['pseudobinary']
+        assert not is_binary_file(pseudobinary_file)
+    
+    def test_is_binary_file_nonexistent(self):
+        """Test that non-existent files return False."""
+        assert not is_binary_file("/non/existent/file.bin")
 
 
 class TestTokenCounter:
@@ -91,6 +148,22 @@ class TestTokenCounter:
         tokens, error = counter.count_file_tokens("/non/existent/file.txt")
         assert tokens == 0
         assert "File not found" in error
+    
+    def test_count_file_tokens_binary_files(self, binary_test_files):
+        """Test that binary files are skipped."""
+        counter = TokenCounter()
+        
+        # Binary file should return 0 tokens with no error
+        binary_file = binary_test_files['binary']
+        tokens, error = counter.count_file_tokens(binary_file)
+        assert tokens == 0
+        assert error is None
+        
+        # Text file should work normally
+        text_file = binary_test_files['text']
+        tokens, error = counter.count_file_tokens(text_file)
+        assert tokens > 0
+        assert error is None
     
     def test_count_directory_tokens(self, temp_files):
         """Test counting tokens in directory."""
