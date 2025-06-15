@@ -28,8 +28,8 @@ This document outlines the necessary improvements to thinktank-wrapper to handle
 ### 3. Fix Hardcoded Model Selection
 **Problem**: tt-plan hardcodes `--model-set high_context`
 **Solution**:
-- [ ] Update tt-plan to use dynamic model selection based on token count
-- [ ] Remove hardcoded `--model-set high_context` from line 28
+- [x] Update tt-plan to use dynamic model selection based on token count
+- [x] Remove hardcoded `--model-set high_context` from line 28
 - [ ] Test tt-plan with various file sizes to ensure proper model selection
 
 ### 4. Improve Token Counting Accuracy
