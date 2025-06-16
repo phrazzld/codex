@@ -470,11 +470,11 @@ class TestTokenCounter:
     
     def test_count_directory_tokens_with_extension_filter(self, temp_files):
         """Test counting tokens with extension filter."""
-        counter = TokenCounter("openai")
+        counter = TokenCounter("openai", include_extensions=['.py'])
         tmp_path = next(iter(temp_files.values()))[0].parent
         
         # Count only Python files
-        tokens, errors = counter.count_directory_tokens(tmp_path, extensions=['.py'])
+        tokens, errors = counter.count_directory_tokens(tmp_path)
         assert len(errors) == 0
         assert tokens == 8  # Only the Python file
     
