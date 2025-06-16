@@ -88,45 +88,15 @@ def find_glance_files(search_paths: List[str], gitignore_enabled: bool = True) -
     return sorted(result)
 
 
-def find_philosophy_files() -> List[str]:
-    """Find DEVELOPMENT_PHILOSOPHY*.md files in the current working directory's docs folder.
-    
-    Returns:
-        A list of absolute paths to philosophy files found.
-    """
-    result: Set[str] = set()
-    
-    # Look in current working directory's docs folder
-    current_dir = pathlib.Path(os.getcwd())
-    docs_dir = current_dir / "docs"
-    if not docs_dir.exists() or not docs_dir.is_dir():
-        logger.warning(f"Docs directory not found: {docs_dir}")
-        return []
-    
-    # Search for philosophy files in the docs directory
-    philosophy_pattern = "DEVELOPMENT_PHILOSOPHY*.md"
-    for philosophy_path in docs_dir.glob(philosophy_pattern):
-        if philosophy_path.is_file():
-            result.add(str(philosophy_path.absolute()))
-    
-    # Log the result
-    logger.debug(f"Found {len(result)} philosophy files in {docs_dir}")
-    
-    # Sort the results for deterministic behavior
-    return sorted(result)
-
 
 def find_leyline_files(gitignore_enabled: bool = True) -> List[str]:
-    """Find leyline documents with fallback to philosophy documents.
-    
-    First tries to find leyline documents in docs/leyline/ in the current working directory.
-    If none are found, falls back to DEVELOPMENT_PHILOSOPHY*.md files in the same docs directory.
+    """Find leyline documents in docs/leyline/ in the current working directory.
     
     Args:
         gitignore_enabled: Whether to respect .gitignore rules when finding files.
     
     Returns:
-        A list of absolute paths to leyline or philosophy .md files found.
+        A list of absolute paths to leyline .md files found.
     """
     result: Set[str] = set()
     
@@ -146,7 +116,7 @@ def find_leyline_files(gitignore_enabled: bool = True) -> List[str]:
     current_dir = pathlib.Path(os.getcwd())
     leyline_dir = current_dir / "docs" / "leyline"
     
-    # First try: Look for leyline documents
+    # Look for leyline documents
     if leyline_dir.exists() and leyline_dir.is_dir():
         # Search for all .md files recursively in the leyline directory
         for leyline_path in leyline_dir.rglob("*.md"):
@@ -158,27 +128,9 @@ def find_leyline_files(gitignore_enabled: bool = True) -> List[str]:
                 else:
                     logger.debug(f"Gitignore filtered out leyline file: {abs_path}")
         
-        if result:
-            logger.info(f"Found {len(result)} leyline files in {leyline_dir}")
-            return sorted(result)
-    
-    # Fallback: Look for philosophy documents if no leyline files found
-    logger.info("No leyline files found, falling back to philosophy documents")
-    docs_dir = current_dir / "docs"
-    if docs_dir.exists() and docs_dir.is_dir():
-        philosophy_pattern = "DEVELOPMENT_PHILOSOPHY*.md"
-        for philosophy_path in docs_dir.glob(philosophy_pattern):
-            if philosophy_path.is_file():
-                abs_path = str(philosophy_path.absolute())
-                # Apply gitignore filtering if enabled
-                if gitignore_filter is None or not gitignore_filter.should_ignore(abs_path):
-                    result.add(abs_path)
-                else:
-                    logger.debug(f"Gitignore filtered out philosophy file: {abs_path}")
-        
-        logger.info(f"Found {len(result)} philosophy files as fallback in {docs_dir}")
+        logger.info(f"Found {len(result)} leyline files in {leyline_dir}")
     else:
-        logger.warning(f"Docs directory not found: {docs_dir}")
+        logger.debug(f"Leyline directory not found: {leyline_dir}")
     
     # Sort the results for deterministic behavior
     return sorted(result)

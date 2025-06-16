@@ -57,17 +57,17 @@
   - Root cause: Tokenization logic boundary conditions or encoding handling
   - Fix: Review tokenization algorithm for edge cases and encoding issues
 
-- [ ] **Fix encoding detection for binary files**
+- [x] **Fix encoding detection for binary files**
   - Location: `tests/test_tokenizer.py:1483`
   - Problem: `detect_file_encoding` returns 'latin1' instead of None for binary files  
   - Root cause: Encoding detection fallback being too permissive for binary data
-  - Fix: Improve binary file detection before encoding analysis
+  - Fix: ✅ Improved binary file detection with null byte and printable character checks before encoding analysis
 
-- [ ] **Fix encoding error messages**
+- [x] **Fix encoding error messages**
   - Location: `tests/test_tokenizer.py:1508,1540`
   - Problem: Error messages don't contain expected text ("binary data", "UTF-8 encoding issues")
   - Root cause: Error message generation logic using generic encoding advice instead of specific detection
-  - Fix: Update error message generation to provide context-appropriate guidance
+  - Fix: ✅ Enhanced error message generation with encoding detection priority and UTF-8 corruption detection
 
 ### 5. Integration and Infrastructure (5 failures)
 - [ ] **Fix command builder IO error handling**

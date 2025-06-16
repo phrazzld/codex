@@ -43,7 +43,7 @@ def detect_file_encoding(file_path: Union[str, Path]) -> Optional[str]:
         file_path: Path to the file to analyze
         
     Returns:
-        Detected encoding name, or None if detection failed
+        Detected encoding name, or None if detection failed or file appears binary
     """
     path = Path(file_path)
     
@@ -55,6 +55,22 @@ def detect_file_encoding(file_path: Union[str, Path]) -> Optional[str]:
         if not sample:
             return 'utf-8'  # Empty file, assume UTF-8
         
+        # First check if this looks like binary data
+        # Check for null bytes which are strong indicators of binary content
+        if b'\x00' in sample:
+            return None
+        
+        # Check for high proportion of non-printable bytes (excluding common whitespace)
+        # ASCII printable range is 32-126, plus common whitespace (9, 10, 13)
+        printable_bytes = 0
+        for byte in sample:
+            if (32 <= byte <= 126) or byte in (9, 10, 13):  # Printable ASCII + tab, LF, CR
+                printable_bytes += 1
+        
+        # If less than 70% printable characters, likely binary
+        if len(sample) > 0 and (printable_bytes / len(sample)) < 0.7:
+            return None
+        
         # Try common encodings in order of likelihood
         encodings_to_try = [
             'utf-8', 'utf-8-sig',  # UTF-8 with and without BOM
@@ -65,7 +81,15 @@ def detect_file_encoding(file_path: Union[str, Path]) -> Optional[str]:
         
         for encoding in encodings_to_try:
             try:
-                sample.decode(encoding)
+                decoded = sample.decode(encoding)
+                # For Latin-1 and similar permissive encodings, do additional checks
+                if encoding in ('latin1', 'iso-8859-1', 'cp1252'):
+                    # Check if the decoded text contains a lot of control characters
+                    # (other than common whitespace)
+                    control_chars = sum(1 for c in decoded if ord(c) < 32 and ord(c) not in (9, 10, 13))
+                    if control_chars > len(decoded) * 0.1:  # More than 10% control chars
+                        continue  # Skip this encoding, looks too suspicious
+                
                 return encoding
             except UnicodeDecodeError:
                 continue
@@ -89,26 +113,53 @@ def get_encoding_error_message(file_path: Union[str, Path], error: UnicodeDecode
     """
     path = Path(file_path)
     
-    # Try to detect the actual encoding
+    # Try to detect the actual encoding using our standard detection first
     detected_encoding = detect_file_encoding(file_path)
     
-    if detected_encoding is None:
-        return (
-            f"Unable to read '{path.name}': The file appears to contain binary data. "
-            f"If this should be a text file, it may be corrupted or use an unusual encoding."
-        )
-    elif detected_encoding != 'utf-8':
+    # If we detected a specific non-UTF-8 encoding, prioritize that
+    if detected_encoding is not None and detected_encoding != 'utf-8':
         return (
             f"Unable to read '{path.name}': The file uses {detected_encoding} encoding, not UTF-8. "
             f"Try converting it to UTF-8 with: iconv -f {detected_encoding} -t utf-8 \"{path}\" > \"{path}.utf8\""
         )
-    else:
-        # UTF-8 detection succeeded but reading failed - might be corrupted
+    
+    # If detected as binary
+    if detected_encoding is None:
+        # Special case: If error codec is utf-8 and we have error position info,
+        # check if this is a partially corrupted UTF-8 file (starts valid then corrupts)
+        if (hasattr(error, 'encoding') and error.encoding == 'utf-8' and 
+            hasattr(error, 'start') and error.start > 0):
+            try:
+                with open(path, 'rb') as f:
+                    sample = f.read(8192)  # Read first 8KB
+                
+                # Check if we can read the beginning as UTF-8
+                try:
+                    readable_part = sample[:error.start]
+                    readable_part.decode('utf-8')
+                    # If we can read the beginning as UTF-8, this suggests a corrupted text file
+                    return (
+                        f"Unable to read '{path.name}': The file has UTF-8 encoding issues. "
+                        f"It may be corrupted or contain mixed encodings. "
+                        f"Try: file \"{path}\" to get more information about the file type."
+                    )
+                except UnicodeDecodeError:
+                    pass
+            except (OSError, IOError):
+                pass
+        
+        # Default binary message
         return (
-            f"Unable to read '{path.name}': The file has UTF-8 encoding issues. "
-            f"It may be corrupted or contain mixed encodings. "
-            f"Try: file \"{path}\" to get more information about the file type."
+            f"Unable to read '{path.name}': The file appears to contain binary data. "
+            f"If this should be a text file, it may be corrupted or use an unusual encoding."
         )
+    
+    # If detected as UTF-8 but reading failed - generic corruption case
+    return (
+        f"Unable to read '{path.name}': The file has UTF-8 encoding issues. "
+        f"It may be corrupted or contain mixed encodings. "
+        f"Try: file \"{path}\" to get more information about the file type."
+    )
 
 
 def get_file_access_error_message(file_path: Union[str, Path], error: Exception) -> str:
