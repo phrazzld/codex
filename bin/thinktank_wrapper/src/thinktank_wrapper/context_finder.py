@@ -249,8 +249,12 @@ def find_context_files(
                 else:
                     logger.debug(f"Gitignore filtered out explicit file: {abs_path}")
             else:
-                # Always include directories - they'll be processed by thinktank
-                valid_explicit_paths.append(abs_path)
+                # Apply gitignore filtering to directories for consistency
+                if gitignore_filter is None or not gitignore_filter.should_ignore(abs_path):
+                    valid_explicit_paths.append(abs_path)
+                else:
+                    logger.warning(f"Explicit directory is gitignored and will be skipped: {abs_path}")
+                    logger.warning(f"To include gitignored directory '{path_str}', disable gitignore filtering with --no-gitignore")
         else:
             logger.warning(f"Explicit path does not exist: {path_str}")
     

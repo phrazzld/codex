@@ -14,7 +14,7 @@
 ## HIGH PRIORITY FUNCTIONAL BUGS
 
 ### Gitignore Rule Precedence Logic Error  
-- [~] **Fix gitignore precedence to match Git's "last rule wins" behavior**
+- [x] **Fix gitignore precedence to match Git's "last rule wins" behavior**
   - Location: `src/thinktank_wrapper/gitignore.py:139-158` (`should_ignore` method)
   - Problem: Current logic processes from root→deepest and returns on first match, preventing deeper `.gitignore` files from overriding parent rules
   - Expected behavior: `!important.log` in subdirectory should override `*.log` in root `.gitignore`
@@ -25,7 +25,7 @@
   - Test case: Create nested directories with conflicting gitignore rules and verify deeper rules win
 
 ### Explicit Directory Filtering Inconsistency
-- [ ] **Apply gitignore filtering to explicit directories for consistency**
+- [x] **Apply gitignore filtering to explicit directories for consistency**
   - Location: `src/thinktank_wrapper/context_finder.py:252-253`
   - Problem: Explicit directories bypass all gitignore/extension filtering, potentially including massive irrelevant directories
   - Current behavior: `thinktank-wrapper src/ node_modules/` includes `node_modules/` even if gitignored
@@ -37,12 +37,12 @@
 ## TESTING REQUIREMENTS
 
 ### Integration Tests for Fixed Issues
-- [ ] **Add gitignore precedence integration test**
+- [x] **Add gitignore precedence integration test**
   - Create test with nested directories containing conflicting `.gitignore` rules
   - Verify subdirectory rules override parent rules
   - Test negation patterns (`!`) work correctly
   
-- [ ] **Add explicit directory gitignore test**
+- [x] **Add explicit directory gitignore test**
   - Test behavior when user explicitly includes gitignored directories
   - Verify consistent filtering behavior or appropriate warnings
 

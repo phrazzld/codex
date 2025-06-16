@@ -314,3 +314,71 @@ class TestGitignoreIntegration:
         # Should still find the glance file
         expected = [str((repo_dir / "glance.md").absolute())]
         assert result == expected
+
+    def test_explicit_directory_gitignore_filtering(self, tmp_path: Path, monkeypatch: pytest.MonkeyPatch, caplog):
+        """Test that explicit directories are filtered by gitignore rules."""
+        # Create a repository structure
+        repo_dir = tmp_path / "repo"
+        repo_dir.mkdir()
+        
+        # Create .gitignore that ignores node_modules
+        gitignore = repo_dir / ".gitignore"
+        gitignore.write_text("node_modules/\n*.log\n")
+        
+        # Create directories - one ignored, one not
+        node_modules_dir = repo_dir / "node_modules"
+        node_modules_dir.mkdir()
+        (node_modules_dir / "package.json").write_text("{}")
+        
+        src_dir = repo_dir / "src"
+        src_dir.mkdir()
+        (src_dir / "main.py").write_text("print('hello')")
+        
+        # Create a regular file for comparison
+        allowed_file = repo_dir / "README.md"
+        allowed_file.write_text("# Project")
+        
+        # Change to repo directory
+        monkeypatch.chdir(repo_dir)
+        
+        # Test with gitignore enabled - explicit gitignored directory should be filtered out
+        result_filtered = find_context_files(
+            include_glance=False,
+            include_leyline=False,
+            explicit_paths=[str(node_modules_dir), str(src_dir), str(allowed_file)],
+            gitignore_enabled=True
+        )
+        
+        # Should include only src_dir and allowed_file, not node_modules
+        expected_filtered = [
+            str(src_dir.absolute()),
+            str(allowed_file.absolute()),
+        ]
+        assert sorted(result_filtered) == sorted(expected_filtered)
+        
+        # Check that warning was logged
+        assert "Explicit directory is gitignored and will be skipped" in caplog.text
+        assert str(node_modules_dir.absolute()) in caplog.text
+        assert "disable gitignore filtering with --no-gitignore" in caplog.text
+        
+        # Clear log for next test
+        caplog.clear()
+        
+        # Test with gitignore disabled - should include all paths
+        result_no_filter = find_context_files(
+            include_glance=False,
+            include_leyline=False,
+            explicit_paths=[str(node_modules_dir), str(src_dir), str(allowed_file)],
+            gitignore_enabled=False
+        )
+        
+        # Should include all paths when gitignore is disabled
+        expected_all = [
+            str(node_modules_dir.absolute()),
+            str(src_dir.absolute()),
+            str(allowed_file.absolute()),
+        ]
+        assert sorted(result_no_filter) == sorted(expected_all)
+        
+        # Should not have warning when gitignore is disabled
+        assert "Explicit directory is gitignored" not in caplog.text

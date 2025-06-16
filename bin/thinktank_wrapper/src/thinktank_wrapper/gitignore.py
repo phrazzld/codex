@@ -113,20 +113,24 @@ class GitignoreFilter:
         
         path = Path(file_path)
         
-        # Convert to absolute path if needed
+        # Convert to absolute path if needed and resolve to handle symlinks
         if not path.is_absolute():
             path = self.root_path / path
         
+        # Resolve both paths to handle symlinks (e.g., /var -> /private/var on macOS)
+        path = path.resolve()
+        root_path = self.root_path.resolve()
+        
         try:
             # Get relative path from root for pattern matching
-            rel_path = path.relative_to(self.root_path)
+            rel_path = path.relative_to(root_path)
         except ValueError:
             # Path is outside root directory - don't ignore
             return False
         
         # Build list of directories to check, from root to file's parent directory
         dirs_to_check = []
-        current_dir = self.root_path
+        current_dir = root_path
         dirs_to_check.append(current_dir)
         
         # Add each subdirectory in the path
@@ -134,40 +138,59 @@ class GitignoreFilter:
             current_dir = current_dir / part
             dirs_to_check.append(current_dir)
         
-        # Check each directory's .gitignore file
-        # Git processes from deepest to shallowest, with deeper rules taking precedence
+        # Collect all gitignore patterns from root to deepest directory
+        # Git processes patterns with later (deeper) rules taking precedence
+        all_patterns = []
         
-        # Process directories from deepest to root (reverse order)
-        for i, dir_path in enumerate(reversed(dirs_to_check)):
-            spec = self._get_gitignore_spec(dir_path)
-            if not spec:
+        # Process directories from root to deepest (normal order)
+        # This ensures that deeper rules will be later in the list and override earlier ones
+        for dir_path in dirs_to_check:
+            gitignore_path = dir_path / ".gitignore"
+            if not gitignore_path.exists() or not gitignore_path.is_file():
                 continue
             
-            # Compute path relative to this directory's .gitignore file
-            # Note: with reversed dirs_to_check, index 0 is now the deepest directory
-            original_index = len(dirs_to_check) - 1 - i
-            if original_index == 0:
-                # Root directory - use full relative path
-                relative_match_path = str(rel_path)
-            else:
-                # Subdirectory - use path relative to this directory
-                try:
-                    relative_match_path = str(path.relative_to(dir_path))
-                except ValueError:
-                    # Shouldn't happen, but skip if it does
-                    continue
+            try:
+                with open(gitignore_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    patterns = f.read().splitlines()
+                
+                # Filter out empty lines and comments
+                patterns = [
+                    line.strip() for line in patterns 
+                    if line.strip() and not line.strip().startswith('#')
+                ]
+                
+                if patterns:
+                    all_patterns.extend(patterns)
+                    logger.debug(f"Added {len(patterns)} patterns from {gitignore_path}")
+                    
+            except Exception as e:
+                logger.warning(f"Failed to read .gitignore file {gitignore_path}: {e}")
+                continue
+        
+        # If no patterns found, don't ignore
+        if not all_patterns:
+            return False
+        
+        # Create a single pathspec with all patterns
+        # Later patterns (from deeper directories) will override earlier ones
+        try:
+            combined_spec = pathspec.PathSpec.from_lines('gitwildmatch', all_patterns)
             
-            # Check what this .gitignore says about the file
-            match_result = spec.match_file(relative_match_path)
+            # Test the file path
+            relative_match_path = str(rel_path)
+            match_result = combined_spec.match_file(relative_match_path)
+            
+            # If not matched and this is a directory, also check with trailing slash
+            if not match_result and path.is_dir():
+                match_result = combined_spec.match_file(relative_match_path + "/")
             
             if match_result:
-                # This .gitignore wants to ignore the file
-                logger.debug(f"File {relative_match_path} matched gitignore pattern in {dir_path}")
+                logger.debug(f"Path {relative_match_path} matched combined gitignore patterns")
                 return True
             
-            # Note: pathspec returns False for both "no match" and "negated match"
-            # For now, continue to parent directories to find positive matches
-            # This preserves existing behavior while fixing the ordering
+        except Exception as e:
+            logger.warning(f"Failed to process combined gitignore patterns: {e}")
+            return False
         
         return False
     

@@ -152,3 +152,129 @@ def test_gitignore_filter_paths():
         # Should filter out .log files
         expected = [Path("normal.txt"), Path("subdir1/normal.txt")]
         assert filtered == expected
+
+
+@pytest.mark.skipif(
+    not hasattr(pytest, "importorskip") or not pytest.importorskip("pathspec", reason="pathspec not available"),
+    reason="pathspec library required for gitignore functionality"
+)
+def test_gitignore_precedence_integration():
+    """Integration test for gitignore precedence - subdirectory rules override parent rules."""
+    import pathspec
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        repo_path = Path(temp_dir)
+        
+        # Create complex directory structure
+        (repo_path / "src" / "main" / "java").mkdir(parents=True)
+        (repo_path / "src" / "test" / "java").mkdir(parents=True)
+        (repo_path / "docs" / "api").mkdir(parents=True)
+        
+        # Create .gitignore files with conflicting rules
+        # Root .gitignore: ignore all .log files and docs directory
+        (repo_path / ".gitignore").write_text("*.log\ndocs/\n")
+        
+        # src/.gitignore: allow important.log files (negation pattern)
+        (repo_path / "src" / ".gitignore").write_text("!important.log\n*.tmp\n")
+        
+        # docs/.gitignore: allow api directory (negation pattern) 
+        (repo_path / "docs" / ".gitignore").write_text("!api/\n*.draft\n")
+        
+        # Create test files to verify precedence
+        test_files = [
+            # Root level - should follow root .gitignore
+            (repo_path / "app.log", True),           # Ignored by root *.log
+            (repo_path / "readme.txt", False),       # Not ignored
+            
+            # src/ level - should follow src .gitignore rules + root rules
+            (repo_path / "src" / "debug.log", True),      # Ignored by root *.log
+            (repo_path / "src" / "important.log", False), # NOT ignored (negated by src/.gitignore)
+            (repo_path / "src" / "temp.tmp", True),       # Ignored by src *.tmp
+            (repo_path / "src" / "main.java", False),     # Not ignored
+            
+            # src/main/java/ level - should follow src rules (no more specific .gitignore)
+            (repo_path / "src" / "main" / "java" / "build.log", True),      # Ignored by root *.log
+            (repo_path / "src" / "main" / "java" / "important.log", False), # NOT ignored (src negation)
+            (repo_path / "src" / "main" / "java" / "cache.tmp", True),      # Ignored by src *.tmp
+            
+            # docs/ level - should follow docs .gitignore + root rules
+            (repo_path / "docs" / "user.log", True),        # Ignored by root *.log
+            (repo_path / "docs" / "spec.draft", True),      # Ignored by docs *.draft
+            (repo_path / "docs" / "index.md", True),        # Ignored by root docs/ rule
+            
+            # docs/api/ level - should NOT be ignored due to docs negation
+            (repo_path / "docs" / "api" / "reference.log", True),   # Ignored by root *.log
+            (repo_path / "docs" / "api" / "spec.draft", True),     # Ignored by docs *.draft  
+            (repo_path / "docs" / "api" / "index.md", False),      # NOT ignored (docs negation for api/)
+        ]
+        
+        # Create all test files
+        for file_path, _ in test_files:
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path.write_text("test content")
+        
+        # Test the GitignoreFilter
+        gitignore_filter = GitignoreFilter(repo_path)
+        assert gitignore_filter.is_enabled()
+        
+        # Verify each file's ignore status
+        for file_path, should_be_ignored in test_files:
+            actual_ignored = gitignore_filter.should_ignore(str(file_path.relative_to(repo_path)))
+            assert actual_ignored == should_be_ignored, (
+                f"Precedence test failed for {file_path.relative_to(repo_path)}: "
+                f"expected ignored={should_be_ignored}, got ignored={actual_ignored}"
+            )
+
+
+@pytest.mark.skipif(
+    not hasattr(pytest, "importorskip") or not pytest.importorskip("pathspec", reason="pathspec not available"),
+    reason="pathspec library required for gitignore functionality"
+)
+def test_gitignore_negation_patterns():
+    """Test that gitignore negation patterns work correctly."""
+    import pathspec
+    
+    with tempfile.TemporaryDirectory() as temp_dir:
+        repo_path = Path(temp_dir)
+        
+        # Create directory structure
+        (repo_path / "build" / "important").mkdir(parents=True)
+        (repo_path / "dist").mkdir()
+        
+        # Root .gitignore: ignore build directory but allow important subdirectory
+        (repo_path / ".gitignore").write_text("build/\n!build/important/\n*.tmp\n!keep.tmp\n")
+        
+        # Create test files
+        test_files = [
+            # Files in build/ - should be ignored except important/
+            (repo_path / "build" / "output.jar", True),                    # Ignored by build/
+            (repo_path / "build" / "temp.log", True),                     # Ignored by build/
+            (repo_path / "build" / "important" / "config.json", False),   # NOT ignored (!build/important/)
+            (repo_path / "build" / "important" / "data.xml", False),      # NOT ignored (!build/important/)
+            
+            # Files in root - test negation of file patterns
+            (repo_path / "temp.tmp", True),     # Ignored by *.tmp
+            (repo_path / "keep.tmp", False),    # NOT ignored (!keep.tmp)
+            (repo_path / "other.tmp", True),    # Ignored by *.tmp
+            
+            # Other files - not affected by these rules
+            (repo_path / "readme.md", False),   # Not ignored
+            (repo_path / "dist" / "app.js", False),  # Not ignored
+        ]
+        
+        # Create all test files
+        for file_path, _ in test_files:
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            file_path.write_text("test content")
+        
+        # Test the GitignoreFilter
+        gitignore_filter = GitignoreFilter(repo_path)
+        assert gitignore_filter.is_enabled()
+        
+        # Verify each file's ignore status
+        for file_path, should_be_ignored in test_files:
+            actual_ignored = gitignore_filter.should_ignore(str(file_path.relative_to(repo_path)))
+            assert actual_ignored == should_be_ignored, (
+                f"Negation test failed for {file_path.relative_to(repo_path)}: "
+                f"expected ignored={should_be_ignored}, got ignored={actual_ignored}"
+            )
