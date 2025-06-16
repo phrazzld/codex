@@ -37,11 +37,14 @@ def test_find_glance_files(mock_glance_files: List[Path], temp_dir: Path):
 
 
 
-def test_find_context_files(mock_glance_files: List[Path], mock_codex_dir: Path, temp_dir: Path):
+def test_find_context_files(mock_glance_files: List[Path], mock_codex_dir: Path, temp_dir: Path, monkeypatch: pytest.MonkeyPatch):
     """Test that find_context_files returns the correct context files."""
     # Create a test file to use as an explicit path
     test_file = temp_dir / "test_file.txt"
     test_file.write_text("Test file")
+    
+    # Change to temp directory so glance file discovery works correctly
+    monkeypatch.chdir(temp_dir)
     
     # Call the function
     result = find_context_files(
