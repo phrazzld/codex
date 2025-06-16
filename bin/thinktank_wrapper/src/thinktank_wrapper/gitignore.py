@@ -136,13 +136,17 @@ class GitignoreFilter:
         
         # Check each directory's .gitignore file
         # Git processes from deepest to shallowest, with deeper rules taking precedence
-        for i, dir_path in enumerate(dirs_to_check):
+        
+        # Process directories from deepest to root (reverse order)
+        for i, dir_path in enumerate(reversed(dirs_to_check)):
             spec = self._get_gitignore_spec(dir_path)
             if not spec:
                 continue
             
             # Compute path relative to this directory's .gitignore file
-            if i == 0:
+            # Note: with reversed dirs_to_check, index 0 is now the deepest directory
+            original_index = len(dirs_to_check) - 1 - i
+            if original_index == 0:
                 # Root directory - use full relative path
                 relative_match_path = str(rel_path)
             else:
@@ -153,9 +157,17 @@ class GitignoreFilter:
                     # Shouldn't happen, but skip if it does
                     continue
             
-            if spec.match_file(relative_match_path):
+            # Check what this .gitignore says about the file
+            match_result = spec.match_file(relative_match_path)
+            
+            if match_result:
+                # This .gitignore wants to ignore the file
                 logger.debug(f"File {relative_match_path} matched gitignore pattern in {dir_path}")
                 return True
+            
+            # Note: pathspec returns False for both "no match" and "negated match"
+            # For now, continue to parent directories to find positive matches
+            # This preserves existing behavior while fixing the ordering
         
         return False
     
