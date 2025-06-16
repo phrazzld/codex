@@ -608,13 +608,18 @@ class TokenCounter:
                 error_message = get_encoding_error_message(file_path, e)
                 return 0, error_message
             
-            # Get base token count
-            base_tokens = self.count_text_tokens(content)
-            
-            # Apply file type adjustment
+            # Apply file type adjustment to avoid double truncation
             suffix = path.suffix.lower()
             adjustment = FILE_TYPE_ADJUSTMENTS.get(suffix, 1.0)
-            adjusted_tokens = int(base_tokens * adjustment)
+            
+            # Use tiktoken for precise counting if available, otherwise use full calculation  
+            if self.provider == "openai" and self._tiktoken_encoding:
+                base_tokens = self.count_text_tokens(content)
+                adjusted_tokens = int(base_tokens * adjustment)
+            else:
+                # For approximation, do full calculation to avoid double truncation
+                adjusted_tokens = int(len(content) * self.base_ratio * adjustment)
+                base_tokens = self.count_text_tokens(content)  # For logging only
             
             logger.debug(f"File {path.name}: {len(content)} chars, "
                         f"{base_tokens} base tokens, {adjusted_tokens} adjusted tokens "

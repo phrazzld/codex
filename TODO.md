@@ -51,11 +51,11 @@
   - Root cause: MAGIC_AVAILABLE patch not applied to all test assertions in mock test
   - Fix: ✅ Wrapped all mock assertions within MAGIC_AVAILABLE patch context
 
-- [ ] **Fix token counting accuracy**
+- [x] **Fix token counting accuracy**
   - Location: `tests/test_tokenizer.py:403,469`
   - Problem: Token counts off by 1 (expected 9 got 8, expected 24 got 23)
-  - Root cause: Tokenization logic boundary conditions or encoding handling
-  - Fix: Review tokenization algorithm for edge cases and encoding issues
+  - Root cause: Double truncation in approximation calculation and test fixture character count mismatch
+  - Fix: ✅ Fixed test fixture to use 31 chars as intended, unified calculation to avoid double truncation when using approximation
 
 - [x] **Fix encoding detection for binary files**
   - Location: `tests/test_tokenizer.py:1483`

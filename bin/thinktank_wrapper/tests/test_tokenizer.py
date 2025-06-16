@@ -36,7 +36,7 @@ def temp_files(tmp_path):
     
     # JSON file
     json_file = tmp_path / "test.json"
-    json_content = '{"key": "value", "number": 42}'  # 31 chars
+    json_content = '{"key": "value", "number": 123}'  # 31 chars
     json_file.write_text(json_content)
     files['json'] = (json_file, json_content)
     
