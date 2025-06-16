@@ -41,12 +41,6 @@ def mock_codex_dir(temp_dir: Path, monkeypatch: pytest.MonkeyPatch) -> Path:
     docs_dir = codex_dir / "docs"
     docs_dir.mkdir(exist_ok=True)
     
-    # Create mock philosophy files
-    (docs_dir / "DEVELOPMENT_PHILOSOPHY.md").write_text("# Mock Philosophy")
-    (docs_dir / "DEVELOPMENT_PHILOSOPHY_APPENDIX_TYPESCRIPT.md").write_text(
-        "# Mock TypeScript Philosophy"
-    )
-    
     # Set the CODEX_DIR environment variable
     monkeypatch.setenv("CODEX_DIR", str(codex_dir))
     

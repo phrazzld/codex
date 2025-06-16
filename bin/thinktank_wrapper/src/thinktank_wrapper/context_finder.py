@@ -1,7 +1,7 @@
 """Context finder module for thinktank-wrapper.
 
 This module provides functionality for finding context files like glance.md 
-and DEVELOPMENT_PHILOSOPHY*.md based on command-line flags.
+and leyline documents based on command-line flags.
 """
 
 import logging
@@ -89,6 +89,7 @@ def find_glance_files(search_paths: List[str], gitignore_enabled: bool = True) -
 
 
 
+
 def find_leyline_files(gitignore_enabled: bool = True) -> List[str]:
     """Find leyline documents in docs/leyline/ in the current working directory.
     
@@ -148,7 +149,7 @@ def find_context_files(
     
     Args:
         include_glance: Whether to include glance.md files.
-        include_leyline: Whether to include leyline documents (with philosophy fallback).
+        include_leyline: Whether to include leyline documents.
         explicit_paths: Explicit file/directory paths to include as context.
         gitignore_enabled: Whether to respect .gitignore rules when finding files.
         include_extensions: If provided, only process files with these extensions.
@@ -165,7 +166,7 @@ def find_context_files(
         result.update(glance_files)
         logger.info(f"Found {len(glance_files)} glance.md files")
     
-    # Find leyline files (with philosophy fallback) if requested
+    # Find leyline files if requested
     if include_leyline:
         leyline_files = find_leyline_files(gitignore_enabled=gitignore_enabled)
         result.update(leyline_files)
