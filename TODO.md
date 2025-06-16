@@ -76,11 +76,11 @@
   - Root cause: Error handling checked file existence before cleanup, but test used fake paths that don't exist
   - Fix: ✅ Removed file existence check in error handling - always attempt cleanup if temp_file_path is set
 
-- [ ] **Fix logging configuration tests**
+- [x] **Fix logging configuration tests**
   - Location: `tests/test_logging_config.py:134,163`
   - Problem: Logging setup and message capture not working in test environment
-  - Root cause: Logging configuration isolation or capture mechanism issues  
-  - Fix: Ensure logging tests properly isolate and capture log output
+  - Root cause: setup_logging() removes existing handlers and writes to stdout, conflicting with test fixtures
+  - Fix: ✅ Replaced custom capture_logs fixture with pytest's capfd fixture to properly capture stdout
 
 - [x] **Fix integration test execution**
   - Location: `tests/test_integration.py:157`

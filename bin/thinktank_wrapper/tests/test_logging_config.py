@@ -12,21 +12,7 @@ import pytest
 from thinktank_wrapper import logging_config
 
 
-@pytest.fixture
-def capture_logs():
-    """Fixture to capture logs for testing."""
-    log_capture = StringIO()
-    handler = logging.StreamHandler(log_capture)
-    
-    root_logger = logging.getLogger()
-    original_handlers = root_logger.handlers.copy()
-    root_logger.handlers = []
-    root_logger.addHandler(handler)
-    
-    yield log_capture
-    
-    # Restore original handlers
-    root_logger.handlers = original_handlers
+# Note: Using pytest's built-in capfd fixture for log capture instead of custom fixture
 
 
 def test_structured_log_formatter():
@@ -117,7 +103,7 @@ def test_structured_log_formatter_with_extra_fields():
     assert parsed["custom_field"] == "custom value"
 
 
-def test_setup_logging_structured(capture_logs):
+def test_setup_logging_structured(capfd):
     """Test that setup_logging correctly configures structured logging."""
     # Call the function
     correlation_id = logging_config.setup_logging(
@@ -128,14 +114,17 @@ def test_setup_logging_structured(capture_logs):
     logging.info("Test message")
     
     # Get the log output
-    log_output = capture_logs.getvalue()
+    captured = capfd.readouterr()
+    log_output = captured.out
     
     # Assert the log output is in JSON format
     assert log_output.startswith("{")
     assert log_output.endswith("}\n")
     
-    # Parse the JSON
-    parsed = json.loads(log_output)
+    # Parse the last JSON line (our test message)
+    lines = log_output.strip().split('\n')
+    last_line = lines[-1]
+    parsed = json.loads(last_line)
     
     # Assert the fields are present
     assert parsed["level"] == "INFO"
@@ -143,7 +132,7 @@ def test_setup_logging_structured(capture_logs):
     assert parsed["correlation_id"] == correlation_id
 
 
-def test_setup_logging_unstructured(capture_logs):
+def test_setup_logging_unstructured(capfd):
     """Test that setup_logging correctly configures unstructured logging."""
     # Call the function
     correlation_id = logging_config.setup_logging(
@@ -154,7 +143,8 @@ def test_setup_logging_unstructured(capture_logs):
     logging.info("Test message")
     
     # Get the log output
-    log_output = capture_logs.getvalue()
+    captured = capfd.readouterr()
+    log_output = captured.out
     
     # Assert the log output is not in JSON format
     assert not log_output.startswith("{")
