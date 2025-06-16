@@ -45,11 +45,11 @@
   - Root cause: Function checked extensions before file existence, and applied content override too broadly
   - Fix: ✅ Added file existence check first, refined content analysis to only override ambiguous extensions (.dat, .bin, .dump)
 
-- [ ] **Fix MIME type detection with magic**
+- [x] **Fix MIME type detection with magic**
   - Location: `tests/test_tokenizer.py:327`
   - Problem: MIME type detection returning None instead of expected type
-  - Root cause: python-magic library integration or mock setup issue
-  - Fix: Ensure MIME type detection works correctly with available libraries
+  - Root cause: MAGIC_AVAILABLE patch not applied to all test assertions in mock test
+  - Fix: ✅ Wrapped all mock assertions within MAGIC_AVAILABLE patch context
 
 - [ ] **Fix token counting accuracy**
   - Location: `tests/test_tokenizer.py:403,469`

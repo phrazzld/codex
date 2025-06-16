@@ -314,27 +314,26 @@ class TestMimeTypeDetection:
         test_file = tmp_path / "test"
         test_file.write_text("test content")
         
-        # Mock magic to return specific MIME types
-        mock_magic.from_file.return_value = "text/plain"
-        
         with patch('thinktank_wrapper.tokenizer.MAGIC_AVAILABLE', True):
+            # Mock magic to return specific MIME types
+            mock_magic.from_file.return_value = "text/plain"
             result = is_binary_by_mime_type(test_file)
             assert result is False  # text/plain should be detected as text
-        
-        # Test binary MIME type
-        mock_magic.from_file.return_value = "application/pdf"
-        result = is_binary_by_mime_type(test_file)
-        assert result is True  # PDF should be detected as binary
-        
-        # Test uncertain MIME type
-        mock_magic.from_file.return_value = "application/unknown"
-        result = is_binary_by_mime_type(test_file)
-        assert result is None  # Unknown type should be uncertain
-        
-        # Test magic exception
-        mock_magic.from_file.side_effect = Exception("Magic failed")
-        result = is_binary_by_mime_type(test_file)
-        assert result is None  # Exception should result in None
+            
+            # Test binary MIME type
+            mock_magic.from_file.return_value = "application/pdf"
+            result = is_binary_by_mime_type(test_file)
+            assert result is True  # PDF should be detected as binary
+            
+            # Test uncertain MIME type
+            mock_magic.from_file.return_value = "application/unknown"
+            result = is_binary_by_mime_type(test_file)
+            assert result is None  # Unknown type should be uncertain
+            
+            # Test magic exception
+            mock_magic.from_file.side_effect = Exception("Magic failed")
+            result = is_binary_by_mime_type(test_file)
+            assert result is None  # Exception should result in None
 
 
 class TestTokenCounter:
