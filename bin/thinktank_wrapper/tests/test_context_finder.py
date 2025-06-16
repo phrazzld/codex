@@ -238,10 +238,9 @@ class TestGitignoreIntegration:
         expected_filtered = [str((leyline_dir / "index.md").absolute())]
         assert sorted(result_filtered) == sorted(expected_filtered)
         
-        # Without gitignore: should include all files
+        # Without gitignore: should include all .md files (find_leyline_files only searches for .md files)
         expected_all = [
             str((leyline_dir / "index.md").absolute()),
-            str((leyline_dir / "temp.tmp").absolute()),
             str((temp_dir / "ignored.md").absolute()),
         ]
         assert sorted(result_no_filter) == sorted(expected_all)

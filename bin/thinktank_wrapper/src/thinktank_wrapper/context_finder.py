@@ -209,7 +209,7 @@ def find_context_files(
     
     # Find glance files if requested
     if include_glance:
-        glance_files = find_glance_files(explicit_paths, gitignore_enabled=gitignore_enabled)
+        glance_files = find_glance_files([], gitignore_enabled=gitignore_enabled)
         result.update(glance_files)
         logger.info(f"Found {len(glance_files)} glance.md files")
     

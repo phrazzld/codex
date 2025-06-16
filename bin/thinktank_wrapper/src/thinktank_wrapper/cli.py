@@ -54,7 +54,7 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
     model_group.add_argument(
         config.MODEL_SET_ARG,
         choices=list(config.MODEL_SETS.keys()),
-        default=None,
+        default=config.DEFAULT_MODEL_SET,
         help=f"Select model set (default: {config.DEFAULT_MODEL_SET})",
         metavar="<set_name>",
     )

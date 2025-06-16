@@ -138,59 +138,37 @@ class GitignoreFilter:
             current_dir = current_dir / part
             dirs_to_check.append(current_dir)
         
-        # Collect all gitignore patterns from root to deepest directory
-        # Git processes patterns with later (deeper) rules taking precedence
-        all_patterns = []
-        
-        # Process directories from root to deepest (normal order)
-        # This ensures that deeper rules will be later in the list and override earlier ones
+        # Check each directory's .gitignore file from root to deepest
+        # Process in normal order, but let deeper files override with precedence
         for dir_path in dirs_to_check:
-            gitignore_path = dir_path / ".gitignore"
-            if not gitignore_path.exists() or not gitignore_path.is_file():
+            spec = self._get_gitignore_spec(dir_path)
+            if not spec:
                 continue
             
-            try:
-                with open(gitignore_path, 'r', encoding='utf-8', errors='ignore') as f:
-                    patterns = f.read().splitlines()
-                
-                # Filter out empty lines and comments
-                patterns = [
-                    line.strip() for line in patterns 
-                    if line.strip() and not line.strip().startswith('#')
-                ]
-                
-                if patterns:
-                    all_patterns.extend(patterns)
-                    logger.debug(f"Added {len(patterns)} patterns from {gitignore_path}")
-                    
-            except Exception as e:
-                logger.warning(f"Failed to read .gitignore file {gitignore_path}: {e}")
-                continue
-        
-        # If no patterns found, don't ignore
-        if not all_patterns:
-            return False
-        
-        # Create a single pathspec with all patterns
-        # Later patterns (from deeper directories) will override earlier ones
-        try:
-            combined_spec = pathspec.PathSpec.from_lines('gitwildmatch', all_patterns)
+            # Compute path relative to this directory's .gitignore file
+            if dir_path == root_path:
+                # Root directory - use full relative path
+                relative_match_path = str(rel_path)
+            else:
+                # Subdirectory - use path relative to this directory
+                try:
+                    relative_match_path = str(path.relative_to(dir_path))
+                except ValueError:
+                    # Shouldn't happen, but skip if it does
+                    continue
             
-            # Test the file path
-            relative_match_path = str(rel_path)
-            match_result = combined_spec.match_file(relative_match_path)
+            # Check what this .gitignore says about the file or directory
+            match_result = spec.match_file(relative_match_path)
             
             # If not matched and this is a directory, also check with trailing slash
+            # Git treats directory patterns (like "node_modules/") specially
             if not match_result and path.is_dir():
-                match_result = combined_spec.match_file(relative_match_path + "/")
+                match_result = spec.match_file(relative_match_path + "/")
             
             if match_result:
-                logger.debug(f"Path {relative_match_path} matched combined gitignore patterns")
+                # This .gitignore wants to ignore the file/directory
+                logger.debug(f"Path {relative_match_path} matched gitignore pattern in {dir_path}")
                 return True
-            
-        except Exception as e:
-            logger.warning(f"Failed to process combined gitignore patterns: {e}")
-            return False
         
         return False
     

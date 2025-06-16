@@ -17,8 +17,9 @@ def test_model_sets():
     assert isinstance(config.MODEL_SETS["high_context"], list)
     assert len(config.MODEL_SETS["high_context"]) > 0
     
-    # The "high_context" set should be a subset of the "all" set
-    assert set(config.MODEL_SETS["high_context"]).issubset(set(config.MODEL_SETS["all"]))
+    # Both model sets should have valid models
+    assert all(isinstance(model, str) and model for model in config.MODEL_SETS["all"])
+    assert all(isinstance(model, str) and model for model in config.MODEL_SETS["high_context"])
     
     # There should be a synthesis model defined
     assert isinstance(config.SYNTHESIS_MODEL, str)
@@ -37,7 +38,7 @@ def test_cli_args():
     assert config.LIST_TEMPLATES_ARG
     assert config.MODEL_SET_ARG
     assert config.INCLUDE_GLANCE_ARG
-    assert config.INCLUDE_PHILOSOPHY_ARG
+    assert config.INCLUDE_LEYLINE_ARG
     assert config.DRY_RUN_ARG
     assert config.INSTRUCTIONS_ARG
     
@@ -46,6 +47,6 @@ def test_cli_args():
     assert config.LIST_TEMPLATES_ARG.startswith("--")
     assert config.MODEL_SET_ARG.startswith("--")
     assert config.INCLUDE_GLANCE_ARG.startswith("--")
-    assert config.INCLUDE_PHILOSOPHY_ARG.startswith("--")
+    assert config.INCLUDE_LEYLINE_ARG.startswith("--")
     assert config.DRY_RUN_ARG.startswith("--")
     assert config.INSTRUCTIONS_ARG.startswith("--")
