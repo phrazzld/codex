@@ -55,15 +55,16 @@ def test_find_context_files(mock_glance_files: List[Path], mock_codex_dir: Path,
     
     # Assert the result contains the glance files and explicit path
     expected_files = [
-        str(test_file.absolute()),
+        str(test_file.resolve()),
     ]
     
     # Add the mock glance files
     for glance_file in mock_glance_files:
-        expected_files.append(str(glance_file.absolute()))
+        expected_files.append(str(glance_file.resolve()))
     
-    # Sort both lists for comparison
-    assert sorted(result) == sorted(expected_files)
+    # Sort both lists for comparison - use resolve() to handle symlinks consistently
+    result_resolved = [str(Path(p).resolve()) for p in result]
+    assert sorted(result_resolved) == sorted(expected_files)
 
 
 def test_find_leyline_files_no_leyline_directory(monkeypatch: pytest.MonkeyPatch, tmp_path: Path):

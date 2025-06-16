@@ -11,17 +11,17 @@
   - Root cause: Philosophy file functionality should not exist - thinktank-wrapper focuses on leyline files, glance files, explicit paths, and instruction files
   - Fix: ✅ Removed all philosophy file functionality and updated tests to focus on leyline and glance file discovery only
 
-- [ ] **Fix context file search path mismatch** 
+- [x] **Fix context file search path mismatch** 
   - Location: `tests/test_context_finder.py:89`
   - Problem: `test_find_context_files` returns current working directory files instead of temp directory files
   - Root cause: Search path logic mixing current directory with test fixture directories  
-  - Fix: Ensure context file search respects test fixture directories
+  - Fix: ✅ Added `monkeypatch.chdir(temp_dir)` to test so `find_glance_files([])` searches in temp directory where mock glance files are created
 
-- [ ] **Fix leyline file discovery in test fixtures**
-  - Location: `tests/test_context_finder.py:116,149`
+- [x] **Fix leyline file discovery in test fixtures**
+  - Location: `tests/test_context_finder.py:40`
   - Problem: Leyline directory tests may not be finding files correctly in test environment
-  - Root cause: Test setup or path resolution issues in leyline file discovery
-  - Fix: Ensure leyline file discovery works correctly with test fixtures (no philosophy fallback needed)
+  - Root cause: macOS symlink path resolution causing `/var` vs `/private/var` mismatch in test comparisons
+  - Fix: ✅ Used `Path.resolve()` to ensure consistent symlink resolution in test assertions
 
 ### 2. Gitignore Precedence Logic (1 failure) 
 - [x] **Fix gitignore negation pattern precedence**
