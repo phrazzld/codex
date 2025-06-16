@@ -39,11 +39,11 @@
   - Fix: ✅ Updated test to use `TokenCounter(include_extensions=['.py'])` and fixed comparison logic
 
 ### 4. Tokenizer Binary/Encoding Detection (6 failures)
-- [ ] **Fix binary file detection logic**
+- [x] **Fix binary file detection logic**
   - Location: `tests/test_tokenizer.py:109,113` 
   - Problem: Binary file detection incorrectly identifies files as binary/non-binary
-  - Root cause: Binary detection heuristics or magic number detection not working as expected
-  - Fix: Review and correct binary file detection algorithm
+  - Root cause: Function checked extensions before file existence, and applied content override too broadly
+  - Fix: ✅ Added file existence check first, refined content analysis to only override ambiguous extensions (.dat, .bin, .dump)
 
 - [ ] **Fix MIME type detection with magic**
   - Location: `tests/test_tokenizer.py:327`

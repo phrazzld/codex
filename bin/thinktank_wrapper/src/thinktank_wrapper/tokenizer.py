@@ -401,9 +401,10 @@ def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192, use_mime
     """Check if a file is binary using a three-stage approach for accuracy.
     
     This function uses a three-stage approach for efficiency and accuracy:
-    1. Fast extension-based check for known binary types
-    2. Content analysis (null byte detection) for unknown extensions  
-    3. MIME type detection as fallback (optional, requires python-magic)
+    1. File existence check - return False for non-existent files
+    2. Content analysis (null byte detection) for definitive binary detection
+    3. Extension-based check for known binary types (when content is ambiguous)
+    4. MIME type detection as fallback (optional, requires python-magic)
     
     Args:
         file_path: Path to the file to check
@@ -413,25 +414,44 @@ def is_binary_file(file_path: Union[str, Path], chunk_size: int = 8192, use_mime
     Returns:
         True if the file appears to be binary, False otherwise
     """
-    # Stage 1: Fast path - check extension first
-    if is_binary_by_extension(file_path):
-        return True
-    
-    # Stage 2: Content analysis - analyze file content for unknown extensions
     path = Path(file_path)
     
+    # Stage 1: File existence check - non-existent files are not binary
+    if not path.exists() or not path.is_file():
+        return False
+    
+    # Stage 2: Content analysis - most reliable method
     try:
         with open(path, 'rb') as f:
             chunk = f.read(chunk_size)
-            # Check for null bytes which are common in binary files
+            # Check for null bytes which are definitive indicators of binary content
             if b'\x00' in chunk:
                 return True
+            
+            # If the file has content but no null bytes, check for ambiguous extensions
+            if chunk:
+                # For certain ambiguous binary extensions, content analysis takes precedence
+                # These are extensions that could reasonably contain text data
+                ambiguous_extensions = {'.dat', '.bin', '.dump'}
+                path_obj = Path(file_path)
+                
+                if path_obj.suffix.lower() in ambiguous_extensions:
+                    # Check if content is mostly printable (could be text file with ambiguous extension)
+                    printable_count = sum(1 for byte in chunk 
+                                        if (32 <= byte <= 126) or byte in (9, 10, 13))
+                    if chunk and (printable_count / len(chunk)) > 0.7:
+                        return False  # Mostly printable, treat as text despite extension
+                
     except (OSError, IOError):
         # If we can't read the file, assume it's not binary
         # This will let the normal file reading logic handle the error
         return False
     
-    # Stage 3: MIME type detection fallback (optional)
+    # Stage 3: Extension-based check for files without null bytes
+    if is_binary_by_extension(file_path):
+        return True
+    
+    # Stage 4: MIME type detection fallback (optional)
     if use_mime_type:
         mime_result = is_binary_by_mime_type(file_path)
         if mime_result is not None:
