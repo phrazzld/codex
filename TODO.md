@@ -1,70 +1,109 @@
-# TODO: Pre-Merge Critical Issues
+# TODO: Remaining Test Failures (Pre-Merge Blockers)
 
-*Issues identified by comprehensive AI code review that must be addressed before merging*
+*Critical test failures that must be resolved before merging to maintain code quality*
 
-## BLOCKING ISSUES (Must Fix Before Merge)
+## BLOCKING TEST FAILURES (Must Fix Before Merge)
 
-### Test Suite Failures
-- [x] **Fix test API mismatch in extension filtering tests**
-  - Location: `tests/test_tokenizer.py:477`
-  - Problem: Test calls `count_directory_tokens(tmp_path, extensions=['.py'])` but method no longer accepts `extensions` parameter
-  - Fix: Update test to use `TokenCounter("openai", include_extensions=['.py']).count_directory_tokens(tmp_path)`
-  - Verification: Run `python -m pytest tests/test_tokenizer.py::TestExtensionFiltering -v` to confirm all tests pass
+### 1. Context Finder Issues (4 failures)
+- [ ] **Fix philosophy file discovery in tests**
+  - Location: `tests/test_context_finder.py:51` 
+  - Problem: `test_find_philosophy_files` expects files in temporary CODEX_DIR but finds empty list
+  - Root cause: Philosophy file discovery logic looks in wrong directory or path resolution issue
+  - Fix: Update context finder to correctly resolve philosophy file paths in test environment
 
-## HIGH PRIORITY FUNCTIONAL BUGS
+- [ ] **Fix context file search path mismatch** 
+  - Location: `tests/test_context_finder.py:89`
+  - Problem: `test_find_context_files` returns current working directory files instead of temp directory files
+  - Root cause: Search path logic mixing current directory with test fixture directories  
+  - Fix: Ensure context file search respects test fixture directories
 
-### Gitignore Rule Precedence Logic Error  
-- [x] **Fix gitignore precedence to match Git's "last rule wins" behavior**
-  - Location: `src/thinktank_wrapper/gitignore.py:139-158` (`should_ignore` method)
-  - Problem: Current logic processes from root→deepest and returns on first match, preventing deeper `.gitignore` files from overriding parent rules
-  - Expected behavior: `!important.log` in subdirectory should override `*.log` in root `.gitignore`
-  - Fix strategy:
-    1. Reverse iteration order: process from deepest→root directory  
-    2. Let last matching rule determine final ignore status
-    3. Ensure negation patterns (`!`) work correctly
-  - Test case: Create nested directories with conflicting gitignore rules and verify deeper rules win
+- [ ] **Fix leyline files fallback to philosophy**
+  - Location: `tests/test_context_finder.py:116,149`
+  - Problem: Both leyline directory and fallback tests return empty lists instead of expected philosophy files
+  - Root cause: Leyline discovery and philosophy fallback logic not finding files in test environment
+  - Fix: Update leyline file discovery to work correctly with test fixtures
 
-### Explicit Directory Filtering Inconsistency
-- [x] **Apply gitignore filtering to explicit directories for consistency**
-  - Location: `src/thinktank_wrapper/context_finder.py:252-253`
-  - Problem: Explicit directories bypass all gitignore/extension filtering, potentially including massive irrelevant directories
-  - Current behavior: `thinktank-wrapper src/ node_modules/` includes `node_modules/` even if gitignored
-  - Options:
-    - **Recommended**: Apply gitignore filtering to directories and warn user when ignored dirs are skipped
-    - **Alternative**: Keep current behavior but add prominent warning when including gitignored directories
-  - Test case: Verify `thinktank-wrapper .` respects `.gitignore` rules for both files and directories
+### 2. Gitignore Precedence Logic (1 failure) 
+- [ ] **Fix gitignore negation pattern precedence**
+  - Location: `tests/test_nested_gitignore.py:223`
+  - Problem: `src/important.log` incorrectly ignored despite `!important.log` negation in src/.gitignore  
+  - Root cause: Gitignore precedence logic not properly handling negation patterns from subdirectories
+  - Expected: `!important.log` in src/ should override `*.log` in root 
+  - Fix: Implement proper Git-style precedence where deeper negation patterns override parent ignore patterns
 
-## TESTING REQUIREMENTS
+### 3. Tokenizer API Mismatch (1 failure)
+- [ ] **Fix deprecated extension parameter usage**
+  - Location: `tests/test_tokenizer.py:965`
+  - Problem: Test calls `count_directory_tokens(extensions=...)` but method no longer accepts `extensions` parameter
+  - Root cause: Test not updated after API refactoring to use TokenCounter constructor parameters
+  - Fix: Update test to use `TokenCounter("openai", include_extensions=[...]).count_directory_tokens(...)`
 
-### Integration Tests for Fixed Issues
-- [x] **Add gitignore precedence integration test**
-  - Create test with nested directories containing conflicting `.gitignore` rules
-  - Verify subdirectory rules override parent rules
-  - Test negation patterns (`!`) work correctly
-  
-- [x] **Add explicit directory gitignore test**
-  - Test behavior when user explicitly includes gitignored directories
-  - Verify consistent filtering behavior or appropriate warnings
+### 4. Tokenizer Binary/Encoding Detection (6 failures)
+- [ ] **Fix binary file detection logic**
+  - Location: `tests/test_tokenizer.py:109,113` 
+  - Problem: Binary file detection incorrectly identifies files as binary/non-binary
+  - Root cause: Binary detection heuristics or magic number detection not working as expected
+  - Fix: Review and correct binary file detection algorithm
 
-### Pre-merge Validation
-- [x] **Run full test suite and verify all tests pass**
-  - Command: `python -m pytest tests/ -v` (requires pytest installation)
-  - All extension filtering tests must pass
-  - All gitignore tests must pass
-  - No regressions in existing functionality
+- [ ] **Fix MIME type detection with magic**
+  - Location: `tests/test_tokenizer.py:327`
+  - Problem: MIME type detection returning None instead of expected type
+  - Root cause: python-magic library integration or mock setup issue
+  - Fix: Ensure MIME type detection works correctly with available libraries
 
-## NOTES
+- [ ] **Fix token counting accuracy**
+  - Location: `tests/test_tokenizer.py:403,469`
+  - Problem: Token counts off by 1 (expected 9 got 8, expected 24 got 23)
+  - Root cause: Tokenization logic boundary conditions or encoding handling
+  - Fix: Review tokenization algorithm for edge cases and encoding issues
 
-- **Priority**: Address blocking issues first, then high-priority functional bugs
-- **Timeline**: These issues affect core functionality and user trust - should be fixed before any production deployment
-- **Testing**: Each fix should include test coverage to prevent regression
-- **Documentation**: Update any user-facing docs if behavior changes significantly
+- [ ] **Fix encoding detection for binary files**
+  - Location: `tests/test_tokenizer.py:1483`
+  - Problem: `detect_file_encoding` returns 'latin1' instead of None for binary files  
+  - Root cause: Encoding detection fallback being too permissive for binary data
+  - Fix: Improve binary file detection before encoding analysis
 
-## VERIFICATION CHECKLIST
+- [ ] **Fix encoding error messages**
+  - Location: `tests/test_tokenizer.py:1508,1540`
+  - Problem: Error messages don't contain expected text ("binary data", "UTF-8 encoding issues")
+  - Root cause: Error message generation logic using generic encoding advice instead of specific detection
+  - Fix: Update error message generation to provide context-appropriate guidance
 
-Before marking complete:
-- [x] All critical test failures resolved (reduced from 29 to 19 failures)
-- [x] Gitignore behavior matches Git's actual precedence rules (core functionality working)
-- [x] Explicit directory handling has consistent, documented behavior
-- [x] No new test failures introduced (significant improvement in test pass rate)
-- [x] Manual testing with real-world repositories confirms expected behavior
+### 5. Integration and Infrastructure (5 failures)
+- [ ] **Fix command builder IO error handling**
+  - Location: `tests/test_command_builder.py` 
+  - Problem: Mock expectations for file operations not being met
+  - Root cause: Error handling path not triggering expected file cleanup operations
+  - Fix: Review command builder error handling and file cleanup logic
+
+- [ ] **Fix logging configuration tests**
+  - Location: `tests/test_logging_config.py:134,163`
+  - Problem: Logging setup and message capture not working in test environment
+  - Root cause: Logging configuration isolation or capture mechanism issues  
+  - Fix: Ensure logging tests properly isolate and capture log output
+
+- [ ] **Fix integration test execution**
+  - Location: `tests/test_integration.py:157`
+  - Problem: Integration test assertion failure (assert False)
+  - Root cause: End-to-end workflow not executing correctly in test environment
+  - Fix: Debug integration test workflow and fix execution path
+
+- [ ] **Fix main gitignore integration test**
+  - Location: `tests/test_main_gitignore_integration.py:192` 
+  - Problem: Expected return code 1 but got 0
+  - Root cause: Main function not returning expected error code for gitignore scenarios
+  - Fix: Review main function error handling and return code logic
+
+## PRIORITY MATRIX
+
+**Critical (Must Fix)**: Context Finder, Gitignore Precedence, Tokenizer API  
+**High**: Binary Detection, Error Messages, Integration Tests  
+**Medium**: Token Counting Edge Cases, Logging Tests
+
+## SUCCESS CRITERIA
+
+- [ ] All 19 test failures resolved 
+- [ ] Test suite achieves 100% pass rate (207/207 passing)
+- [ ] No regressions introduced during fixes
+- [ ] Core functionality (gitignore, context finding, tokenization) working correctly
+- [ ] Integration tests demonstrate end-to-end workflow success
