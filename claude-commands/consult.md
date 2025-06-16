@@ -6,9 +6,9 @@ Generate alternative approaches and solutions for a blocked task by leveraging m
 ## 1. Formulate Request & Identify Task
 - Identify the issue or blocked task you're struggling with (reference task ID if available).
 - Create `CONSULT-REQUEST.md`.
-- ***Think hard*** & populate with: `Task Description`, `Goal`, `Problem/Blocker` (Relate to `DEVELOPMENT_PHILOSOPHY.md` and leyline documents), `Context/History`, `Key Files`, `Errors`, `Desired Outcome`.
+- ***Think hard*** & populate with: `Task Description`, `Goal`, `Problem/Blocker` (Relate to leyline documents), `Context/History`, `Key Files`, `Errors`, `Desired Outcome`.
 - Identify the ten files most relevant to the problem you're struggling with.
-- Identify development philosophy and leyline documents
+- Identify leyline documents
 
 ## 2. Generate Alternative Approaches
 - Add to `CONSULT-REQUEST.md`: "Keep the program's purpose in mind and strive for the highest quality maintainable solutions while avoiding overengineering."

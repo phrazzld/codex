@@ -24,7 +24,7 @@ Generate a comprehensive code review of changes against best practices, using a 
 - Identify every file changed in the diff
 - ***Think very hard*** about the code changes:
   - Analyze the diff line-by-line for correctness, performance, security, and maintainability
-  - Check for adherence to DEVELOPMENT_PHILOSOPHY.md and leyline document principles
+  - Check for adherence to leyline document principles
   - Evaluate consistency with existing codebase patterns and conventions
   - Identify potential bugs, edge cases, or error handling issues
   - Consider architectural implications and design patterns

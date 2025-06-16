@@ -16,7 +16,7 @@ Analyze the codebase against our development philosophy and leyline documents an
   [Include output from GitHub issues list]
 
   ## Request
-  Analyze the codebase against our development philosophy and leyline documents and generate items to improve alignment.
+  Analyze the codebase against leyline documents and generate items to improve alignment.
   ```
 
 ## 2. Generate Philosophy-Aligned Improvement Items
@@ -25,7 +25,7 @@ Analyze the codebase against our development philosophy and leyline documents an
   - Focus on principles relevant to identified components and patterns
   - Internalize both philosophical foundations and practical implementation guidelines
 - **Think very hard** about the codebase alignment with our development philosophy and leyline documents:
-  - Read and internalize `DEVELOPMENT_PHILOSOPHY.md`, all language-specific appendices, and leyline documents
+  - Read and internalize leyline documents
   - Systematically analyze each major component/module against our core principles:
     * Simplicity and modularity
     * Testability and explicit contracts

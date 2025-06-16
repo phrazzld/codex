@@ -8,7 +8,7 @@ Systematically identify, analyze, and create a plan to fix bugs through structur
 - Identify related `Original Task ID: TXXX` from `TODO.md`. Note if none.
 - Create `BUGFIXPLAN.md` (Sections: Bug Desc, Repro, Expected, Actual, Components, Hypotheses, Test Log, Root Cause, Fix Desc, Status: Investigating).
 - Create `DEBUG-REQUEST.md` (copy prompt template, add bug details, `Original Task ID`).
-- Identify relevant development philosophy files and leyline documents
+- Identify relevant leyline documents
 - ***Think very hard*** about the bug:
   - Analyze the bug description, reproduction steps, and symptoms
   - Consider the system architecture and component interactions

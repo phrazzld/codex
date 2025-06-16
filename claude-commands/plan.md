@@ -39,7 +39,7 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
   [Any linked or referenced issues]
   ```
 - ***Think very hard*** about creating a ruthless, engineering-focused implementation plan by:
-  - **Internalizing philosophy**: Read and deeply understand DEVELOPMENT_PHILOSOPHY.md, leyline documents, and all their principles (simplicity, modularity, testability, etc.)
+  - **Internalizing philosophy**: Read and deeply understand leyline documents and all their principles (simplicity, modularity, testability, etc.)
   - **Drafting multiple approaches**: Generate 2-3 distinct technical approaches, analyzing each against philosophy alignment, pros/cons, and risks
   - **Selecting the optimal path**: Choose the approach that best balances simplicity, maintainability, and avoiding overengineering
   - **Expanding into detailed plan**: Create a comprehensive PLAN.md with:

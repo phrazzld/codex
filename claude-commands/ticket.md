@@ -5,7 +5,7 @@ Generate a detailed task breakdown from a high-level implementation plan into a 
 
 ## 1. Review Plan
 - Ensure PLAN.md exists and contains sufficient implementation details.
-- Find relevant development philosophy and leyline documents.
+- Find relevant leyline documents.
 
 ## 2. Generate Task Breakdown
 - **Leyline Pre-Processing**: Query principles for task decomposition:

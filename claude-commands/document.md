@@ -11,7 +11,7 @@ Audit, critique, evaluate, consolidate, expand, and improve the documentation in
 ## 1. Prepare Context
 - Gather all the markdown documentation files in the project
 - Review `BACKLOG.md` to understand current documentation-related tasks
-- Read `DEVELOPMENT_PHILOSOPHY.md` and leyline documents for documentation standards and expectations
+- Read leyline documents for documentation standards and expectations
 
 ## 2. Create Context File
 - Create `DOCUMENT-CONTEXT.md` with project-specific documentation context:
@@ -35,7 +35,7 @@ Audit, critique, evaluate, consolidate, expand, and improve the documentation in
   - Check for missing or outdated information
   - Assess organization and navigation ease
   - Identify redundancies and inconsistencies
-  - Review adherence to documentation standards in DEVELOPMENT_PHILOSOPHY.md and leyline documents
+  - Review adherence to documentation standards in leyline documents
   - Consider documentation accessibility and target audience needs
   - Evaluate code examples, diagrams, and cross-references
 - Create `DOCUMENTATION_IMPROVEMENT_PLAN.md` with:

@@ -39,7 +39,7 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
 - **Synthesize results**: Review thinktank outputs and create implementation plan
 
 **4. Plan & Implement**
-- Follow `DEVELOPMENT_PHILOSOPHY.md`, leyline documents, and relevant language appendices
+- Follow leyline documents
 - For medium+ complexity: write failing tests first, implement to make them pass
 - For high complexity: implement according to thinktank analysis and synthesis
 - Never mock internal collaborators - refactor for testability instead

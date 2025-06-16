@@ -8,7 +8,7 @@ Analyze and right-size `TODO.md`, breaking it into manageable pieces if needed t
 ### 1. Gather Context
 - Read PLAN.md
 - Read TODO.md
-- Find relevant development philosophy and leyline documents
+- Find relevant leyline documents
 
 ### 2. Analyze Scope and Complexity
 - **Think very hard** about the scope and complexity of TODO.md:
