@@ -959,16 +959,14 @@ class TestTokenizerGitignoreIntegration:
     
     def test_token_counter_with_extension_filtering(self, gitignore_test_repo):
         """Test token counting with both gitignore and extension filtering."""
-        counter = TokenCounter(gitignore_enabled=True)
+        counter = TokenCounter(gitignore_enabled=True, include_extensions=['.py'])
         
         # Count only Python files
-        tokens_py, errors_py = counter.count_directory_tokens(
-            gitignore_test_repo, 
-            extensions=['.py']
-        )
+        tokens_py, errors_py = counter.count_directory_tokens(gitignore_test_repo)
         
         # Count all text files  
-        tokens_all, errors_all = counter.count_directory_tokens(gitignore_test_repo)
+        counter_all = TokenCounter(gitignore_enabled=True)
+        tokens_all, errors_all = counter_all.count_directory_tokens(gitignore_test_repo)
         
         assert len(errors_py) == 0
         assert len(errors_all) == 0
