@@ -88,11 +88,11 @@
   - Root cause: Test was checking for philosophy files which were removed from thinktank-wrapper
   - Fix: ✅ Updated test to use --include-leyline instead of --include-philosophy and removed philosophy file assertions
 
-- [ ] **Fix main gitignore integration test**
+- [x] **Fix main gitignore integration test**
   - Location: `tests/test_main_gitignore_integration.py:192` 
   - Problem: Expected return code 1 but got 0
-  - Root cause: Main function not returning expected error code for gitignore scenarios
-  - Fix: Review main function error handling and return code logic
+  - Root cause: Infinite recursion in mock setup causing test to fail with RecursionError
+  - Fix: ✅ Simplified test mock setup to avoid recursive function calls and return proper mock data
 
 ## PRIORITY MATRIX
 

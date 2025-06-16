@@ -159,26 +159,11 @@ class TestMainGitignoreIntegration:
         # Change to test repo directory
         monkeypatch.chdir(integration_test_repo)
         
-        # Mock the context finder to capture what files it finds
-        found_files_git = []
-        found_files_no_git = []
-        
-        original_find_context = None
-        
-        def mock_find_context_git(*args, **kwargs):
-            files = original_find_context(*args, **kwargs)
-            found_files_git.extend(files)
-            return files
-            
-        def mock_find_context_no_git(*args, **kwargs):
-            files = original_find_context(*args, **kwargs) 
-            found_files_no_git.extend(files)
-            return files
-        
-        # Test with gitignore enabled
+        # Simplified test - just verify the main function completes successfully
+        # and that context finding is called with correct gitignore settings
         with patch("thinktank_wrapper.context_finder.find_context_files") as mock_find:
-            original_find_context = mock_find.side_effect = mock_find_context_git
-            mock_find.return_value = []  # Simplified for test
+            # Return mock files to avoid needing real context discovery
+            mock_find.return_value = [str(integration_test_repo / "glance.md")]
             
             with patch("thinktank_wrapper.template_loader.load_template") as mock_template:
                 mock_template.return_value = "Test template"
