@@ -32,11 +32,11 @@
   - Fix: Implement proper Git-style precedence where deeper negation patterns override parent ignore patterns
 
 ### 3. Tokenizer API Mismatch (1 failure)
-- [~] **Fix deprecated extension parameter usage**
+- [x] **Fix deprecated extension parameter usage**
   - Location: `tests/test_tokenizer.py:965`
   - Problem: Test calls `count_directory_tokens(extensions=...)` but method no longer accepts `extensions` parameter
   - Root cause: Test not updated after API refactoring to use TokenCounter constructor parameters
-  - Fix: Update test to use `TokenCounter("openai", include_extensions=[...]).count_directory_tokens(...)`
+  - Fix: ✅ Updated test to use `TokenCounter(include_extensions=['.py'])` and fixed comparison logic
 
 ### 4. Tokenizer Binary/Encoding Detection (6 failures)
 - [ ] **Fix binary file detection logic**
