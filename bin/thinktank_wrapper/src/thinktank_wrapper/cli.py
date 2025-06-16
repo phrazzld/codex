@@ -54,7 +54,7 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
     model_group.add_argument(
         config.MODEL_SET_ARG,
         choices=list(config.MODEL_SETS.keys()),
-        default=None,
+        default=config.DEFAULT_MODEL_SET,
         help=f"Select model set (default: {config.DEFAULT_MODEL_SET})",
         metavar="<set_name>",
     )
@@ -70,6 +70,26 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         config.INCLUDE_LEYLINE_ARG,
         action="store_true",
         help="Include leyline documents from docs/leyline/; if not found, falls back to DEVELOPMENT_PHILOSOPHY*.md files in docs/",
+    )
+    context_group.add_argument(
+        "--no-gitignore",
+        action="store_true", 
+        help="Disable gitignore filtering when finding context files",
+    )
+    
+    # File extension filtering
+    extension_group = context_group.add_mutually_exclusive_group()
+    extension_group.add_argument(
+        "--include-ext",
+        action="append",
+        metavar="EXT",
+        help="Only process files with these extensions (use multiple times: --include-ext .py --include-ext .js)",
+    )
+    extension_group.add_argument(
+        "--exclude-ext", 
+        action="append",
+        metavar="EXT",
+        help="Skip files with these extensions (use multiple times: --exclude-ext .log --exclude-ext .tmp)",
     )
     
     # Execution options
@@ -90,6 +110,11 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         "--disable-token-counting",
         action="store_true",
         help="Disable automatic token counting and model selection",
+    )
+    execution_group.add_argument(
+        "--verbose",
+        action="store_true",
+        help="Enable verbose logging, including details about skipped files",
     )
     
     # Backward compatibility
@@ -170,4 +195,10 @@ def validate_args(args: argparse.Namespace) -> None:
             raise ValueError(f"Inject file not found: {args.inject}")
         
         if not os.access(args.inject, os.R_OK):
-            raise ValueError(f"Inject file not readable: {args.inject}")
+            from pathlib import Path
+            inject_path = Path(args.inject)
+            raise ValueError(
+                f"Permission denied reading inject file '{inject_path.name}'. "
+                f"Check that you have read access to this file. "
+                f"Try: chmod +r \"{inject_path}\" or run with appropriate permissions."
+            )

@@ -57,10 +57,20 @@ def main(args: Optional[List[str]] = None) -> int:
         cli.validate_args(parsed_args)
         
         # Find context files based on flags and explicit paths
+        # Gitignore is enabled by default, disabled by --no-gitignore flag
+        gitignore_enabled = not getattr(parsed_args, 'no_gitignore', False)
+        
+        # Get extension filtering parameters
+        include_extensions = getattr(parsed_args, 'include_ext', None)
+        exclude_extensions = getattr(parsed_args, 'exclude_ext', None)
+        
         context_files = context_finder.find_context_files(
             include_glance=parsed_args.include_glance,
             include_leyline=parsed_args.include_leyline,
             explicit_paths=parsed_args.context_paths,
+            gitignore_enabled=gitignore_enabled,
+            include_extensions=include_extensions,
+            exclude_extensions=exclude_extensions,
         )
         parsed_args.context_files = context_files
         logger.info(f"Found {len(context_files)} context files", extra={
@@ -76,8 +86,15 @@ def main(args: Optional[List[str]] = None) -> int:
                 # Lazy import tokenizer to avoid breaking when optional deps missing
                 from thinktank_wrapper import tokenizer
                 
-                # Initialize token counter
-                token_counter = tokenizer.TokenCounter(provider=config.TOKEN_COUNT_PROVIDER)
+                # Initialize token counter with gitignore, verbose, and extension filtering settings
+                verbose_enabled = getattr(parsed_args, 'verbose', False)
+                token_counter = tokenizer.TokenCounter(
+                    provider=config.TOKEN_COUNT_PROVIDER,
+                    gitignore_enabled=gitignore_enabled,
+                    verbose=verbose_enabled,
+                    include_extensions=include_extensions,
+                    exclude_extensions=exclude_extensions
+                )
                 
                 # Count tokens in all context files
                 total_tokens, errors = token_counter.estimate_model_tokens(context_files)

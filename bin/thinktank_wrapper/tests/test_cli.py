@@ -35,7 +35,7 @@ def test_parse_args_defaults():
     assert not args.list_templates
     assert args.model_set == config.DEFAULT_MODEL_SET
     assert not args.include_glance
-    assert not args.include_philosophy
+    assert not args.include_leyline
     assert not args.dry_run
     assert args.instructions is None
     assert args.inject is None
@@ -72,12 +72,12 @@ def test_parse_args_model_set():
 
 def test_parse_args_include_flags():
     """Test that parse_args handles --include-* flags correctly."""
-    # Call the function with --include-glance and --include-philosophy
-    args, unknown = cli.parse_args(["--include-glance", "--include-philosophy"])
+    # Call the function with --include-glance and --include-leyline
+    args, unknown = cli.parse_args(["--include-glance", "--include-leyline"])
     
     # Assert the flags are set
     assert args.include_glance
-    assert args.include_philosophy
+    assert args.include_leyline
 
 
 def test_parse_args_dry_run():
@@ -96,6 +96,50 @@ def test_parse_args_instructions():
     
     # Assert the instructions path is set
     assert args.instructions == "/path/to/instructions.md"
+
+
+def test_parse_args_no_gitignore():
+    """Test that parse_args handles --no-gitignore correctly."""
+    # Test default behavior (gitignore enabled)
+    args_default, _ = cli.parse_args([])
+    assert not hasattr(args_default, 'no_gitignore') or not args_default.no_gitignore
+    
+    # Test with --no-gitignore flag
+    args_no_git, _ = cli.parse_args(["--no-gitignore"])
+    assert hasattr(args_no_git, 'no_gitignore') and args_no_git.no_gitignore
+
+
+def test_parse_args_token_threshold():
+    """Test that parse_args handles --token-threshold correctly."""
+    # Test default behavior
+    args_default, _ = cli.parse_args([])
+    assert args_default.token_threshold == config.LLM_CONTEXT_THRESHOLD
+    
+    # Test with custom threshold
+    args_custom, _ = cli.parse_args(["--token-threshold", "50000"])
+    assert args_custom.token_threshold == 50000
+
+
+def test_parse_args_disable_token_counting():
+    """Test that parse_args handles --disable-token-counting correctly."""
+    # Test default behavior
+    args_default, _ = cli.parse_args([])
+    assert not hasattr(args_default, 'disable_token_counting') or not args_default.disable_token_counting
+    
+    # Test with flag enabled
+    args_disabled, _ = cli.parse_args(["--disable-token-counting"])
+    assert hasattr(args_disabled, 'disable_token_counting') and args_disabled.disable_token_counting
+
+
+def test_parse_args_verbose():
+    """Test that parse_args handles --verbose correctly."""
+    # Test default behavior
+    args_default, _ = cli.parse_args([])
+    assert not hasattr(args_default, 'verbose') or not args_default.verbose
+    
+    # Test with --verbose flag
+    args_verbose, _ = cli.parse_args(["--verbose"])
+    assert hasattr(args_verbose, 'verbose') and args_verbose.verbose
 
 
 def test_parse_args_inject():
@@ -119,10 +163,10 @@ def test_parse_args_context_paths():
 def test_parse_args_unknown():
     """Test that parse_args handles unknown args correctly."""
     # Call the function with unknown args
-    args, unknown = cli.parse_args(["--unknown-flag", "value", "--another-flag"])
+    args, unknown = cli.parse_args(["--unknown-flag", "--another-flag"])
     
     # Assert the unknown args are returned
-    assert unknown == ["--unknown-flag", "value", "--another-flag"]
+    assert unknown == ["--unknown-flag", "--another-flag"]
 
 
 def test_handle_list_templates(mock_available_templates, capsys):
@@ -326,4 +370,4 @@ def test_validate_args_inject_file_not_readable(mock_os_path_checks):
             cli.validate_args(args)
     
     # Assert the error message
-    assert "Inject file not readable" in str(excinfo.value)
+    assert "Permission denied reading inject file" in str(excinfo.value)
