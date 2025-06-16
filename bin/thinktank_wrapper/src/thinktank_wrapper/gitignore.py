@@ -98,9 +98,8 @@ class GitignoreFilter:
     def should_ignore(self, file_path: Union[str, Path]) -> bool:
         """Check if a file path should be ignored according to .gitignore rules.
         
-        This method checks all .gitignore files in the directory hierarchy from
-        the root path down to the file's directory, with each .gitignore file
-        matching against paths relative to its own directory.
+        This implements Git's algorithm: check patterns from all applicable .gitignore files,
+        applying them in order from root to deepest, with later patterns overriding earlier ones.
         
         Args:
             file_path: Path to check (can be absolute or relative to root_path)
@@ -138,39 +137,102 @@ class GitignoreFilter:
             current_dir = current_dir / part
             dirs_to_check.append(current_dir)
         
-        # Check each directory's .gitignore file from root to deepest
-        # Process in normal order, but let deeper files override with precedence
+        # Collect all applicable patterns in order from root to deepest
+        all_patterns = []
+        
         for dir_path in dirs_to_check:
-            spec = self._get_gitignore_spec(dir_path)
-            if not spec:
+            gitignore_path = dir_path / ".gitignore"
+            if not gitignore_path.exists() or not gitignore_path.is_file():
                 continue
+            
+            try:
+                with open(gitignore_path, 'r', encoding='utf-8', errors='ignore') as f:
+                    lines = f.read().splitlines()
+                
+                for line in lines:
+                    line = line.strip()
+                    if not line or line.startswith('#'):
+                        continue
+                    
+                    all_patterns.append((dir_path, line))
+                        
+            except Exception as e:
+                logger.warning(f"Failed to read .gitignore file {gitignore_path}: {e}")
+                continue
+        
+        # Separate directory patterns from file patterns and apply them properly
+        # First determine if the file's directory path is ignored
+        directory_ignored = False
+        file_ignored = False
+        
+        # Get the directory part of the path (empty string if file is in root)
+        if len(rel_path.parts) > 1:
+            dir_parts = rel_path.parts[:-1]
+        else:
+            dir_parts = ()
+        
+        for dir_path, line in all_patterns:
+            is_negation = line.startswith('!')
+            pattern = line[1:] if is_negation else line
+            is_dir_only_pattern = pattern.endswith('/')
+            
+            # Remove trailing slash for matching but remember it was a directory pattern
+            if is_dir_only_pattern:
+                pattern = pattern[:-1]
             
             # Compute path relative to this directory's .gitignore file
             if dir_path == root_path:
                 # Root directory - use full relative path
                 relative_match_path = str(rel_path)
+                relative_dir_path = '/'.join(dir_parts) if dir_parts else ''
             else:
                 # Subdirectory - use path relative to this directory
                 try:
                     relative_match_path = str(path.relative_to(dir_path))
+                    rel_to_dir = path.relative_to(dir_path)
+                    if len(rel_to_dir.parts) > 1:
+                        relative_dir_path = '/'.join(rel_to_dir.parts[:-1])
+                    else:
+                        relative_dir_path = ''
                 except ValueError:
                     # Shouldn't happen, but skip if it does
                     continue
             
-            # Check what this .gitignore says about the file or directory
-            match_result = spec.match_file(relative_match_path)
-            
-            # If not matched and this is a directory, also check with trailing slash
-            # Git treats directory patterns (like "node_modules/") specially
-            if not match_result and path.is_dir():
-                match_result = spec.match_file(relative_match_path + "/")
-            
-            if match_result:
-                # This .gitignore wants to ignore the file/directory
-                logger.debug(f"Path {relative_match_path} matched gitignore pattern in {dir_path}")
-                return True
+            try:
+                # Test this specific pattern
+                test_spec = pathspec.PathSpec.from_lines('gitwildmatch', [pattern])
+                
+                if is_dir_only_pattern:
+                    # Directory-only pattern - check if it affects the directory containing this file
+                    # Check all parent directories
+                    path_parts = relative_match_path.split('/')
+                    for i in range(len(path_parts)):
+                        parent_path = '/'.join(path_parts[:i+1])
+                        if test_spec.match_file(parent_path + "/"):
+                            directory_ignored = not is_negation
+                            logger.debug(f"Dir pattern '{line}' in {dir_path} matched parent {parent_path}/, dir_ignored={directory_ignored}")
+                            break
+                else:
+                    # Regular file pattern - check if it matches this specific file
+                    matches_file = test_spec.match_file(relative_match_path)
+                    matches_dir = path.is_dir() and test_spec.match_file(relative_match_path + "/")
+                    
+                    if matches_file or matches_dir:
+                        file_ignored = not is_negation
+                        logger.debug(f"File pattern '{line}' in {dir_path} matched {relative_match_path}, file_ignored={file_ignored}")
+                    
+            except Exception as e:
+                logger.debug(f"Failed to test pattern '{line}': {e}")
+                continue
         
-        return False
+        # A file is ignored if:
+        # 1. Its containing directory is ignored by directory patterns, OR
+        # 2. It matches file ignore patterns (regardless of directory status)
+        should_ignore = directory_ignored or file_ignored
+        
+        logger.debug(f"Final decision for {rel_path}: directory_ignored={directory_ignored}, file_ignored={file_ignored}, should_ignore={should_ignore}")
+        
+        return should_ignore
     
     def filter_paths(self, paths: List[Union[str, Path]]) -> List[Path]:
         """Filter a list of paths, removing those that should be ignored.
