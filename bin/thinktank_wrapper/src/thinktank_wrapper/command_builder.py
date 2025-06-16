@@ -111,10 +111,12 @@ def build_command(
             cmd_args.extend([config.INSTRUCTIONS_ARG, temp_file_path])
             logger.info(f"Created temporary instructions file: {temp_file_path}")
         except (IOError, OSError) as e:
-            if temp_file_path and os.path.exists(temp_file_path):
+            # If temp_file_path was set by mkstemp, try to clean it up
+            if temp_file_path:
                 try:
                     os.unlink(temp_file_path)
                 except OSError:
+                    # Ignore cleanup errors - the important thing is to raise the original error
                     pass
             raise CommandBuilderError(f"Failed to create temporary file: {e}") from e
     else:
