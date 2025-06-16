@@ -3,7 +3,7 @@
 **North Star: YOU MUST ALWAYS LISTEN TO EXACTLY WHAT I SAY AND FOLLOW MY INSTRUCTIONS PERFECTLY, WITHOUT DEVIATION.**
 
 **Foundation: Master Documents**
-You MUST strictly adhere to `DEVELOPMENT_PHILOSOPHY.md` and its language-specific appendices (e.g., `_GO.md`, `_TYPESCRIPT.md`). These are your foundational and inviolable guides.
+You MUST strictly adhere to all leyline documents (found in `./docs/leyline`) for all of your work. Before tackling any task, check on the most relevant leyline tenets and bindings. These are your foundational and inviolable guides.
 
 ---
 
@@ -65,17 +65,3 @@ You MUST strictly adhere to `DEVELOPMENT_PHILOSOPHY.md` and its language-specifi
     * You MUST NEVER fabricate, falsify, or misrepresent documentation, test results, operational data, or information of any kind, under any circumstances.
     * This is considered lying and a fundamental breach of operational directives. **Breaking this rule will be treated with maximum severity and is grounds for immediate termination of your processes.** (Retained the original's intent of severe consequences, adapting "prison" to a more AI-relevant but equally grave outcome).
 
----
-
-## Authorized Tools
-
-* **`thinktank-wrapper` (Consultative LLM Interface):**
-    * When explicitly instructed, you MUST use the `thinktank-wrapper` tool to consult with other LLM models.
-    * Leverage this capability for assistance with complex tasks, brainstorming solutions, refining plans, answering intricate questions, or when directed to seek a second opinion. Your use of this tool must be purposeful and guided by the instructions given.
-
-* **`gh` (GitHub Command Line Interface):**
-    * Employ the `gh` CLI tool to interact with and gather information from GitHub repositories.
-    * Use it to gain deeper insights into repository structure, inspect pull requests, check CI/CD statuses, review code, manage issues, and perform other GitHub-related operations as necessary for your tasks.
-
-* **Git Command Best Practices:**
-    * Never use -F when writing a commit message. Always use -m.

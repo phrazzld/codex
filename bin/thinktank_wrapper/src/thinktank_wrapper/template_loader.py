@@ -8,9 +8,11 @@ import importlib.resources
 import os
 import pathlib
 import re
-from typing import List, Optional
+from pathlib import Path
+from typing import List, Optional, Union
 
 from thinktank_wrapper import config
+from thinktank_wrapper.tokenizer import get_file_access_error_message, get_encoding_error_message
 
 
 class TemplateNotFoundError(Exception):
@@ -137,5 +139,9 @@ def inject_context(template_content: str, context_file_path: Optional[str]) -> s
         )
         
         return replaced_content
-    except (IOError, OSError) as e:
-        raise ValueError(f"Failed to read context file {context_file_path}: {e}") from e
+    except (PermissionError, FileNotFoundError, IsADirectoryError, OSError, IOError) as e:
+        error_message = get_file_access_error_message(context_file_path, e)
+        raise ValueError(f"Failed to read context file: {error_message}") from e
+    except UnicodeDecodeError as e:
+        error_message = get_encoding_error_message(context_file_path, e)
+        raise ValueError(f"Failed to read context file: {error_message}") from e

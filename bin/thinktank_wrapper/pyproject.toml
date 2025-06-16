@@ -14,6 +14,7 @@ authors = [
 ]
 dependencies = [
     "python-json-logger>=2.0.0",
+    "pathspec>=0.11.0",
 ]
 
 [project.scripts]
@@ -26,6 +27,11 @@ dev = [
     "mypy>=1.0.0",
     "black>=23.0.0",
     "isort>=5.0.0",
+]
+tokenizers = [
+    "tiktoken>=0.5.0",  # OpenAI tokenizer
+    "anthropic>=0.28.0",  # Anthropic tokenizer via API
+    "python-magic>=0.4.25",  # Enhanced binary detection
 ]
 
 [tool.hatch.build.targets.wheel]
