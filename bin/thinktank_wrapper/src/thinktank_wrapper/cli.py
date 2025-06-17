@@ -116,6 +116,11 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
         action="store_true",
         help="Enable verbose logging, including details about skipped files",
     )
+    execution_group.add_argument(
+        "--debug",
+        action="store_true",
+        help="Enable debug mode with structured JSON logging",
+    )
     
     # Backward compatibility
     compat_group = parser.add_argument_group("Backward Compatibility")

@@ -30,19 +30,25 @@ def main(args: Optional[List[str]] = None) -> int:
     Returns:
         The exit code to return to the shell.
     """
-    # Set up logging with structured output and a correlation ID
-    correlation_id = logging_config.setup_logging(structured=True)
-    logger = logging.getLogger(__name__)
-    logger.info("Starting thinktank-wrapper", extra={
-        "version": "0.1.0",
-    })
-    
     # Initialize variable to track any temp file we create
     temp_file_path: Optional[str] = None
     
     try:
         # Parse command-line arguments
         parsed_args, unknown_args = cli.parse_args(args)
+        
+        # Set up logging based on --debug flag
+        debug_mode = getattr(parsed_args, 'debug', False)
+        # Use INFO level for debug mode, WARNING for normal mode
+        log_level = logging.INFO if debug_mode else logging.WARNING
+        correlation_id = logging_config.setup_logging(
+            level=log_level,
+            structured=debug_mode
+        )
+        logger = logging.getLogger(__name__)
+        logger.info("Starting thinktank-wrapper", extra={
+            "version": "0.1.0",
+        })
         logger.debug("Arguments parsed successfully", extra={
             "args": vars(parsed_args),
             "unknown_args_count": len(unknown_args),

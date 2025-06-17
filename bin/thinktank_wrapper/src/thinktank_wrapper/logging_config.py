@@ -95,25 +95,28 @@ def setup_logging(
     # Create a handler for stdout
     handler = logging.StreamHandler(sys.stdout)
     
-    # Configure the formatter based on the structured flag
-    if structured:
-        formatter = StructuredLogFormatter(correlation_id)
-    else:
-        formatter = logging.Formatter(
-            "%(asctime)s [%(levelname)s] [%(name)s] [correlation_id=%(correlation_id)s] %(message)s"
-        )
-    
-    # Set the formatter and add the handler to the root logger
-    handler.setFormatter(formatter)
-    root_logger.addHandler(handler)
-    
     # Set the correlation ID as a filter for all log records
     class CorrelationIDFilter(logging.Filter):
         def filter(self, record: logging.LogRecord) -> bool:
             record.correlation_id = correlation_id
             return True
     
-    root_logger.addFilter(CorrelationIDFilter())
+    # Add the filter to the handler first
+    handler.addFilter(CorrelationIDFilter())
+    
+    # Configure the formatter based on the structured flag
+    if structured:
+        formatter = StructuredLogFormatter(correlation_id)
+    else:
+        # For non-structured logging, skip the correlation ID in the format
+        # to avoid clutter in the output
+        formatter = logging.Formatter(
+            "%(asctime)s [%(levelname)s] %(message)s"
+        )
+    
+    # Set the formatter and add the handler to the root logger
+    handler.setFormatter(formatter)
+    root_logger.addHandler(handler)
     
     # Log that logging has been set up
     logging.info("Logging initialized", extra={"correlation_id": correlation_id})

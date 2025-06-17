@@ -10,7 +10,7 @@ set -e
 # ... context preparation ...
 
 # Fixed model set - potentially wasteful for small contexts
-thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --model-set high_context --include-philosophy --include-leyline --include-glance ./
+thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --model-set high_context --include-philosophy --include-leyline ./
 ```
 
 ## After: Dynamic Model Selection
@@ -23,7 +23,7 @@ set -e
 # ... context preparation ...
 
 # Automatic model selection based on token count
-thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --include-philosophy --include-leyline --include-glance ./
+thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --include-philosophy --include-leyline ./
 
 # The wrapper will output:
 # TOKEN_COUNT: 12543
@@ -45,7 +45,7 @@ $(cat PLAN.md)
 EOF
 
 # Get token count and capture output
-OUTPUT=$(thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --include-philosophy --include-leyline --include-glance ./ 2>&1)
+OUTPUT=$(thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --include-philosophy --include-leyline ./ 2>&1)
 
 # Extract token count from output
 TOKEN_COUNT=$(echo "$OUTPUT" | grep "TOKEN_COUNT:" | cut -d' ' -f2)

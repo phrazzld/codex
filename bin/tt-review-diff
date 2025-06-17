@@ -62,14 +62,14 @@ FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
 echo "Generating diff-focused code review for $FILE_COUNT files..."
 
 # Update glance files first (may take several minutes for large codebases)
-if [ "$SKIP_GLANCE_UPDATE" != "1" ]; then
-    echo "Updating glance context files (this may take up to 10+ minutes for large codebases)..."
-    if glance ./ >/dev/null 2>&1; then
-        echo "✓ Glance context files updated successfully"
-    else
-        echo "⚠ Warning: Failed to update glance files, proceeding with existing context"
-    fi
-fi
+# if [ "$SKIP_GLANCE_UPDATE" != "1" ]; then
+#     echo "Updating glance context files (this may take up to 10+ minutes for large codebases)..."
+#     if glance ./ >/dev/null 2>&1; then
+#         echo "✓ Glance context files updated successfully"
+#     else
+#         echo "⚠ Warning: Failed to update glance files, proceeding with existing context"
+#     fi
+# fi
 
 # Create context file
 cat > REVIEW-CONTEXT.md << EOF
@@ -88,7 +88,7 @@ FILES_ARGS=$(echo "$CHANGED_FILES" | tr '\n' ' ')
 
 # Run diff-focused review
 echo "Analyzing diff for bugs and functional issues..."
-thinktank-wrapper --template review-diff --inject REVIEW-CONTEXT.md --model-set high_context --include-glance --include-leyline $FILES_ARGS
+thinktank-wrapper --template review-diff --inject REVIEW-CONTEXT.md --model-set high_context --include-leyline $FILES_ARGS
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)

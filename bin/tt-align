@@ -37,7 +37,7 @@ EOF
 
 # Run thinktank analysis
 echo "Running philosophy alignment analysis with high_context model set..."
-thinktank-wrapper --template align --inject ALIGN-CONTEXT.md --model-set high_context --include-leyline --include-glance ./
+thinktank-wrapper --template align --inject ALIGN-CONTEXT.md --model-set high_context --include-leyline ./
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
@@ -46,7 +46,7 @@ if [ -n "$SYNTHESIS_FILE" ]; then
     # Copy synthesis to temporary file
     cp "$SYNTHESIS_FILE" ALIGN_BACKLOG_ITEMS.md
     echo "Created ALIGN_BACKLOG_ITEMS.md from synthesis output"
-    
+
     # Show preview of alignment items
     echo ""
     echo "Preview of philosophy alignment items:"
@@ -55,11 +55,11 @@ if [ -n "$SYNTHESIS_FILE" ]; then
     echo ""
     echo "[...truncated for preview]"
     echo ""
-    
+
     # Prompt for appending to backlog
     read -p "Append these alignment items to BACKLOG.md? (y/N): " -n 1 -r
     echo ""
-    
+
     if [[ $REPLY =~ ^[Yy]$ ]]; then
         # Append with section header
         echo "" >> BACKLOG.md
@@ -70,10 +70,10 @@ if [ -n "$SYNTHESIS_FILE" ]; then
     else
         echo "Items saved in ALIGN_BACKLOG_ITEMS.md but not appended to BACKLOG.md"
     fi
-    
+
     # Clean up (but keep the items file for reference)
     rm -f ALIGN-CONTEXT.md
-    
+
     echo ""
     echo "Philosophy alignment analysis complete!"
 else
