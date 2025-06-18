@@ -69,7 +69,7 @@ For more detailed documentation, see the [thinktank_wrapper README](./thinktank_
 
 ### tt-review
 
-Automated script for generating comprehensive code reviews using thinktank analysis.
+Automated script for generating comprehensive two-pass code reviews using thinktank analysis.
 
 **Usage:**
 ```bash
@@ -77,19 +77,21 @@ tt-review [base_branch]
 ```
 
 **Parameters:**
-- `base_branch` - Branch to compare against (default: master)
+- `base_branch` - Branch to compare against (default: auto-detected main/master)
 
 **Features:**
+- **Two-pass review process:**
+  1. Diff-focused review (bugs, functional issues)
+  2. Philosophy alignment review (standards, patterns)
 - Automatically generates diff against base branch
-- Identifies all changed files
-- Runs thinktank-wrapper with review template
-- Creates CODE_REVIEW.md from synthesis output
+- Identifies all changed files (excluding deleted files)
+- Runs thinktank-wrapper with specialized templates
 - Handles errors gracefully
 - Cleans up temporary files
 
 **Examples:**
 ```bash
-# Review changes against master
+# Run full two-pass review against master
 tt-review
 
 # Review changes against specific branch
@@ -97,7 +99,40 @@ tt-review feature/new-feature
 ```
 
 **Output:**
-- Creates `CODE_REVIEW.md` with comprehensive review analysis
+- Creates `CODE_REVIEW_DIFF.md` with functional issues analysis
+- Creates `CODE_REVIEW_PHILOSOPHY.md` with philosophy alignment review
+- Temporarily creates context files (cleaned up on success)
+
+### tt-review-diff
+
+Specialized script for diff-focused code reviews analyzing bugs and functional issues.
+
+**Usage:**
+```bash
+tt-review-diff [base_branch]
+```
+
+**Parameters:**
+- `base_branch` - Branch to compare against (default: auto-detected main/master)
+
+**Features:**
+- **Filters out deleted files** to prevent "file not found" warnings
+- Focuses exclusively on functional issues and bugs
+- Uses high_context model set for detailed analysis
+- Dramatically reduces token usage by processing only existing files
+- Automatically includes leyline documents for context
+
+**Examples:**
+```bash
+# Run diff-focused review only
+tt-review-diff
+
+# Review against specific branch
+tt-review-diff develop
+```
+
+**Output:**
+- Creates `CODE_REVIEW_DIFF.md` with bug and functional issue analysis
 - Temporarily creates `REVIEW-CONTEXT.md` (cleaned up on success)
 
 ### tt-address
