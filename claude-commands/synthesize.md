@@ -1,7 +1,3 @@
-# SYNTHESIZE
-
-## GOAL
-
 Create a single superior synthesis that captures the collective intelligence while eliminating redundancy and resolving conflicts.
 
 ## READ

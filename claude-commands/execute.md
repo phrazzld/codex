@@ -1,5 +1,3 @@
-# EXECUTE
-
 Pick the next unblocked ticket from `TODO.md` and complete it following our development philosophy and leyline documents.
 
 ## Workflow
