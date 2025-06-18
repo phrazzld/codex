@@ -50,7 +50,7 @@ if [ -z "$CURRENT_BRANCH" ]; then
 fi
 
 # Get list of changed files
-CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH" || true)
+CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH" 2>/dev/null | while read -r file; do [ -f "$file" ] && echo "$file"; done || true)
 
 if [ -z "$CHANGED_FILES" ]; then
     echo "No changes detected between $CURRENT_BRANCH and $BASE_BRANCH"
