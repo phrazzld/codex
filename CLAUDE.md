@@ -1,42 +1,46 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+Repository-specific operational guidance for Claude Code.
 
-## Build, Test, Lint Commands
+## Repository Purpose
+Configuration repository with AI prompt templates, Claude Code slash commands, and productivity tools for software development workflows.
 
-* Project is primarily a collection of prompt templates and configuration files
-* No specific build process required
-* No testing commands defined
-* No linting commands defined
+## Build Commands
+* No build process - collection of templates and configuration files
+* No testing or linting commands defined
 
-## Style Guidelines
+## Repository-Specific Structure
+* `/claude-commands/` - Custom Claude CLI slash commands (structured workflows)
+* `/docs/` - Development philosophy, prompt templates, professional docs
+* `/dotfiles/` - Shell configurations (.zshrc, .aliases, .env)
+* `/bin/` - Helper utilities (thinktank-wrapper)
 
-* Follow core principles from `DEVELOPMENT_PHILOSOPHY.md`
-* Prefer simplicity and maintainability over complexity
-* Ensure commit messages follow Conventional Commits specification
-* NEVER sign your commit messages. Your commits should ALWAYS and ONLY contain meaningful detailed multiline conventional commits about the work done.
-* Document "why" not "how" in comments
-* Adhere to strict configuration for any code added to the repository:
-  * TypeScript: strict typing with no `any`, use immutable patterns, Prettier formatting
-  * Go: strict linting with golangci-lint, gofmt formatting
+## Command Templates
+When creating new slash commands in `/claude-commands/`:
+* Follow existing command structure and format
+* Include clear GOAL, ANALYZE, and EXECUTE sections
+* Reference DEVELOPMENT_PHILOSOPHY.md principles
+* Maintain consistency with workflow patterns
 
-## Project Structure
+## Thinktank Integration
+* Use `thinktank-wrapper` from `/bin/` for analysis
+* Pre-configured with model sets and context files
+* Run: `thinktank --instructions temp_instructions.txt <paths>`
+* API keys configured locally
 
-* Organize by feature/domain not technical type
-* Use `/claude-commands/` for custom Claude CLI slash commands
-* Use `/docs/` for all documentation, organized by purpose
-* Keep file and function sizes reasonable
+## Commit Standards
+* NEVER sign commit messages
+* Follow Conventional Commits specification strictly
+* Use meaningful multiline descriptions
+* All commits must pass pre-commit hooks
 
-## Error Handling & Quality Gates
+## Code Standards (when adding code)
+* TypeScript: strict typing, no `any`, immutable patterns, Prettier
+* Go: golangci-lint, gofmt formatting
+* Follow DEVELOPMENT_PHILOSOPHY.md core principles
+* Document "why" not "how"
 
-* Never suppress errors/warnings - fix root causes
-* Never hardcode secrets - use environment variables
-* All code must pass pre-commit hooks and CI checks
-* Ensure consistent, explicit error handling
-* Follow Test-Driven Development when applicable
-
-## Thinktank Tool
-
-* Use `thinktank` CLI for deeper analysis when needed
-* Run with: `thinktank --instructions temp_instructions.txt <relevant_paths...>`
-* API keys are pre-configured locally
+## Git Hooks
+* Custom hooks in `.githooks/` directory
+* `post-commit` runs `glance ./` asynchronously
+* Never bypass with `--no-verify`
