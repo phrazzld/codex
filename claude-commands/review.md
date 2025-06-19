@@ -1,6 +1,3 @@
-# REVIEW
-
-## GOAL
 Generate a comprehensive code review using a two-phase approach: thinktank multi-model analysis followed by independent Claude review, then synthesis of all findings into superior collective intelligence.
 
 ## WORKFLOW

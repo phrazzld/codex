@@ -1,6 +1,3 @@
-# CI
-
-## GOAL
 Check the CI status for the current PR and generate actionable resolution tasks for failures.
 
 ## 1. Check CI Status

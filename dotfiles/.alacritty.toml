@@ -5,7 +5,7 @@
 # General configuration
 [general]
 import = [
-    "/Users/phaedrus/Development/alacritty-theme/themes/rose_pine_dawn.toml"
+    "/Users/phaedrus/Development/alacritty-theme/themes/rose_pine.toml"
 ]
 
 # Terminal emulation

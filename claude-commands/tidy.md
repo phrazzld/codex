@@ -1,5 +1,3 @@
-# TIDY
-
 There are a number of unstaged changes and/or untracked files.
 
 They should all be either:
