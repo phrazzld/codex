@@ -88,7 +88,7 @@ FILES_ARGS=$(echo "$CHANGED_FILES" | tr '\n' ' ')
 
 # Run diff-focused review
 echo "Analyzing diff for bugs and functional issues..."
-thinktank-wrapper --template review-diff --inject REVIEW-CONTEXT.md --model-set high_context --include-leyline $FILES_ARGS
+thinktank-wrapper --template review-diff --inject REVIEW-CONTEXT.md --include-leyline $FILES_ARGS
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)

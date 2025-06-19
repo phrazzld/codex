@@ -37,8 +37,8 @@ Focus on improving maintainability, readability, and reducing technical debt.
 EOF
 
 # Step 3: Generate Refactoring Backlog Items
-echo "Running thinktank analysis with high_context model set..."
-thinktank-wrapper --template refactor --inject REFACTOR-CONTEXT.md --model-set high_context --include-leyline --include-glance ./
+echo "Running thinktank analysis..."
+thinktank-wrapper --template refactor --inject REFACTOR-CONTEXT.md --include-leyline --include-glance ./
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
