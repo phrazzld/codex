@@ -63,7 +63,7 @@
 - [x] Create launchd agent directory: `mkdir -p ~/Library/LaunchAgents`
 - [x] Create morning trigger plist: `~/Library/LaunchAgents/com.user.claude.morning.plist` (6:00 AM with wake)
 - [x] Create midday trigger plist: `~/Library/LaunchAgents/com.user.claude.midday.plist` (11:05 AM with wake)  
-- [ ] Create afternoon trigger plist: `~/Library/LaunchAgents/com.user.claude.afternoon.plist` (4:05 PM with wake)
+- [x] Create afternoon trigger plist: `~/Library/LaunchAgents/com.user.claude.afternoon.plist` (4:05 PM with wake)
 - [ ] Configure each plist with proper wake settings:
   - `StartCalendarInterval` for precise timing
   - `ThrottleInterval` to prevent rapid re-runs
