@@ -3,7 +3,7 @@
 ## Setup and Preparation Tasks
 
 - [x] Verify Claude Code CLI is installed globally by running `claude --version` in terminal
-- [ ] Test Claude Code CLI works with basic command `claude -p "hello"` to confirm authentication and connectivity
+- [x] Test Claude Code CLI works with basic command `claude -p "hello"` to confirm authentication and connectivity
 - [ ] Check if `~/bin/` directory exists, create it if missing with `mkdir -p ~/bin`
 - [ ] Verify `~/bin/` is in PATH by running `echo $PATH | grep "$HOME/bin"` or add to shell profile if needed
 
