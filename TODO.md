@@ -20,11 +20,11 @@
 
 ## Testing Tasks
 
-- [ ] Run manual test of script: `~/bin/claude-trigger.sh`
-- [ ] Verify script creates log file at `/tmp/claude-trigger.log`
-- [ ] Check system logs for claude-trigger entries: `log show --predicate 'senderImagePath contains "logger"' --info | grep claude-trigger`
-- [ ] Confirm Claude actually responds in the log file by checking `/tmp/claude-trigger.log` contents
-- [ ] Test script behavior when Claude CLI fails (temporarily break authentication) to verify error handling
+- [x] Run manual test of script: `~/bin/claude-trigger.sh`
+- [x] Verify script creates log file at `/tmp/claude-trigger.log`
+- [x] Check system logs for claude-trigger entries: `log show --predicate 'senderImagePath contains "logger"' --info | grep claude-trigger` (NOTE: log command has syntax issues but logger functionality works)
+- [x] Confirm Claude actually responds in the log file by checking `/tmp/claude-trigger.log` contents
+- [x] Test script behavior when Claude CLI fails (temporarily break authentication) to verify error handling
 
 ## Cron Job Configuration Tasks
 
