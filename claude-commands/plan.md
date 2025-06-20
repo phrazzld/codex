@@ -1,6 +1,3 @@
-# PLAN
-
-## GOAL
 Generate a detailed implementation plan for a prioritized task, with focus on architecture, approach tradeoffs, implementation steps, testing strategy, and risk mitigation.
 
 ## 1. Select & Scope Task
@@ -8,7 +5,7 @@ Generate a detailed implementation plan for a prioritized task, with focus on ar
   ```bash
   # Get all open issues
   gh issue list --state open --json number,title,labels,assignees --limit 100
-  
+
   # After selecting an issue number, view its complete details
   gh issue view [issue-number] --json number,title,body,labels,assignees,milestone
   ```

@@ -1,4 +1,4 @@
-Pick the next unblocked ticket from `TODO.md` and complete it following our development philosophy and leyline documents.
+Pick the next unblocked ticket from `TODO.md` and complete it. Be sure to adhere to relevant leyline documents, and always think: what would John Carmack do?
 
 ## Workflow
 
@@ -32,7 +32,7 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
   - Expected implementation approach and testing strategy
 - **Run thinktank**: Execute comprehensive analysis:
   ```bash
-  thinktank-wrapper --instructions execute-instructions.md --model-set all --include-leyline --include-glance [list of relevant files and directories]
+  thinktank-wrapper --instructions execute-instructions.md --model-set all --include-leyline [list of relevant files and directories]
   ```
 - **Synthesize results**: Review thinktank outputs and create implementation plan
 
@@ -40,8 +40,6 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
 - Follow leyline documents
 - For medium+ complexity: write failing tests first, implement to make them pass
 - For high complexity: implement according to thinktank analysis and synthesis
-- Never mock internal collaborators - refactor for testability instead
-- Create planning artifacts proportional to complexity
 
 **5. Validate**
 - Format, lint, test - resolve all issues
@@ -51,9 +49,3 @@ Pick the next unblocked ticket from `TODO.md` and complete it following our deve
 - Mark ticket `[x]` complete
 - Push clean commit
 - Clean up any planning files and thinktank outputs
-
-## Key Principles
-- Maintain acyclic dependencies
-- All commits must pass CI
-- Test-driven development for non-trivial work
-- Mock only true external dependencies
