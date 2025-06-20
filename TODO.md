@@ -80,9 +80,9 @@
 ### launchd Deployment and Testing
 
 - [x] Load morning agent: `launchctl load ~/Library/LaunchAgents/com.user.claude.morning.plist`
-- [ ] Load midday agent: `launchctl load ~/Library/LaunchAgents/com.user.claude.midday.plist`
-- [ ] Load afternoon agent: `launchctl load ~/Library/LaunchAgents/com.user.claude.afternoon.plist`
-- [ ] Verify agents are loaded: `launchctl list | grep claude`
+- [x] Load midday agent: `launchctl load ~/Library/LaunchAgents/com.user.claude.midday.plist`
+- [x] Load afternoon agent: `launchctl load ~/Library/LaunchAgents/com.user.claude.afternoon.plist`
+- [x] Verify agents are loaded: `launchctl list | grep claude`
 - [ ] Check agent status and next run time: `launchctl print gui/501/com.user.claude.morning`
 
 ### Wake-from-Sleep Validation
