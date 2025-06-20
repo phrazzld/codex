@@ -28,14 +28,14 @@
 
 ## Cron Job Configuration Tasks
 
-- [ ] Open crontab editor with `crontab -e`
-- [ ] Add comment line: `# Claude usage window triggers`
-- [ ] Add 6:00 AM trigger: `0 6 * * * /bin/bash ~/bin/claude-trigger.sh`
-- [ ] Add 11:05 AM trigger: `5 11 * * * /bin/bash ~/bin/claude-trigger.sh`
-- [ ] Add 4:05 PM trigger: `5 16 * * * /bin/bash ~/bin/claude-trigger.sh`
-- [ ] Add 9:05 PM trigger: `5 21 * * * /bin/bash ~/bin/claude-trigger.sh`
-- [ ] Save and exit crontab editor
-- [ ] Verify crontab entries with `crontab -l`
+- [x] Open crontab editor with `crontab -e`
+- [x] Add comment line: `# Claude usage window triggers`
+- [x] Add 6:00 AM trigger: `0 6 * * * /bin/bash ~/bin/claude-trigger.sh`
+- [x] Add 11:05 AM trigger: `5 11 * * * /bin/bash ~/bin/claude-trigger.sh`
+- [x] Add 4:05 PM trigger: `5 16 * * * /bin/bash ~/bin/claude-trigger.sh`
+- [x] Add 9:05 PM trigger: `5 21 * * * /bin/bash ~/bin/claude-trigger.sh`
+- [x] Save and exit crontab editor
+- [x] Verify crontab entries with `crontab -l`
 
 ## Monitoring and Validation Tasks
 
