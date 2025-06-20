@@ -4,19 +4,19 @@
 
 - [x] Verify Claude Code CLI is installed globally by running `claude --version` in terminal
 - [x] Test Claude Code CLI works with basic command `claude -p "hello"` to confirm authentication and connectivity
-- [ ] Check if `~/bin/` directory exists, create it if missing with `mkdir -p ~/bin`
-- [ ] Verify `~/bin/` is in PATH by running `echo $PATH | grep "$HOME/bin"` or add to shell profile if needed
+- [x] Check if `~/bin/` directory exists, create it if missing with `mkdir -p ~/bin`
+- [x] Verify `~/bin/` is in PATH by running `echo $PATH | grep "$HOME/bin"` or add to shell profile if needed
 
 ## Script Creation Tasks
 
-- [ ] Create the main trigger script file at `~/bin/claude-trigger.sh`
-- [ ] Write shell script content with shebang `#!/bin/bash` at the top
-- [ ] Add timestamp logging line: `echo "$(date): Triggering Claude usage window" | logger -t claude-trigger`
-- [ ] Add main Claude command: `claude -p "hello" >> /tmp/claude-trigger.log 2>&1`
-- [ ] Capture exit code with: `exit_code=$?`
-- [ ] Add success logging: `if [ $exit_code -eq 0 ]; then echo "$(date): Success" | logger -t claude-trigger`
-- [ ] Add failure logging: `else echo "$(date): Failed with exit code $exit_code" | logger -t claude-trigger; fi`
-- [ ] Make script executable with `chmod +x ~/bin/claude-trigger.sh`
+- [x] Create the main trigger script file at `~/bin/claude-trigger.sh`
+- [x] Write shell script content with shebang `#!/bin/bash` at the top
+- [x] Add timestamp logging line: `echo "$(date): Triggering Claude usage window" | logger -t claude-trigger`
+- [x] Add main Claude command: `claude -p "hello" >> /tmp/claude-trigger.log 2>&1`
+- [x] Capture exit code with: `exit_code=$?`
+- [x] Add success logging: `if [ $exit_code -eq 0 ]; then echo "$(date): Success" | logger -t claude-trigger`
+- [x] Add failure logging: `else echo "$(date): Failed with exit code $exit_code" | logger -t claude-trigger; fi`
+- [x] Make script executable with `chmod +x ~/bin/claude-trigger.sh`
 
 ## Testing Tasks
 
