@@ -62,11 +62,6 @@ def parse_args(args: Optional[List[str]] = None) -> Tuple[argparse.Namespace, Li
     # Context file finding options
     context_group = parser.add_argument_group("Context Options")
     context_group.add_argument(
-        config.INCLUDE_GLANCE_ARG,
-        action="store_true",
-        help="Include glance.md files automatically",
-    )
-    context_group.add_argument(
         config.INCLUDE_LEYLINE_ARG,
         action="store_true",
         help="Include leyline documents from docs/leyline/; if not found, falls back to DEVELOPMENT_PHILOSOPHY*.md files in docs/",

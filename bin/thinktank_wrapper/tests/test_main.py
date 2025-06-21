@@ -27,7 +27,7 @@ def mock_parse_args():
         args.template = "test-template"
         args.instructions = None
         args.inject = None
-        args.include_glance = True
+        args.include_glance = False
         args.include_leyline = False
         args.context_paths = ["/path/to/file.md"]
         args.dry_run = False

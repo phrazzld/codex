@@ -89,7 +89,6 @@ def test_integration_template_dry_run(
     args = [
         "--template", template_name,
         "--model-set", "high_context",
-        "--include-glance",
         "--include-philosophy",
         "--dry-run",
         str(glance_path),
@@ -121,7 +120,6 @@ def test_integration_template_execution(
     args = [
         "--template", template_name,
         "--model-set", "high_context",
-        "--include-glance",
         "--include-leyline",
         str(glance_path),
     ]
@@ -172,7 +170,6 @@ def test_integration_with_instructions(
     args = [
         "--instructions", str(instructions_path),
         "--model-set", "all",
-        "--include-glance",
         str(glance_path),
     ]
     

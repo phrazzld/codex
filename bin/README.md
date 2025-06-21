@@ -35,8 +35,7 @@ thinktank-wrapper [OPTIONS] [CONTEXT_PATHS...]
 - `--inject <file>` - Inject context from a file into the template's CONTEXT section
 - `--list-templates` - List all available templates and exit
 - `--model-set <set_name>` - Use predefined model set (all, high_context)
-- `--include-glance` - Include glance.md files automatically
-- `--include-philosophy` - Include DEVELOPMENT_PHILOSOPHY*.md files automatically
+- `--include-leyline` - Include leyline documents from docs/leyline/
 - `--dry-run` - Display the command that would be executed without running it
 - `--instructions <file>` - Use an explicit instructions file (overrides --template)
 - `-h, --help` - Show help message
@@ -52,17 +51,17 @@ thinktank-wrapper --template debug --inject bug-details.md ./src
 # List available templates
 thinktank-wrapper --list-templates
 
-# Include glance.md files automatically with a specific template
-thinktank-wrapper --template debug --include-glance --model-set high_context
+# Include leyline files automatically with a specific template
+thinktank-wrapper --template debug --include-leyline --model-set high_context
 
-# Include both glance and philosophy files with context injection
-thinktank-wrapper --template ideate --inject context.md --include-glance --include-philosophy
+# Include leyline files with context injection
+thinktank-wrapper --template ideate --inject context.md --include-leyline
 
 # Show command without executing (dry run)
 thinktank-wrapper --template review --dry-run file.md
 
 # Backward compatibility with explicit instructions file
-thinktank-wrapper --instructions custom-prompt.md --include-philosophy
+thinktank-wrapper --instructions custom-prompt.md --include-leyline
 ```
 
 For more detailed documentation, see the [thinktank_wrapper README](./thinktank_wrapper/README.md).

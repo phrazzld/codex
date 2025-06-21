@@ -37,7 +37,6 @@ def test_cli_args():
     assert config.TEMPLATE_ARG
     assert config.LIST_TEMPLATES_ARG
     assert config.MODEL_SET_ARG
-    assert config.INCLUDE_GLANCE_ARG
     assert config.INCLUDE_LEYLINE_ARG
     assert config.DRY_RUN_ARG
     assert config.INSTRUCTIONS_ARG
@@ -46,7 +45,6 @@ def test_cli_args():
     assert config.TEMPLATE_ARG.startswith("--")
     assert config.LIST_TEMPLATES_ARG.startswith("--")
     assert config.MODEL_SET_ARG.startswith("--")
-    assert config.INCLUDE_GLANCE_ARG.startswith("--")
     assert config.INCLUDE_LEYLINE_ARG.startswith("--")
     assert config.DRY_RUN_ARG.startswith("--")
     assert config.INSTRUCTIONS_ARG.startswith("--")

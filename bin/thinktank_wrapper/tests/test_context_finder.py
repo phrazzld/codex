@@ -48,19 +48,14 @@ def test_find_context_files(mock_glance_files: List[Path], mock_codex_dir: Path,
     
     # Call the function
     result = find_context_files(
-        include_glance=True,
         include_leyline=False,
         explicit_paths=[str(test_file)]
     )
     
-    # Assert the result contains the glance files and explicit path
+    # Assert the result contains the explicit path (no glance files since include_glance=False)
     expected_files = [
         str(test_file.resolve()),
     ]
-    
-    # Add the mock glance files
-    for glance_file in mock_glance_files:
-        expected_files.append(str(glance_file.resolve()))
     
     # Sort both lists for comparison - use resolve() to handle symlinks consistently
     result_resolved = [str(Path(p).resolve()) for p in result]
@@ -232,7 +227,6 @@ class TestGitignoreIntegration:
         
         # Test with gitignore enabled
         result_filtered = find_context_files(
-            include_glance=True,
             include_leyline=False,
             explicit_paths=[str(ignored_file)],
             gitignore_enabled=True
@@ -240,19 +234,17 @@ class TestGitignoreIntegration:
         
         # Test with gitignore disabled
         result_no_filter = find_context_files(
-            include_glance=True,
             include_leyline=False,
             explicit_paths=[str(ignored_file)],
             gitignore_enabled=False
         )
         
-        # With gitignore: should exclude .log files
-        expected_filtered = [str((repo_dir / "glance.md").absolute())]
+        # With gitignore: should exclude .log files (no glance files since include_glance=False)
+        expected_filtered = []
         assert sorted(result_filtered) == sorted(expected_filtered)
         
-        # Without gitignore: should include all files
+        # Without gitignore: should include explicit files only (no glance files since include_glance=False)
         expected_all = [
-            str((repo_dir / "glance.md").absolute()),
             str(ignored_file.absolute()),
         ]
         assert sorted(result_no_filter) == sorted(expected_all)
@@ -306,7 +298,6 @@ class TestGitignoreIntegration:
         
         # Test with gitignore enabled - explicit gitignored directory should be filtered out
         result_filtered = find_context_files(
-            include_glance=False,
             include_leyline=False,
             explicit_paths=[str(node_modules_dir), str(src_dir), str(allowed_file)],
             gitignore_enabled=True
@@ -329,7 +320,6 @@ class TestGitignoreIntegration:
         
         # Test with gitignore disabled - should include all paths
         result_no_filter = find_context_files(
-            include_glance=False,
             include_leyline=False,
             explicit_paths=[str(node_modules_dir), str(src_dir), str(allowed_file)],
             gitignore_enabled=False

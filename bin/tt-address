@@ -36,7 +36,7 @@ EOF
 
 # Step 3: Generate Plan with Thinktank
 echo "Running thinktank analysis..."
-thinktank-wrapper --template address --inject ADDRESS-CONTEXT.md --include-leyline --include-glance ./
+thinktank-wrapper --template address --inject ADDRESS-CONTEXT.md --include-leyline ./
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)

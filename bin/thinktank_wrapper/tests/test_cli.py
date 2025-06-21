@@ -34,7 +34,6 @@ def test_parse_args_defaults():
     assert args.template is None
     assert not args.list_templates
     assert args.model_set == config.DEFAULT_MODEL_SET
-    assert not args.include_glance
     assert not args.include_leyline
     assert not args.dry_run
     assert args.instructions is None
@@ -74,18 +73,7 @@ def test_parse_args_include_flags():
     """Test that parse_args handles --include-* flags correctly."""
     # Test --include-leyline flag
     args_leyline, _ = cli.parse_args(["--include-leyline"])
-    assert not args_leyline.include_glance  # Should be false
     assert args_leyline.include_leyline     # Should be true
-    
-    # Test --include-glance flag
-    args_glance, _ = cli.parse_args(["--include-glance"])
-    assert args_glance.include_glance   # Should be true
-    assert not args_glance.include_leyline  # Should be false
-    
-    # Test both flags together
-    args_both, _ = cli.parse_args(["--include-glance", "--include-leyline"])
-    assert args_both.include_glance    # Should be true
-    assert args_both.include_leyline   # Should be true
 
 
 def test_parse_args_dry_run():

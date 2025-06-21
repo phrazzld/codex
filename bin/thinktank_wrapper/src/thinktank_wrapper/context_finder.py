@@ -138,7 +138,6 @@ def find_leyline_files(gitignore_enabled: bool = True) -> List[str]:
 
 
 def find_context_files(
-    include_glance: bool, 
     include_leyline: bool,
     explicit_paths: List[str],
     gitignore_enabled: bool = True,
@@ -148,7 +147,6 @@ def find_context_files(
     """Find all context files based on flags and explicit paths.
     
     Args:
-        include_glance: Whether to include glance.md files.
         include_leyline: Whether to include leyline documents.
         explicit_paths: Explicit file/directory paths to include as context.
         gitignore_enabled: Whether to respect .gitignore rules when finding files.
@@ -159,12 +157,6 @@ def find_context_files(
         A list of absolute paths to context files.
     """
     result: Set[str] = set()
-    
-    # Find glance files if requested
-    if include_glance:
-        glance_files = find_glance_files([], gitignore_enabled=gitignore_enabled)
-        result.update(glance_files)
-        logger.info(f"Found {len(glance_files)} glance.md files")
     
     # Find leyline files if requested
     if include_leyline:

@@ -18,7 +18,7 @@ echo "Analyzing codebase for radical simplification opportunities..."
 
 # Run thinktank analysis
 echo "Running thinktank analysis..."
-thinktank-wrapper --template gordian --include-leyline --include-glance ./
+thinktank-wrapper --template gordian --include-leyline ./
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
@@ -27,7 +27,7 @@ if [ -n "$SYNTHESIS_FILE" ]; then
     # Copy synthesis to results file
     cp "$SYNTHESIS_FILE" GORDIAN_ANALYSIS.md
     echo "Created GORDIAN_ANALYSIS.md from synthesis output"
-    
+
     # Show preview of recommendations
     echo ""
     echo "Preview of simplification recommendations:"
@@ -36,7 +36,7 @@ if [ -n "$SYNTHESIS_FILE" ]; then
     echo ""
     echo "[...truncated for preview]"
     echo ""
-    
+
     echo "Gordian analysis complete! See GORDIAN_ANALYSIS.md"
     echo ""
     echo "Remember: 'The number one mistake great engineers make"

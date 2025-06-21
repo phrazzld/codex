@@ -41,7 +41,7 @@ $(cat "$PLAN_FILE")
 EOF
 
 echo "Running thinktank analysis..."
-thinktank-wrapper --template ticket --inject TICKET-CONTEXT.md --include-leyline --include-glance "$PLAN_FILE"
+thinktank-wrapper --template ticket --inject TICKET-CONTEXT.md --include-leyline "$PLAN_FILE"
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)

@@ -26,7 +26,7 @@ thinktank-wrapper --template plan --include-philosophy --include-leyline ./
 ### Large Context Example
 ```bash
 # With many files exceeding threshold
-thinktank-wrapper --template review --include-glance ./src ./tests ./docs
+thinktank-wrapper --template review ./src ./tests ./docs
 
 # Output:
 # TOKEN_COUNT: 15234

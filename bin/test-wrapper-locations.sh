@@ -66,7 +66,7 @@ run_test 2 "Run from bin directory" "./thinktank-wrapper --dry-run --model-set h
 
 # Test 3: Run from home directory with absolute path
 cd "$HOME"
-run_test 3 "Run from home directory (absolute path)" "thinktank-wrapper --dry-run --include-glance \"$TEST_FILE\""
+run_test 3 "Run from home directory (absolute path)" "thinktank-wrapper --dry-run --include-leyline \"$TEST_FILE\""
 
 # Test 4: Run from home directory with relative path to test file
 cd "$HOME"
@@ -74,7 +74,7 @@ run_test 4 "Run from home directory (relative path)" "thinktank-wrapper --dry-ru
 
 # Test 5: Run from unrelated directory
 cd "/tmp"
-run_test 5 "Run from unrelated directory" "thinktank-wrapper --dry-run --include-glance --include-philosophy \"$TEST_FILE\""
+run_test 5 "Run from unrelated directory" "thinktank-wrapper --dry-run --include-leyline \"$TEST_FILE\""
 
 # Test 6: Run with no arguments to test help display
 cd "$HOME"

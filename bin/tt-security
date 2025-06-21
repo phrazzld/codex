@@ -17,7 +17,7 @@ echo "Performing security audit of codebase..."
 
 # Run thinktank security analysis
 echo "Running security analysis..."
-thinktank-wrapper --template audit --include-leyline --include-glance ./
+thinktank-wrapper --template audit --include-leyline ./
 
 # Find the most recent synthesis file
 SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)

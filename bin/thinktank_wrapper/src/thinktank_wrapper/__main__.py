@@ -71,7 +71,6 @@ def main(args: Optional[List[str]] = None) -> int:
         exclude_extensions = getattr(parsed_args, 'exclude_ext', None)
         
         context_files = context_finder.find_context_files(
-            include_glance=parsed_args.include_glance,
             include_leyline=parsed_args.include_leyline,
             explicit_paths=parsed_args.context_paths,
             gitignore_enabled=gitignore_enabled,
@@ -80,7 +79,6 @@ def main(args: Optional[List[str]] = None) -> int:
         )
         parsed_args.context_files = context_files
         logger.info(f"Found {len(context_files)} context files", extra={
-            "include_glance": parsed_args.include_glance,
             "include_leyline": parsed_args.include_leyline,
             "explicit_paths_count": len(parsed_args.context_paths),
         })
