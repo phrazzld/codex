@@ -1,6 +1,3 @@
-# BRANCH
-
-## GOAL
 Create a new git worktree with a dedicated branch based on the current task from TASK.md, enabling parallel development without disrupting the main workspace.
 
 ## ANALYZE

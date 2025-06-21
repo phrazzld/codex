@@ -1,51 +1,23 @@
-Pick the next unblocked ticket from `TODO.md` and complete it. Be sure to adhere to relevant leyline documents, and always think: what would John Carmack do?
+# Execute the next task
 
-## Workflow
+## ACQUISITION
 
-**1. Select Task**
-- Find first `[~]` ticket -- an in progress ticket -- and complete it.
-- If there are no in progress tickets, find first `[ ]` ticket where all `depends-on:` tasks are `[x]` completed
-- Mark as `[~]` in progress
+Select the next available ticket from the `TODO.md` queue that is not blocked. Prioritize in progress `[~]` tickets. If none are available, grab the next unblocked unstarted `[ ]` ticket. If all tickets in `TODO.md` are completed, immediately halt execution and say something witty and relevant.
 
-**2. Assess Complexity & Allocate Thinking**
-- **Leyline Pre-Processing**: Based on the selected ticket's domain and requirements:
-  - Identify relevant tenets (e.g., Modularity for component work, Testability for new features, Simplicity for refactoring)
-  - Query applicable bindings (language-specific, testing patterns, architecture guidelines)
-  - Internalize how these principles will guide implementation approach
-- **Analyze** the ticket's scope, risk, architectural impact, and design decisions required
-- **Scale thinking budget** based on complexity:
-  - **Minimal**: Trivial fixes, typos, obvious changes → just execute
-  - **Low**: Single-file changes, clear requirements → **think** briefly about approach
-  - **Medium**: Multi-file changes, some ambiguity → **think hard** about design and plan thoroughly
-  - **High**: Architectural changes, cross-cutting concerns → **engage thinktank** for comprehensive analysis
+## CONTEXT GATHERING
 
-**3. For High Complexity: Engage Thinktank**
-- **Investigate context**: Thoroughly examine the codebase to identify the most relevant files and directories for the task
-  - Read the ticket carefully to understand all affected areas
-  - Use search tools to find related code, tests, documentation, and configuration
-  - Identify key modules, interfaces, and dependencies that will be impacted
-  - Locate existing patterns and architectural precedents to follow
-- **Create instructions**: Generate `execute-instructions.md` with detailed context about:
-  - The specific task requirements and acceptance criteria
-  - Relevant architectural constraints and design principles
-  - Key files and directories that need consideration
-  - Expected implementation approach and testing strategy
-- **Run thinktank**: Execute comprehensive analysis:
-  ```bash
-  thinktank-wrapper --instructions execute-instructions.md --model-set all --include-leyline [list of relevant files and directories]
-  ```
-- **Synthesize results**: Review thinktank outputs and create implementation plan
+Conduct a comprehensive review of all relevant materials. This must include, but is not limited to, the primary codebase, associated Leyline documentation, and external web resources via the Context7 MCP. Think hard about them, particularly in the context of the task.
 
-**4. Plan & Implement**
-- Follow leyline documents
-- For medium+ complexity: write failing tests first, implement to make them pass
-- For high complexity: implement according to thinktank analysis and synthesis
+If the task's complexity warrants it, invoke the `thinktank` CLI for advanced analysis.
 
-**5. Validate**
-- Format, lint, test - resolve all issues
-- Ensure clean conventional commit that passes pre-commit hooks
+## STRATEGIC PLANNING
 
-**6. Finalize**
-- Mark ticket `[x]` complete
-- Push clean commit
-- Clean up any planning files and thinktank outputs
+Think very hard about what John Carmack would do, and construct a formal plan of execution.
+
+## IMPLEMENTATION
+
+Execute the approved plan until the task is fully resolved. If, at any point during execution, you encounter unexpected information, hiccups, blockers, or circumstances that you think might meaningfully change what the best course of action is, halt and report back to the user what the situation is and what new information we need to consider before we proceed.
+
+## CLEANUP
+
+Upon successful completion, update the ticket's status to [x] in TODO.md.
