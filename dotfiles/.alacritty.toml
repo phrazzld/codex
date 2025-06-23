@@ -5,7 +5,8 @@
 # General configuration
 [general]
 import = [
-    "/Users/phaedrus/Development/alacritty-theme/themes/rose_pine_dawn.toml"
+    "/Users/phaedrus/Development/alacritty-theme/themes/rose_pine_dawn.toml",
+    "/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-jetbrains.toml"
 ]
 
 # Terminal emulation
@@ -68,31 +69,8 @@ history = 10000
 # Scrolling distance multiplier
 multiplier = 3
 
-# Font configuration
-[font]
-# Normal (roman) font face
-normal = { family = "FiraCode Nerd Font Mono", style = "Regular" }
-
-# Bold font face
-bold = { family = "FiraCode Nerd Font Mono", style = "Bold" }
-
-# Italic font face
-italic = { family = "FiraCode Nerd Font Mono", style = "Regular" }
-
-# Bold italic font face
-bold_italic = { family = "FiraCode Nerd Font Mono", style = "Bold" }
-
-# Point size
-size = 14.0
-
-# Offset is the extra space around each character
-offset = { x = 0, y = 0 }
-
-# Glyph offset determines the locations of the glyphs within their cells
-glyph_offset = { x = 0, y = 0 }
-
-# Use built-in font for box drawing characters
-builtin_box_drawing = true
+# Font configuration is handled via imports above
+# To switch fonts, change the font import path in the [general] section
 
 # Bell
 [bell]

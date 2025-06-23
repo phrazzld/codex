@@ -25,3 +25,58 @@ find_philosophy_files() {
 # glance_files=$(find_glance_files)
 # philosophy_files=$(find_philosophy_files)
 # thinktank $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $glance_files $philosophy_files
+
+# Alacritty Font Switching Functions
+switch_font() {
+  local font_name="${1:-help}"
+  local config_file="$HOME/Development/codex/dotfiles/.alacritty.toml"
+  local temp_file=$(mktemp)
+  
+  case "$font_name" in
+    "firacode"|"fira")
+      local font_import="/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-firacode.toml"
+      ;;
+    "jetbrains"|"jb")
+      local font_import="/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-jetbrains.toml"
+      ;;
+    "sourcecodepro"|"scp")
+      local font_import="/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-source-code-pro.toml"
+      ;;
+    "help"|*)
+      echo "Usage: switch_font [font_name]"
+      echo "Available fonts (all with Nerd Font icons):"
+      echo "  firacode, fira      - FiraCode Nerd Font Mono"
+      echo "  jetbrains, jb       - JetBrainsMono Nerd Font"
+      echo "  sourcecodepro, scp  - SauceCodePro Nerd Font"
+      echo ""
+      echo "Current font: $(get_current_font)"
+      return 0
+      ;;
+  esac
+  
+  # Update the import line in the config file
+  sed "s|/Users/phaedrus/Development/codex/dotfiles/\.alacritty-font-.*\.toml|$font_import|g" "$config_file" > "$temp_file"
+  mv "$temp_file" "$config_file"
+  
+  echo "Switched to $font_name font. Restart Alacritty to see changes."
+}
+
+# Get current font from config
+get_current_font() {
+  local config_file="$HOME/Development/codex/dotfiles/.alacritty.toml"
+  local font_line=$(grep "\.alacritty-font-.*\.toml" "$config_file")
+  
+  if [[ $font_line == *"firacode"* ]]; then
+    echo "FiraCode Nerd Font Mono"
+  elif [[ $font_line == *"jetbrains"* ]]; then
+    echo "JetBrainsMono Nerd Font"
+  elif [[ $font_line == *"source-code-pro"* ]]; then
+    echo "SauceCodePro Nerd Font"
+  else
+    echo "Unknown"
+  fi
+}
+
+# Aliases for convenience
+alias font='switch_font'
+alias fonthelp='switch_font help'

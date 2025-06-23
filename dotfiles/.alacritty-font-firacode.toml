@@ -1,0 +1,10 @@
+# FiraCode Nerd Font Configuration
+[font]
+normal = { family = "FiraCode Nerd Font Mono", style = "Regular" }
+bold = { family = "FiraCode Nerd Font Mono", style = "Bold" }
+italic = { family = "FiraCode Nerd Font Mono", style = "Regular" }
+bold_italic = { family = "FiraCode Nerd Font Mono", style = "Bold" }
+size = 14.0
+offset = { x = 0, y = 0 }
+glyph_offset = { x = 0, y = 0 }
+builtin_box_drawing = true
