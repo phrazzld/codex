@@ -90,4 +90,4 @@ esac
 # Codex directory path for thinktank-wrapper
 export CODEX_DIR="/Users/phaedrus/Development/codex"
 export PATH="$HOME/bin:$PATH"
-alias claude="/Users/phaedrus/.claude/local/claude"
+export PATH="$HOME/.npm-global/bin:$PATH"

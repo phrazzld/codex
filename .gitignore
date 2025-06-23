@@ -28,3 +28,4 @@ bin/thinktank-venv/
 **/dist/
 **/build/
 
+logs/
