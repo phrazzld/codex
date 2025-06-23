@@ -42,12 +42,24 @@ switch_font() {
     "sourcecodepro"|"scp")
       local font_import="/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-source-code-pro.toml"
       ;;
+    "cascadia"|"cc")
+      local font_import="/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-cascadia.toml"
+      ;;
+    "victormono"|"vm")
+      local font_import="/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-victor-mono.toml"
+      ;;
+    "hack"|"hk")
+      local font_import="/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-hack.toml"
+      ;;
     "help"|*)
       echo "Usage: switch_font [font_name]"
       echo "Available fonts (all with Nerd Font icons):"
       echo "  firacode, fira      - FiraCode Nerd Font Mono"
       echo "  jetbrains, jb       - JetBrainsMono Nerd Font"
       echo "  sourcecodepro, scp  - SauceCodePro Nerd Font"
+      echo "  cascadia, cc        - Cascadia Code NF (Microsoft)"
+      echo "  victormono, vm      - VictorMono Nerd Font (cursive italics)"
+      echo "  hack, hk            - Hack Nerd Font (eye-strain optimized)"
       echo ""
       echo "Current font: $(get_current_font)"
       return 0
@@ -72,6 +84,12 @@ get_current_font() {
     echo "JetBrainsMono Nerd Font"
   elif [[ $font_line == *"source-code-pro"* ]]; then
     echo "SauceCodePro Nerd Font"
+  elif [[ $font_line == *"cascadia"* ]]; then
+    echo "Cascadia Code NF"
+  elif [[ $font_line == *"victor-mono"* ]]; then
+    echo "VictorMono Nerd Font"
+  elif [[ $font_line == *"hack"* ]]; then
+    echo "Hack Nerd Font"
   else
     echo "Unknown"
   fi

@@ -1,0 +1,10 @@
+# Cascadia Code Nerd Font Configuration
+[font]
+normal = { family = "Cascadia Code NF", style = "Regular" }
+bold = { family = "Cascadia Code NF", style = "Bold" }
+italic = { family = "Cascadia Code NF", style = "Italic" }
+bold_italic = { family = "Cascadia Code NF", style = "Bold Italic" }
+size = 14.0
+offset = { x = 0, y = 0 }
+glyph_offset = { x = 0, y = 0 }
+builtin_box_drawing = true
