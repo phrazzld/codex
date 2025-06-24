@@ -66,11 +66,14 @@ switch_font() {
       ;;
   esac
   
-  # Update the import line in the config file
+  # Update the font import line in the config file (preserve theme imports)
   sed "s|/Users/phaedrus/Development/codex/dotfiles/\.alacritty-font-.*\.toml|$font_import|g" "$config_file" > "$temp_file"
   mv "$temp_file" "$config_file"
   
-  echo "Switched to $font_name font. Restart Alacritty to see changes."
+  # Touch the config file to trigger live reload
+  touch "$config_file"
+  
+  echo "Switched to $font_name font (live reload)."
 }
 
 # Get current font from config

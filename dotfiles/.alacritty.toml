@@ -6,7 +6,7 @@
 [general]
 import = [
     "/Users/phaedrus/Development/alacritty-theme/themes/rose_pine_dawn.toml",
-    "/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-victor-mono.toml"
+    "/Users/phaedrus/Development/codex/dotfiles/.alacritty-font-jetbrains.toml"
 ]
 
 # Terminal emulation
