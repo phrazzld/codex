@@ -209,8 +209,8 @@ apply_theme() {
 
     # Update the import line in alacritty config
     if [[ -f "$ALACRITTY_CONFIG" ]]; then
-        # Use sed to replace the import line
-        sed -i '' "s|\".*\.toml\"|\"$theme_file\"|" "$ALACRITTY_CONFIG"
+        # Use sed to replace only theme imports, preserving font imports
+        sed -i '' "s|\"/Users/phaedrus/Development/alacritty-theme/themes/.*\.toml\"|\"/Users/phaedrus/Development/alacritty-theme/themes/$theme.toml\"|" "$ALACRITTY_CONFIG"
     else
         echo "Error: Alacritty config file not found at $ALACRITTY_CONFIG"
         exit 1
