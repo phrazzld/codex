@@ -1,6 +1,5 @@
 #!/bin/bash
-# tt-common.sh - Robust shared library for all tt-* scripts
-# Eliminates code duplication and provides bulletproof cross-platform functionality
+# tt-common.sh - Shared library for tt-* scripts
 
 set -e
 

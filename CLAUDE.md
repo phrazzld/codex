@@ -1,45 +1,24 @@
 # CLAUDE.md
 
-Repository-specific operational guidance for Claude Code.
+Repository-specific guidance for Claude Code.
 
-## Repository Purpose
-Configuration repository with AI prompt templates, Claude Code slash commands, and productivity tools for software development workflows.
+## Purpose
+Configuration repository with AI templates, slash commands, and productivity tools.
 
-## Build Commands
-* No build process - collection of templates and configuration files
-* No testing or linting commands defined
-
-## Repository-Specific Structure
-* `/claude-commands/` - Custom Claude CLI slash commands (structured workflows)
-* `/docs/` - Development philosophy, prompt templates, professional docs
-* `/dotfiles/` - Shell configurations (.zshrc, .aliases, .env)
-* `/bin/` - Helper utilities (thinktank-wrapper)
-
-## Command Templates
-When creating new slash commands in `/claude-commands/`:
-* Follow existing command structure and format
-* Include clear GOAL, ANALYZE, and EXECUTE sections
-* Reference DEVELOPMENT_PHILOSOPHY.md principles
-* Maintain consistency with workflow patterns
+## Structure
+* `/bin/` - Thinktank scripts and utilities
+* `/docs/` - Development philosophy and templates  
+* `/dotfiles/` - Shell configs (.zshrc, .aliases, .env)
+* `/scripts/` - System maintenance
 
 ## Thinktank Integration
-* Use `thinktank` CLI directly for analysis
-* Pre-configured with model sets and context files
+* Use `thinktank` CLI directly
 * Run: `thinktank --instructions temp_instructions.txt <paths>`
 * API keys configured locally
 
-## Commit Standards
-* NEVER sign commit messages
-* Follow Conventional Commits specification strictly
-* Use meaningful multiline descriptions
-* All commits must pass pre-commit hooks
-
-## Code Standards (when adding code)
-* TypeScript: strict typing, no `any`, immutable patterns, Prettier
+## Standards
+* Conventional commits, multiline descriptions
+* TypeScript: strict typing, no `any`, immutable patterns
 * Go: golangci-lint, gofmt formatting
-* Follow DEVELOPMENT_PHILOSOPHY.md core principles
 * Document "why" not "how"
-
-## Git Hooks
-* Custom hooks in `.githooks/` directory
-* Never bypass with `--no-verify`
+* Never bypass git hooks with `--no-verify`

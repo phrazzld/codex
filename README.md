@@ -1,115 +1,31 @@
 # codex
 
-A comprehensive configuration repository with adaptive configurations, AI prompt templates, and productivity tools that streamline software development workflows.
-
-## Overview
-
-This repository serves as a single source of truth for shell configurations, development standards, AI assistant prompts, and Claude Code slash commands. It establishes consistent practices across development activities.
+Configuration repository with AI prompt templates, Claude Code slash commands, and productivity tools for software development workflows.
 
 ## Features
 
-- **Structured Configuration**
-  - Organized `.zshrc` with clean organization and environment detection
-  - Streamlined `.aliases` for common commands
-  - Comprehensive `.env` file with environment variables
-
-- **AI Tools & Templates**
-  - Claude Code custom slash commands for structured development workflows
-  - Comprehensive prompt templates for AI interactions
-  - Standardized development processes codified in commands
-
-- **Development Standards**
-  - Detailed development philosophy with architecture guidelines
-  - Documented coding standards and shell scripting patterns
-  - Conventional commit formatting and structured git workflows
-  - Comprehensive testing, logging, and security guidelines
+- Shell configs (`.zshrc`, `.aliases`, `.env`)
+- Claude Code slash commands for structured workflows  
+- AI prompt templates and development standards
+- Git hooks and automated quality checks
 
 ## Installation
 
-Clone this repository to your development directory:
-
 ```bash
 git clone https://github.com/phrazzld/codex.git ~/Development/codex
-```
-
-Install configuration files and commands:
-
-```bash
 cd ~/Development/codex
 ./install.sh
 ```
 
-This creates symbolic links from your home directory to the configuration files and sets up Claude Code slash commands.
 
-### Git Hooks
+## Structure
 
-This repository includes custom Git hooks in the `.githooks` directory. After installation, hooks are automatically configured with:
+- `/dotfiles/` - Shell configs (`.zshrc`, `.aliases`, `.env`)
+- `/bin/` - Utilities and thinktank scripts
+- `/docs/` - Development philosophy and templates
+- `/scripts/` - System maintenance and setup
 
-```bash
-git config core.hooksPath .githooks
-```
 
-Current hooks:
-- `post-commit`: Runs `glance ./` asynchronously after each commit and saves output to `.glance-output.md`
-
-If you need to manually set up the hooks after cloning:
-
-```bash
-git config core.hooksPath .githooks
-chmod +x .githooks/*
-```
-
-## Repository Structure
-
-- **Root**: Documentation and installation script
-- **`/dotfiles/`**: Configuration files (`.zshrc`, `.aliases`, `.env`)
-- **`/claude-commands/`**: Structured workflow commands for Claude Code CLI
-- **`/docs/`**: Documentation on development philosophy, best practices, and prompt templates
-  - **`/docs/prompts/`**: Templates that power Claude Code commands
-  - **`/docs/professional/`**: Professional document templates (CV, resume)
-- **`BACKLOG.md`**: Planned enhancements and features
-
-## Claude Code Commands
-
-The repository includes a suite of slash commands for Claude Code that enable structured software development workflows:
-
-- `/audit` - Create security audit documentation for codebases
-- `/breathe` - Promote reflection and mindfulness during development
-- `/chill` - Reduce development stress and maintain perspective
-- `/consult` - Document problems and request architectural assistance
-- `/debug` - Structured approach to diagnosing and fixing bugs
-- `/execute` - Implement tasks from TODO lists with best practices
-- `/extract` - Identify opportunities to create reusable independent modules
-- `/ideate` - Generate and explore creative solution alternatives
-- `/plan` - Create detailed technical plans for backlog items
-- `/prime` - Gather context from key repository files
-- `/push` - Quality assurance steps before committing code
-- `/refactor` - Create structured plans for improving code quality
-- `/resolve` - Troubleshoot and fix specific issues
-- `/review` - Establish code review processes and documentation
-- `/ticket` - Convert plans into prioritized task tickets
-
-## Helper Utilities
-
-The repository includes several helper utilities in the `bin` directory:
-
-- **`thinktank-wrapper`** - A configurable wrapper around the thinktank CLI that:
-  - Centralizes model configuration for predefined model sets
-  - Simplifies finding and including context files (glance.md, DEVELOPMENT_PHILOSOPHY*.md)
-  - Provides consistent command-line flags for common operations
-  - Makes thinktank invocation from scripts and commands more consistent
-
-## Development Philosophy
-
-The repository includes a comprehensive development philosophy document that establishes standards for:
-
-- Core development principles
-- Architecture guidelines
-- Coding standards
-- Testing strategy
-- Logging strategy
-- Security considerations
-- Documentation approach
 
 ## License
 

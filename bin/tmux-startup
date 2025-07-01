@@ -1,15 +1,11 @@
 #!/bin/bash
 
-# Tmux Startup Script for Claude Code workflow
-# Creates one session with multiple windows for different projects
+# Tmux development session startup
 
 SESSION_NAME="dev"
 DEVELOPMENT_ROOT="${DEVELOPMENT:-$HOME/Development}"
 
-# ===== CONFIGURATION =====
-# Define your active projects here. Format: "relative_path:window_name"
-# To add a project: add a new line with "path:name"
-# To remove a project: delete or comment out the line
+# Active projects: "path:window_name"
 declare -a PROJECTS=(
     "adminifi/web:adminifi-web"
     "adminifi/edugakko-api:adminifi-edugakko-api"

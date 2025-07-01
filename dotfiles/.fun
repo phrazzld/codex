@@ -1,21 +1,13 @@
 #!/bin/bash
-# .fun - Collection of useful shell functions
+# .fun - Shell utility functions
 
-
-# Find all development philosophy files in the current directory or any subdirectory
+# Find development philosophy files
 find_philosophy_files() {
-  # Get current directory's absolute path
-  local current_dir="$(pwd)"
-  
-  # Use find with -L option to follow symbolic links
-  find -L "$current_dir" -type f -name "DEVELOPMENT_PHILOSOPHY*.md" | sort
+  find -L "$(pwd)" -type f -name "DEVELOPMENT_PHILOSOPHY*.md" | sort
 }
 
-# Usage examples:
-# philosophy_files=$(find_philosophy_files)
-# thinktank $THINKTANK_HIGH_CONTEXT_MODELS $THINKTANK_SYNTHESIS_MODEL $philosophy_files
 
-# Alacritty Font Switching Functions
+# Font switching for Alacritty
 switch_font() {
   local font_name="${1:-help}"
   local config_file="$HOME/Development/codex/dotfiles/.alacritty.toml"
@@ -65,7 +57,7 @@ switch_font() {
   echo "Switched to $font_name font (live reload)."
 }
 
-# Get current font from config
+# Get current font
 get_current_font() {
   local config_file="$HOME/Development/codex/dotfiles/.alacritty.toml"
   local font_line=$(grep "\.alacritty-font-.*\.toml" "$config_file")
@@ -87,6 +79,6 @@ get_current_font() {
   fi
 }
 
-# Aliases for convenience
+# Convenience aliases
 alias font='switch_font'
 alias fonthelp='switch_font help'

@@ -1,13 +1,12 @@
 #!/bin/bash
 
-# Alacritty Theme Switcher
-# Uses the official alacritty-theme repository
+# Alacritty theme switcher
 # Usage: alacritty-theme [theme-name|list|search|toggle]
 
 THEMES_DIR="/Users/phaedrus/Development/alacritty-theme/themes"
 ALACRITTY_CONFIG="/Users/phaedrus/Development/codex/dotfiles/.alacritty.toml"
 
-# Curated themes for better user experience
+# Curated themes
 CURATED_THEMES=(
     "tokyo_night"
     "tokyo_night_storm"
