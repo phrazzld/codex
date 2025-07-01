@@ -42,5 +42,4 @@ When creating new slash commands in `/claude-commands/`:
 
 ## Git Hooks
 * Custom hooks in `.githooks/` directory
-* `post-commit` runs `glance ./` asynchronously
 * Never bypass with `--no-verify`

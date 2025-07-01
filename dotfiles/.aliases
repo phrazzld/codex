@@ -121,7 +121,6 @@ alias yt='yarn test'
 alias meme="$HOME/Development/random-meme.sh"
 alias vcc="v $HOME/Library/Application\ Support/Claude/claude_desktop_config.json"
 alias gsl='git checkout stable && git pull'
-alias handoff-glance='handoff --ignore-gitignore $(find . -name "glance.md" -type f)'
 
 # Search with ripgrep and open results in Neovim
 # Usage: vrgi search_term - case insensitive search
