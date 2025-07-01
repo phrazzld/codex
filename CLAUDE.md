@@ -23,7 +23,7 @@ When creating new slash commands in `/claude-commands/`:
 * Maintain consistency with workflow patterns
 
 ## Thinktank Integration
-* Use `thinktank-wrapper` from `/bin/` for analysis
+* Use `thinktank` CLI directly for analysis
 * Pre-configured with model sets and context files
 * Run: `thinktank --instructions temp_instructions.txt <paths>`
 * API keys configured locally

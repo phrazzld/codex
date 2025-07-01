@@ -1,83 +1,96 @@
 #!/bin/bash
-set -e
+# tt-align - Philosophy alignment analysis using shared library
 
-# Function to display usage
-usage() {
-    echo "Usage: $0"
-    echo "  Analyzes codebase alignment with development philosophy"
-    echo "  Generates backlog items to improve philosophy compliance"
-    exit 1
-}
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
 
-# Check for help flag
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-fi
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "align" \
+        --output-file "ALIGN_BACKLOG_ITEMS.md" \
+        --description "Analyzes codebase alignment with development philosophy"
 
-# Check if BACKLOG.md exists
-if [ ! -f "BACKLOG.md" ]; then
-    echo "Warning: BACKLOG.md not found. Creating empty backlog file..."
-    echo "# BACKLOG" > BACKLOG.md
-    echo "" >> BACKLOG.md
-fi
-
-echo "Analyzing codebase alignment with development philosophy..."
-
-# Create minimal context file with current backlog
-echo "Creating alignment context file..."
-cat > ALIGN-CONTEXT.md << EOF
-# Philosophy Alignment Context
-
-## Current Backlog
-$(cat BACKLOG.md)
-
-## Request
-Analyze the codebase against our development philosophy and generate backlog items to improve alignment.
-EOF
-
-# Run thinktank analysis
-echo "Running philosophy alignment analysis..."
-thinktank-wrapper --template align --inject ALIGN-CONTEXT.md --include-leyline ./
-
-# Find the most recent synthesis file
-SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
-
-if [ -n "$SYNTHESIS_FILE" ]; then
-    # Copy synthesis to temporary file
-    cp "$SYNTHESIS_FILE" ALIGN_BACKLOG_ITEMS.md
-    echo "Created ALIGN_BACKLOG_ITEMS.md from synthesis output"
-
-    # Show preview of alignment items
-    echo ""
-    echo "Preview of philosophy alignment items:"
-    echo "===================================="
-    head -20 ALIGN_BACKLOG_ITEMS.md
-    echo ""
-    echo "[...truncated for preview]"
-    echo ""
-
-    # Prompt for appending to backlog
-    read -p "Append these alignment items to BACKLOG.md? (y/N): " -n 1 -r
-    echo ""
-
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        # Append with section header
+    # Check for BACKLOG.md and create if missing
+    if [[ ! -f "BACKLOG.md" ]]; then
+        echo "Warning: BACKLOG.md not found. Creating empty backlog file..."
+        echo "# BACKLOG" > BACKLOG.md
         echo "" >> BACKLOG.md
-        echo "## Philosophy Alignment (Generated)" >> BACKLOG.md
-        echo "" >> BACKLOG.md
-        cat ALIGN_BACKLOG_ITEMS.md >> BACKLOG.md
-        echo "Alignment items appended to BACKLOG.md"
-    else
-        echo "Items saved in ALIGN_BACKLOG_ITEMS.md but not appended to BACKLOG.md"
     fi
 
-    # Clean up (but keep the items file for reference)
-    rm -f ALIGN-CONTEXT.md
+    # Read the current backlog content
+    local backlog_content
+    backlog_content=$(cat BACKLOG.md)
 
-    echo ""
-    echo "Philosophy alignment analysis complete!"
-else
-    echo "Warning: Could not find synthesis file from thinktank output"
-    echo "Alignment context saved in ALIGN-CONTEXT.md for manual inspection"
-    exit 1
-fi
+    # Set the template content
+    tt_set_template << 'EOF'
+# Philosophy-Aligned Backlog Item Generation
+
+You are a strategic product thinktank analyzing this codebase against our development philosophy and leyline documents to generate actionable backlog items that will improve alignment.
+
+## Process
+1. Study the development philosophy files and leyline documents thoroughly
+2. Analyze the current backlog to understand existing priorities
+3. Examine the codebase systematically against each principle
+4. Identify specific gaps and generate concrete backlog items
+5. Format backlog items according to the required structure
+
+## Key Areas to Examine
+- **Simplicity**: Unnecessary complexity, overengineering
+- **Modularity**: Component cohesion, clear boundaries
+- **Separation of Concerns**: Business logic vs infrastructure
+- **Testability**: Structure, minimal mocking
+- **Coding Standards**: Language-specific practices
+- **Error Handling**: Consistency, clarity
+- **Dependencies**: Management, minimization, security
+- **Security**: Best practices, data handling
+- **Logging**: Structure, context, correlation IDs
+- **Documentation**: Why vs how, self-documenting code
+- **Configuration**: Externalization, environment handling
+
+## Backlog Item Format
+
+Format each backlog item as follows:
+
+```markdown
+- [ ] [PHILOSOPHY-{PRIORITY}] Clear, actionable title
+  Description: Brief explanation of what needs to be done
+  Principle: Which philosophy principle this addresses
+  Affected: Files/components that need changes  
+  Complexity: [SMALL/MEDIUM/LARGE]
+  Outcome: Expected result after implementation
+```
+
+Where {PRIORITY} is one of: CRITICAL, HIGH, MEDIUM, LOW
+
+## Output Requirements
+
+1. **Produce ONLY formatted backlog items** - no other commentary or analysis
+2. **Group items by priority** level (Critical, High, Medium, Low)
+3. **Ensure each item is:**
+   - Specific and actionable (not vague)
+   - Directly connected to development philosophy and leyline document principles
+   - Realistic in scope (can be completed in 1-3 days of effort)
+   - Focused on one improvement (atomic changes preferred)
+4. **Include a mix of:**
+   - Quick wins (high impact, low effort)
+   - Strategic improvements (may require more effort but align with long-term goals)
+   - Technical debt reduction
+   - Process improvements
+
+Be direct, specific, and actionable. Focus on patterns rather than isolated instances. Balance engineering excellence with practical delivery.
+EOF
+
+    # Set the context with backlog content
+    tt_set_context "## Philosophy Alignment Context
+
+### Current Backlog
+$backlog_content
+
+### Request
+Analyze the codebase against our development philosophy and generate backlog items to improve alignment."
+}
+
+# Main execution
+tt_main "$@"
+tt_run

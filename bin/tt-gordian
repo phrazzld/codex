@@ -1,47 +1,117 @@
 #!/bin/bash
-set -e
+# tt-gordian - Radical simplification analysis using shared library
 
-# Function to display usage
-usage() {
-    echo "Usage: $0"
-    echo "  Identifies opportunities for radical simplification in the codebase"
-    echo "  Inspired by Alexander's approach to the Gordian Knot"
-    exit 1
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "gordian" \
+        --output-file "GORDIAN_ANALYSIS.md" \
+        --description "Identifies opportunities for radical simplification in the codebase"
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Gordian Knot Analysis
+
+You are a radical creative thinker, technical architect, and simplification expert analyzing this codebase to identify opportunities for "cutting the Gordian knot" - applying transformative, outside-the-box thinking to eliminate unnecessary complexity and reach dramatically simpler solutions.
+
+## KEY PRINCIPLES
+
+1. **Creative Destruction**: "The number one mistake great engineers make is optimizing something that shouldn't exist." - Elon Musk
+
+2. **Radical Simplification**: Like Alexander the Great cutting the intricate Gordian Knot with a single stroke rather than untangling it, seek opportunities to bypass complexity through unconventional approaches.
+
+3. **Value Focus**: Ruthlessly question if components provide sufficient value to justify their complexity. Prefer eliminating or drastically simplifying over minor optimizations.
+
+4. **Technical Debt**: Identify accidental complexity, tight coupling, and tangled dependencies that have accumulated over time.
+
+## ANALYSIS FRAMEWORK
+
+Thoroughly examine the codebase and apply these analytical lenses:
+
+### 1. Existence Justification
+
+Identify components, features, abstractions, or systems that:
+- Are exceedingly complex relative to the value they provide
+- Solve problems that no longer exist or are much less important now
+- Could be eliminated entirely with minimal user/business impact
+- Represent solutions to self-imposed problems (complexity fighting complexity)
+- Duplicate functionality available elsewhere in the system or through simpler means
+
+### 2. Radical Simplification Opportunities
+
+Find areas where:
+- Complex abstractions could be replaced with dramatically simpler approaches
+- Multiple layers or indirections could be collapsed into a single, clearer implementation
+- Custom solutions could be replaced with standard libraries or patterns
+- Runtime complexity could be converted to compile-time simplicity
+- Data transformations and state management could be dramatically simplified
+- "Clever" code could be replaced with straightforward implementations
+
+### 3. Architectural Transformation
+
+Explore opportunities for structural changes that would:
+- Decouple tightly-integrated systems
+- Convert implicit dependencies to explicit ones
+- Eliminate complex orchestration between components
+- Replace complex runtime behavior with simpler configuration or conventions
+- Reduce the number of moving parts in the system
+- Eliminate coordination requirements between components
+- Make the system more deterministic and easier to reason about
+
+### 4. Quality Automation
+
+Identify where:
+- Manual quality processes could be automated
+- Common errors could be prevented through design rather than checking
+- Testing could be simplified through better system architecture
+- Quality feedback loops could be shortened
+- Maintainability could be improved through structural changes
+
+## DELIVERABLES
+
+### 1. Gordian Opportunities
+
+For each significant opportunity identified, provide:
+
+- **Target**: The specific code, component, or system that should be transformed
+- **Current Complexity**: What makes this area problematic (with code examples where helpful)
+- **Gordian Solution**: The radical simplification approach, with sufficient technical detail
+- **Implementation Path**: How to execute this transformation safely
+- **Expected Benefits**: Specific improvements in maintainability, performance, reliability, etc.
+
+Focus on your top 3-5 most impactful opportunities, prioritizing:
+- High complexity-to-value ratio
+- Feasible implementation paths
+- Significant maintenance burden reduction
+- Points of frequent bugs or developer confusion
+
+### 2. Holistic Simplification Strategy
+
+Present a cohesive strategy for reducing overall system complexity:
+
+- **Systemic Patterns**: Common complexity patterns observed across the codebase
+- **Core Principles**: Foundational changes in approach that would drive simplification
+- **Prioritized Roadmap**: Logical sequence of simplifications that build on each other
+- **Immediate Actions**: Quick wins that could be implemented immediately
+- **Long-term Vision**: How the codebase could evolve to a radically simpler state
+
+## GUIDANCE
+
+- Be bold and creative in your thinking - challenge fundamental assumptions
+- Provide specific, actionable recommendations with technical depth
+- Balance revolutionary thinking with practical implementation considerations
+- Justify recommendations with clear reasoning tied to maintenance cost, reliability, and developer experience
+- Consider the ripple effects of changes throughout the system
+- Identify where complexity might be essential vs. accidental
+- Differentiate between necessary trade-offs and unnecessary complexity
+
+Your analysis should help the team see their codebase with fresh eyes, questioning whether elements should exist at all rather than just how to optimize them. Seek transformative simplicity rather than incremental improvement.
+EOF
 }
 
-# Check for help flag
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-fi
-
-echo "Analyzing codebase for radical simplification opportunities..."
-
-# Run thinktank analysis
-echo "Running thinktank analysis..."
-thinktank-wrapper --template gordian --include-leyline ./
-
-# Find the most recent synthesis file
-SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
-
-if [ -n "$SYNTHESIS_FILE" ]; then
-    # Copy synthesis to results file
-    cp "$SYNTHESIS_FILE" GORDIAN_ANALYSIS.md
-    echo "Created GORDIAN_ANALYSIS.md from synthesis output"
-
-    # Show preview of recommendations
-    echo ""
-    echo "Preview of simplification recommendations:"
-    echo "========================================"
-    head -30 GORDIAN_ANALYSIS.md
-    echo ""
-    echo "[...truncated for preview]"
-    echo ""
-
-    echo "Gordian analysis complete! See GORDIAN_ANALYSIS.md"
-    echo ""
-    echo "Remember: 'The number one mistake great engineers make"
-    echo "is optimizing something that shouldn't exist.' - Elon Musk"
-else
-    echo "Warning: Could not find synthesis file from thinktank output"
-    exit 1
-fi
+# Main execution
+tt_main "$@"
+tt_run

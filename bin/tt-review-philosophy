@@ -1,20 +1,14 @@
 #!/bin/bash
-set -e
+# tt-review-philosophy - Philosophy-focused code review using shared library
 
-# Function to display usage
-usage() {
-    echo "Usage: $0 [base_branch]"
-    echo "  base_branch: Branch to compare against (default: auto-detected main/master)"
-    echo ""
-    echo "Performs philosophy-alignment code review (standards, patterns) -> CODE_REVIEW_PHILOSOPHY.md"
-    exit 1
-}
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
 
 # Function to detect default branch
 get_default_branch() {
     local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
 
-    if [ -n "$default_branch" ]; then
+    if [[ -n "$default_branch" ]]; then
         echo "$default_branch"
         return
     fi
@@ -32,73 +26,190 @@ get_default_branch() {
     fi
 }
 
-# Parse arguments
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-elif [ -n "$1" ]; then
-    BASE_BRANCH="$1"
-else
-    BASE_BRANCH=$(get_default_branch)
-fi
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-philosophy" \
+        --output-file "CODE_REVIEW_PHILOSOPHY.md" \
+        --description "Performs philosophy-alignment code review (standards, patterns)"
 
-# Get current branch name
-CURRENT_BRANCH=$(git branch --show-current)
-
-if [ -z "$CURRENT_BRANCH" ]; then
-    echo "Error: Not on a branch"
-    exit 1
-fi
-
-# Get list of changed files
-CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH" || true)
-
-if [ -z "$CHANGED_FILES" ]; then
-    echo "No changes detected between $CURRENT_BRANCH and $BASE_BRANCH"
-    exit 0
-fi
-
-FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
-
-echo "Generating philosophy-alignment code review for $FILE_COUNT files..."
-
-# Update glance files first (may take several minutes for large codebases)
-if [ "$SKIP_GLANCE_UPDATE" != "1" ]; then
-    echo "Updating glance context files (this may take up to 10+ minutes for large codebases)..."
-    if glance ./ >/dev/null 2>&1; then
-        echo "✓ Glance context files updated successfully"
-    else
-        echo "⚠ Warning: Failed to update glance files, proceeding with existing context"
+    # Parse arguments for base branch (handle manually since we need base_branch logic)
+    local base_branch=""
+    local remaining_args=()
+    
+    # Simple argument parsing for this script
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
     fi
-fi
 
-# Create context file
-cat > REVIEW-CONTEXT.md << EOF
-# Code Review Context
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
 
-## PR Details
-Branch: $CURRENT_BRANCH
-Files Changed: $FILE_COUNT
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
 
-## Diff
-$(git diff "$BASE_BRANCH")
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating philosophy-alignment code review for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Philosophy-Alignment Code Review Instructions
+
+You are performing a **philosophy-alignment code review**. Your purpose is to evaluate how well the changes in this diff align with our development philosophy, leyline documents, and coding standards.
+
+**CRITICAL CONSTRAINT**: Focus primarily on the changed code, but you may consider how changes fit with existing patterns. Do NOT review functional bugs (handled by separate diff review).
+
+## Philosophy Standards to Evaluate Against
+
+Based on `DEVELOPMENT_PHILOSOPHY.md` and leyline documents:
+
+1. **Simplicity & Modularity**
+   - Are changes appropriately simple?
+   - Do they introduce unnecessary complexity?
+   - Are abstractions justified and clean?
+
+2. **Testability**
+   - Are changes designed for easy testing?
+   - Do they avoid tight coupling that makes testing hard?
+   - Are internal collaborators properly structured?
+
+3. **Explicitness & Maintainability**
+   - Are dependencies and contracts explicit?
+   - Is the code self-documenting and clear?
+   - Would other developers easily understand this?
+
+4. **Standards Compliance**
+   - Consistent naming conventions
+   - Proper error handling patterns
+   - Appropriate logging practices
+   - Security best practices
+
+## Review Process
+
+1. **Evaluate Changed Code Against Philosophy**
+   - Focus on the `+` and modified lines in the diff
+   - Consider how changes fit with existing codebase patterns
+   - Look for philosophy violations or missed opportunities
+
+2. **Identify Alignment Issues**
+   For each philosophy violation in the **changed code**:
+   - **Describe** the violation clearly
+   - **Reference** the specific philosophy principle
+   - **Explain** why this matters for maintainability
+   - **Propose** a philosophy-aligned alternative
+   - **Cite** the exact changed lines
+   - **Assign severity**:
+     - `high` – significant philosophy violation that will cause problems
+     - `medium` – notable deviation from best practices
+     - `low` – minor style or pattern inconsistency
+
+3. **Focus Areas for Philosophy Review**
+   - Over-engineering or premature optimization
+   - Under-engineering or overly simplistic approaches
+   - Inconsistent patterns with existing codebase
+   - Poor separation of concerns
+   - Unclear or misleading naming
+   - Missing documentation for public interfaces
+   - Violation of established architectural patterns
+   - Non-idiomatic code for the language/framework
+
+## Output Format
+
+```
+# Philosophy-Alignment Code Review
+
+## SIGNIFICANT VIOLATIONS
+[Major deviations from development philosophy and leyline documents]
+
+### [Issue Title] - HIGH
+- **Changed Lines**: [specific + lines from diff]
+- **Philosophy Violation**: [which principle is violated]
+- **Impact**: [why this matters for maintainability/quality]
+- **Recommended Approach**: [philosophy-aligned alternative]
+
+## NOTABLE DEVIATIONS
+[Medium-priority philosophy alignment issues]
+
+### [Issue Title] - MEDIUM
+- **Changed Lines**: [specific + lines from diff]
+- **Philosophy Deviation**: [what doesn't align]
+- **Impact**: [potential long-term issues]
+- **Improvement**: [suggested enhancement]
+
+## MINOR IMPROVEMENTS
+[Small opportunities to better align with philosophy]
+
+### [Issue Title] - LOW
+- **Changed Lines**: [specific + lines from diff]
+- **Opportunity**: [how to better align]
+- **Benefit**: [why this would help]
+
+## POSITIVE OBSERVATIONS
+[Changes that exemplify good philosophy alignment]
+
+### [What was done well]
+- **Changed Lines**: [specific + lines from diff]
+- **Philosophy Strength**: [which principle is well demonstrated]
+- **Value**: [why this is a good example]
+
+## SUMMARY
+Philosophy alignment assessment: [Overall evaluation]
+Key areas for improvement: [Top 2-3 recommendations]
+```
+
+**Remember**: Focus on philosophy, patterns, and maintainability. Functional bugs are handled by the separate diff review.
 EOF
 
-# Run philosophy-alignment review
-echo "Analyzing changes for philosophy alignment..."
-thinktank-wrapper --template review-philosophy --inject REVIEW-CONTEXT.md --include-leyline ./
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
 
-# Find the most recent synthesis file
-SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
 
-if [ -n "$SYNTHESIS_FILE" ]; then
-    cp "$SYNTHESIS_FILE" CODE_REVIEW_PHILOSOPHY.md
-    echo "✓ Created CODE_REVIEW_PHILOSOPHY.md (philosophy alignment)"
-    rm -f REVIEW-CONTEXT.md
-    echo ""
-    echo "Philosophy-alignment code review complete!"
-    echo "📐 Philosophy alignment: CODE_REVIEW_PHILOSOPHY.md"
-else
-    echo "Warning: Could not find synthesis file for philosophy review"
-    echo "Review context saved in REVIEW-CONTEXT.md for manual inspection"
-    exit 1
-fi
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

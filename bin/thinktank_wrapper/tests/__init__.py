@@ -1,1 +1,0 @@
-"""Tests for thinktank_wrapper package."""

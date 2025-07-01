@@ -1,59 +1,55 @@
 #!/bin/bash
-set -e
+# tt-security - Security audit using shared library
 
-# Function to display usage
-usage() {
-    echo "Usage: $0"
-    echo "  Performs a security audit and generates backlog items for remediation"
-    exit 1
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "security" \
+        --output-file "SECURITY_BACKLOG_ITEMS.md" \
+        --description "Performs a security audit and generates backlog items for remediation"
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Security Audit Instructions
+
+You are an expert AI security auditor. Your goal is to perform a thorough security review of the provided codebase and generate actionable backlog items for security remediation.
+
+## Methodology & Instructions
+
+1. **Systematic Review:** Employ techniques like keyword searches for dangerous functions, data flow analysis (especially for external inputs), component reviews (auth, session, input validation, crypto, errors, dependencies, config), and pattern recognition (OWASP Top 10, hardcoded secrets, injection flaws, XSS).
+
+2. **Deep Dive Analysis:** For potential findings, analyze the code deeply to confirm vulnerabilities, assess potential impact (data exposure, unauthorized access, DoS), and estimate severity (Critical, High, Medium, Low).
+
+3. **Generate Backlog Items:** Create security remediation tasks as backlog items following this format:
+   ```
+   - [ ] [SECURITY-CRITICAL/HIGH/MEDIUM/LOW] Brief title of the security issue
+     Vulnerability: Clear description of the security issue
+     Location: file_path:line_number where the issue exists
+     Impact: Brief impact assessment and potential consequences
+     Fix: Specific remediation steps or secure pattern to implement
+   ```
+
+## Output Requirements
+
+Generate a prioritized list of security backlog items ready to be appended to BACKLOG.md. Items should be:
+- Grouped by severity (CRITICAL first, then HIGH, MEDIUM, LOW)
+- Actionable and specific with clear remediation steps
+- Include file locations for quick navigation
+- Focus on real vulnerabilities, not theoretical risks
+
+Start with an executive summary section:
+```
+## Security Audit Summary
+[Date]: Found X critical, Y high, Z medium severity issues requiring remediation
+```
+
+Then list all security findings as properly formatted backlog items.
+EOF
 }
 
-# Check for help flag
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-fi
-
-echo "Performing security audit of codebase..."
-
-# Run thinktank security analysis
-echo "Running security analysis..."
-thinktank-wrapper --template audit --include-leyline ./
-
-# Find the most recent synthesis file
-SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
-
-if [ -n "$SYNTHESIS_FILE" ]; then
-    # Copy synthesis to temporary file
-    cp "$SYNTHESIS_FILE" SECURITY_BACKLOG_ITEMS.md
-    echo "Created SECURITY_BACKLOG_ITEMS.md from synthesis output"
-    
-    # Show preview of security findings
-    echo ""
-    echo "Preview of security findings:"
-    echo "==========================="
-    head -20 SECURITY_BACKLOG_ITEMS.md
-    echo ""
-    echo "[...truncated for preview]"
-    echo ""
-    
-    # Prompt for appending to backlog
-    read -p "Append these security items to BACKLOG.md? (y/N): " -n 1 -r
-    echo ""
-    
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        # Append with section header
-        echo "" >> BACKLOG.md
-        echo "## Security Remediation (Generated)" >> BACKLOG.md
-        echo "" >> BACKLOG.md
-        cat SECURITY_BACKLOG_ITEMS.md >> BACKLOG.md
-        echo "Security items appended to BACKLOG.md"
-    else
-        echo "Items saved in SECURITY_BACKLOG_ITEMS.md but not appended to BACKLOG.md"
-    fi
-    
-    echo ""
-    echo "Security audit complete!"
-else
-    echo "Warning: Could not find synthesis file from thinktank output"
-    exit 1
-fi
+# Main execution
+tt_main "$@"
+tt_run

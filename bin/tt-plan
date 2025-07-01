@@ -1,57 +1,119 @@
 #!/bin/bash
-set -e
+# tt-plan - Implementation planning using shared library
 
-# Function to display usage
-usage() {
-    echo "Usage: $0"
-    echo "  Generates a detailed implementation plan from PLAN-CONTEXT.md"
-    echo "  Assumes PLAN-CONTEXT.md already exists with task details"
-    exit 1
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "plan" \
+        --output-file "PLAN.md" \
+        --description "Generates a detailed implementation plan from PLAN-CONTEXT.md" \
+        --requires-input-file "PLAN-CONTEXT.md"
+
+    # Read the context file
+    local context_content
+    context_content=$(cat PLAN-CONTEXT.md)
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Ruthless Task‑Planning Prompt
+
+You are the senior thinktank in charge of writing the **single source‑of‑truth plan** for the scoped task. Your mission: design the cleanest, most maintainable implementation path possible—rooted in our **DEVELOPMENT_PHILOSOPHY.md** and **leyline documents**—and expose every technical decision, risk, and trade‑off in writing. No timelines, no stakeholder fluff, just hard engineering detail.
+
+Keep the program's purpose in mind throughout planning. Strive for the highest quality, maintainable, extensible, readable codebase possible while avoiding overengineering. Balance engineering excellence with practical delivery. The ideal plan delivers real value without unnecessary complexity.
+
+## 1 Collect Context
+- Read the task description + any linked specs.
+- Internalize every relevant rule in **DEVELOPMENT_PHILOSOPHY.md** and **leyline documents** (simplicity, modularity, separation, testability, coding standards, security, docs, logging).
+
+## 2 Draft Candidate Approaches
+For each **distinct** technical approach you can justify:
+
+1. **Summary** – one‑sentence gist.
+2. **Step List** – numbered build steps (5‑15 bullets max).
+3. **Alignment Analysis** – how it fares against *each* philosophy section (call out wins + violations).
+4. **Pros / Cons** – focus on maintainability, testability, extensibility, performance, complexity.
+5. **Risks & Mitigations** – tag every risk `critical / high / medium / low`.
+
+> If two approaches are 90 % identical, collapse them.
+
+## 3 Pick the Winner
+Choose the approach that best satisfies the philosophy hierarchy:
+
+1. Simplicity (avoiding overengineering)
+2. Modularity + strict separation
+3. Testability (minimal mocking)
+4. Coding standards
+5. Documentation approach
+
+Justify selection in ≤ 5 bullet points, citing explicit trade‑offs. Always favor approaches that deliver practical value without unnecessary complexity while maintaining high quality.
+
+## 4 Expand into the Definitive Plan
+Produce a **plan.md** containing these sections:
+
+```
+# Plan Title (Task Name)
+
+## Chosen Approach (One‑liner)
+
+## Architecture Blueprint
+- **Modules / Packages**
+  - Name → single responsibility
+- **Public Interfaces / Contracts**
+  - Signature sketches or type aliases
+- **Data Flow Diagram** (ascii or mermaid)
+- **Error & Edge‑Case Strategy**
+
+## Detailed Build Steps
+1. Step
+2. Step
+…
+n. Step
+(Precise enough to turn straight into a todo list)
+
+## Testing Strategy
+- Test layers (unit / integration / e2e)
+- What to mock (only true externals!) and why
+- Coverage targets & edge‑case notes
+
+## Logging & Observability
+- Log events + structured fields per action
+- Correlation ID propagation
+
+## Security & Config
+- Input validation hotspots
+- Secrets handling
+- Least‑privilege notes
+
+## Documentation
+- Code self‑doc patterns
+- Any required readme or openapi updates
+
+## Risk Matrix
+
+| Risk | Severity | Mitigation |
+|------|----------|------------|
+| …    | critical | …          |
+| …    | medium   | …          |
+
+## Open Questions
+- Itemize anything blocking execution
+```
+
+## 5 Output Requirements
+- Return **only** the finished `plan.md` content—no extra chatter.
+- Ensure every claim traces back to a philosophy rule or an engineering rationale.
+- Brutality over politeness: call out weak spots loudly.
+EOF
+
+    # Set the context from the PLAN-CONTEXT.md file
+    tt_set_context "## Task Context
+
+$context_content"
 }
 
-# Check for help flag
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-fi
-
-# Step 1: Verify Context File
-if [ ! -f "PLAN-CONTEXT.md" ]; then
-    echo "Error: PLAN-CONTEXT.md not found"
-    echo "Please create PLAN-CONTEXT.md with task details"
-    exit 1
-fi
-
-echo "Found PLAN-CONTEXT.md, generating implementation plan..."
-
-# Step 2: Generate Plan with Thinktank
-echo "Running thinktank analysis with dynamic model selection..."
-thinktank-wrapper --template plan --inject PLAN-CONTEXT.md --include-leyline ./
-
-# Find the most recent synthesis file
-SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
-
-if [ -n "$SYNTHESIS_FILE" ]; then
-    cp "$SYNTHESIS_FILE" PLAN.md
-    echo "Created PLAN.md from synthesis output"
-    
-    # Show preview of the plan
-    echo ""
-    echo "Preview of generated plan:"
-    echo "========================="
-    head -30 PLAN.md
-    echo ""
-    echo "[...truncated for preview]"
-    echo ""
-    
-    # Remind about branch creation
-    echo "Plan generation complete! See PLAN.md"
-    echo ""
-    echo "Next steps:"
-    echo "1. Review the generated PLAN.md"
-    echo "2. Create a branch for implementation:"
-    echo "   git checkout -b feature/[task-name]"
-else
-    echo "Warning: Could not find synthesis file from thinktank output"
-    echo "Plan context remains in PLAN-CONTEXT.md for manual inspection"
-    exit 1
-fi
+# Main execution
+tt_main "$@"
+tt_run

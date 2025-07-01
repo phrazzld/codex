@@ -1,59 +1,68 @@
 #!/bin/bash
-set -e
+# tt-ideate - Innovation ideation using shared library
 
-# Function to display usage
-usage() {
-    echo "Usage: $0"
-    echo "  Analyzes codebase to generate innovative ideas for the backlog"
-    exit 1
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "ideate" \
+        --output-file "IDEATE_BACKLOG_ITEMS.md" \
+        --description "Analyzes codebase to generate innovative ideas for the backlog"
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Ideation Instructions
+
+You are a Senior AI Software Thinktank and Creative Technologist responsible for expanding project vision. Your goal is to analyze the codebase and generate innovative, technically sound ideas formatted as backlog items.
+
+## Instructions
+
+1. **Analyze Codebase Context:**
+   * Consider the repository structure, technologies, and architectural patterns
+   * Identify areas with potential for enhancement, expansion, or innovation
+   * Look for opportunities to apply emerging technologies or methodologies
+   * Review existing documentation, development philosophy, and leyline documents
+
+2. **Generate Ideas as Backlog Items:**
+   * Propose 5-10 innovative backlog items that could significantly advance the project
+   * Format each as a concise backlog entry following this structure:
+     ```
+     - [ ] [CATEGORY] Title of the idea
+       Brief 1-2 sentence description of what this involves.
+       Impact: [HIGH/MEDIUM/LOW] - Why this matters
+       Effort: [SMALL/MEDIUM/LARGE] - Rough implementation complexity
+     ```
+
+3. **Focus Areas:**
+   * Developer Experience improvements
+   * Architecture enhancements
+   * Performance optimizations
+   * New feature opportunities
+   * Technical debt reduction
+   * Automation and tooling
+   * Integration possibilities
+   * Documentation and testing improvements
+
+4. **Balance Innovation with Practicality:**
+   * Keep the program's purpose in mind
+   * Strive for high quality, maintainable solutions
+   * Avoid overengineering
+   * Consider both transformative ideas and quick wins
+
+## Output
+
+Generate a formatted list of backlog items ready to be appended to BACKLOG.md. Each item should be:
+- Actionable and specific
+- Clearly categorized (e.g., [FEATURE], [TECH-DEBT], [TOOLING], [ARCHITECTURE])
+- Sized with impact and effort estimates
+- Aligned with the project's development philosophy and leyline documents
+
+Group related items together and prioritize by impact vs effort ratio.
+EOF
 }
 
-# Check for help flag
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-fi
-
-echo "Generating innovative ideas for project backlog..."
-
-# No context file needed - just run directly against the codebase
-echo "Running thinktank analysis..."
-thinktank-wrapper --template ideate --include-leyline ./
-
-# Find the most recent synthesis file
-SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
-
-if [ -n "$SYNTHESIS_FILE" ]; then
-    # Copy synthesis to temporary file
-    cp "$SYNTHESIS_FILE" IDEATE_BACKLOG_ITEMS.md
-    echo "Created IDEATE_BACKLOG_ITEMS.md from synthesis output"
-    
-    # Show preview of new items
-    echo ""
-    echo "Preview of generated ideas:"
-    echo "==========================="
-    head -20 IDEATE_BACKLOG_ITEMS.md
-    echo ""
-    echo "[...truncated for preview]"
-    echo ""
-    
-    # Prompt for appending to backlog
-    read -p "Append these ideas to BACKLOG.md? (y/N): " -n 1 -r
-    echo ""
-    
-    if [[ $REPLY =~ ^[Yy]$ ]]; then
-        # Append with section header
-        echo "" >> BACKLOG.md
-        echo "## Innovative Ideas (Generated)" >> BACKLOG.md
-        echo "" >> BACKLOG.md
-        cat IDEATE_BACKLOG_ITEMS.md >> BACKLOG.md
-        echo "Ideas appended to BACKLOG.md"
-    else
-        echo "Ideas saved in IDEATE_BACKLOG_ITEMS.md but not appended to BACKLOG.md"
-    fi
-    
-    echo ""
-    echo "Ideation complete!"
-else
-    echo "Warning: Could not find synthesis file from thinktank output"
-    exit 1
-fi
+# Main execution
+tt_main "$@"
+tt_run

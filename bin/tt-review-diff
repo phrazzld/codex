@@ -1,20 +1,14 @@
 #!/bin/bash
-set -e
+# tt-review-diff - Diff-focused code review using shared library
 
-# Function to display usage
-usage() {
-    echo "Usage: $0 [base_branch]"
-    echo "  base_branch: Branch to compare against (default: auto-detected main/master)"
-    echo ""
-    echo "Performs diff-focused code review (bugs, functional issues) -> CODE_REVIEW_DIFF.md"
-    exit 1
-}
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
 
 # Function to detect default branch
 get_default_branch() {
     local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
 
-    if [ -n "$default_branch" ]; then
+    if [[ -n "$default_branch" ]]; then
         echo "$default_branch"
         return
     fi
@@ -32,76 +26,179 @@ get_default_branch() {
     fi
 }
 
-# Parse arguments
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-elif [ -n "$1" ]; then
-    BASE_BRANCH="$1"
-else
-    BASE_BRANCH=$(get_default_branch)
-fi
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-diff" \
+        --output-file "CODE_REVIEW_DIFF.md" \
+        --description "Performs diff-focused code review (bugs, functional issues)"
 
-# Get current branch name
-CURRENT_BRANCH=$(git branch --show-current)
+    # Parse arguments for base branch (handle manually since we need base_branch logic)
+    local base_branch=""
+    local remaining_args=()
+    
+    # Simple argument parsing for this script
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
+    fi
 
-if [ -z "$CURRENT_BRANCH" ]; then
-    echo "Error: Not on a branch"
-    exit 1
-fi
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
 
-# Get list of changed files
-CHANGED_FILES=$(git diff --name-only "$BASE_BRANCH" 2>/dev/null | while read -r file; do [ -f "$file" ] && echo "$file"; done || true)
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
 
-if [ -z "$CHANGED_FILES" ]; then
-    echo "No changes detected between $CURRENT_BRANCH and $BASE_BRANCH"
-    exit 0
-fi
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
 
-FILE_COUNT=$(echo "$CHANGED_FILES" | wc -l | tr -d ' ')
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
 
-echo "Generating diff-focused code review for $FILE_COUNT files..."
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
 
-# Update glance files first (may take several minutes for large codebases)
-# if [ "$SKIP_GLANCE_UPDATE" != "1" ]; then
-#     echo "Updating glance context files (this may take up to 10+ minutes for large codebases)..."
-#     if glance ./ >/dev/null 2>&1; then
-#         echo "✓ Glance context files updated successfully"
-#     else
-#         echo "⚠ Warning: Failed to update glance files, proceeding with existing context"
-#     fi
-# fi
+    echo "Generating diff-focused code review for $file_count files..."
 
-# Create context file
-cat > REVIEW-CONTEXT.md << EOF
-# Code Review Context
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
 
-## PR Details
-Branch: $CURRENT_BRANCH
-Files Changed: $FILE_COUNT
+    # Set the template content
+    tt_set_template << 'EOF'
+# Diff-Focused Code Review Instructions
 
-## Diff
-$(git diff "$BASE_BRANCH")
+You are performing a **diff-focused code review**. Your sole purpose is to identify **functional issues, bugs, and critical problems** in the actual changes shown in the diff. 
+
+**CRITICAL CONSTRAINT**: Review ONLY the lines that were changed (added, modified, or removed) in the diff. Do NOT review unchanged code or the broader codebase state.
+
+## Scope: What to Review
+
+**IN SCOPE - Review these aggressively:**
+- Logic errors in changed lines
+- Security vulnerabilities introduced by changes
+- Bugs or potential crashes in new/modified code
+- Incorrect implementations of intended functionality
+- Resource leaks or performance issues in changes
+- Type errors or syntax issues
+- Missing error handling in new code paths
+- Race conditions or concurrency issues introduced
+
+**OUT OF SCOPE - Do NOT review:**
+- Pre-existing code that wasn't changed
+- Overall codebase architecture (unless directly impacted by changes)
+- Development philosophy compliance (handled by separate review)
+- Style/formatting issues (unless they create bugs)
+- Existing technical debt in unchanged code
+
+## Review Process
+
+1. **Examine Each Changed Line**
+   - Focus on the `+` and modified lines in the diff
+   - Consider the immediate context but don't review unchanged surrounding code
+   - Look for functional correctness issues
+
+2. **Identify Critical Issues**
+   For each problem found in the **changed code only**:
+   - **Describe** the functional issue clearly
+   - **Explain** why it could cause bugs or problems
+   - **Propose** a specific fix
+   - **Cite** the exact changed lines (use + line numbers from diff)
+   - **Assign severity**:
+     - `blocker` – will cause crashes, security holes, or data loss
+     - `high` – likely to cause bugs or significant problems
+     - `medium` – potential issues that should be addressed
+     - `low` – minor concerns that could cause issues
+
+3. **Focus Areas for Changed Code**
+   - Null pointer dereferences
+   - Array bounds violations
+   - SQL injection or XSS vulnerabilities
+   - Authentication/authorization bypasses
+   - Incorrect API usage
+   - Memory leaks or resource exhaustion
+   - Deadlocks or race conditions
+   - Incorrect error handling
+
+## Output Format
+
+```
+# Diff-Focused Code Review
+
+## BLOCKING ISSUES
+[Issues that will cause crashes or security problems]
+
+### [Issue Title] - BLOCKER
+- **Changed Lines**: [specific + lines from diff]
+- **Problem**: [what will go wrong]
+- **Impact**: [crashes, security risk, data loss, etc.]
+- **Fix**: [specific code change needed]
+
+## LIKELY BUGS
+[Issues that will probably cause problems]
+
+### [Issue Title] - HIGH
+- **Changed Lines**: [specific + lines from diff]
+- **Problem**: [what could go wrong]
+- **Impact**: [functional impact]
+- **Fix**: [specific code change needed]
+
+## POTENTIAL ISSUES
+[Changes that might cause problems]
+
+### [Issue Title] - MEDIUM
+...
+
+## MINOR CONCERNS
+[Small issues in changed code]
+
+### [Issue Title] - LOW
+...
+
+## SUMMARY
+Total issues found: [X blocking, Y high, Z medium, W low]
+```
+
+**Remember**: Only review the actual changes in the diff. Ignore pre-existing code quality issues.
 EOF
 
-# Convert newline-separated files to space-separated for command
-FILES_ARGS=$(echo "$CHANGED_FILES" | tr '\n' ' ')
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
 
-# Run diff-focused review
-echo "Analyzing diff for bugs and functional issues..."
-thinktank-wrapper --template review-diff --inject REVIEW-CONTEXT.md --include-leyline $FILES_ARGS
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
 
-# Find the most recent synthesis file
-SYNTHESIS_FILE=$(find . -name "*synthesis.md" -newermt '1 minute ago' 2>/dev/null | head -1)
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
 
-if [ -n "$SYNTHESIS_FILE" ]; then
-    cp "$SYNTHESIS_FILE" CODE_REVIEW_DIFF.md
-    echo "✓ Created CODE_REVIEW_DIFF.md (functional issues)"
-    rm -f REVIEW-CONTEXT.md
-    echo ""
-    echo "Diff-focused code review complete!"
-    echo "📋 Functional issues: CODE_REVIEW_DIFF.md"
-else
-    echo "Warning: Could not find synthesis file for diff review"
-    echo "Review context saved in REVIEW-CONTEXT.md for manual inspection"
-    exit 1
-fi
+# Main execution
+tt_main "$@"
+tt_run
