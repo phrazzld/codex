@@ -29,3 +29,4 @@ bin/thinktank-venv/
 **/build/
 
 logs/
+.vercel

@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "use \`gemini --prompt\` instead of search commands!" >&2
+exit 2

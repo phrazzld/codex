@@ -1,7 +1,11 @@
 #!/bin/bash
-# .fun - Shell utility functions
+# ===================================================================
+# SHELL UTILITY FUNCTIONS
+# Collection of useful functions for development and system management
+# ===================================================================
 
-# Find development philosophy files
+# --- PROJECT DISCOVERY ---
+# Find development philosophy files in current directory tree
 find_philosophy_files() {
   find -L "$(pwd)" -type f -name "DEVELOPMENT_PHILOSOPHY*.md" | sort
 }

@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "use ast-grep or rg instead of grep!" >&2
+exit 2

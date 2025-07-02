@@ -104,6 +104,7 @@ alias xit="exit"
 alias vimv="$HOME/Development/vimv"
 alias ts="todo-stats"
 alias python="python3"
+alias prd="pnpm run dev"
 
 alias l="eza --long --all --git --icons --group-directories-first --color=never"
 alias ls="eza --icons --group-directories-first --color=never"
