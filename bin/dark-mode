@@ -21,3 +21,11 @@ else
     echo "✗ Failed to switch to dark mode"
     exit 1
 fi
+
+# Update Claude config to match
+claude config set theme dark
+if [[ $? -eq 0 ]]; then
+    echo "✓ Updated Claude theme to dark"
+else
+    echo "✗ Failed to update Claude theme"
+fi
