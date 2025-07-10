@@ -11,6 +11,7 @@ alias decompress='tar xzf'
 alias f='fzf --bind "enter:execute(nvim {})"'
 alias c='claude'
 alias e='node $DEVELOPMENT/elevator/dist/cli.js'
+alias cub='ccusage blocks --live'
 
 # Git aliases
 alias g='git'
@@ -43,6 +44,7 @@ alias goverview='echo "🔭 Repository Overview"; echo "────────
 alias gbranch-age='echo "🕰️  Branch Age:"; echo "────────────────────"; for branch in $(git for-each-ref --format="%(refname:short)" refs/heads); do echo "$branch: $(git log -1 --pretty=format:"%cr" $branch)"; done | sort -k2,3'
 alias gstash-list='echo "📦 Stash Overview:"; echo "────────────────────"; git stash list --pretty=format:"%gd: %s" | while read stash; do stash_id=$(echo $stash | cut -d: -f1); echo "$stash"; echo "   Files: $(git stash show $stash_id | wc -l | xargs)"; echo "   Changes: +$(git stash show $stash_id | awk "{sum+=\$1} END {print sum}") -$(git stash show $stash_id | awk "{sum+=\$2} END {print sum}")"; echo ""; done'
 alias gwte='echo "🌳 Git Worktrees:"; echo "────────────────────"; git worktree list | while read line; do dir=$(echo $line | awk "{print \$1}"); branch=$(echo $line | awk "{print \$3}" | tr -d "[]"); echo "📁 $(basename $dir) - 🌿 $branch"; echo "   $(cd $dir && git log -1 --pretty=format:"Last commit: %s (%cr)" HEAD)"; echo ""; done'
+# gwtn function available from .fun - creates worktree with new branch
 
 # Enhanced Git Functions
 # Git Branch Diff - show line difference stats between current branch and main/master

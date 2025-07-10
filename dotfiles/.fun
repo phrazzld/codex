@@ -83,6 +83,73 @@ get_current_font() {
   fi
 }
 
+# --- GIT WORKTREE MANAGEMENT ---
+# Create git worktree with new branch in ../<repo>__<branch>
+gwtn() {
+  local branch_name="$1"
+  local base_branch="${2:-$(git rev-parse --abbrev-ref HEAD 2>/dev/null)}"
+  
+  # Check if branch name is provided
+  if [[ -z "$branch_name" ]]; then
+    echo "Usage: gwtn <branch_name> [base_branch]"
+    echo "Creates a new git worktree with a new branch in ../<repo>__<branch_name>"
+    echo ""
+    echo "Examples:"
+    echo "  gwtn feature/auth       # Creates worktree from current branch"
+    echo "  gwtn hotfix main        # Creates worktree from main branch"
+    return 1
+  fi
+  
+  # Check if we're in a git repository
+  if ! git rev-parse --git-dir > /dev/null 2>&1; then
+    echo "❌ Error: Not in a git repository"
+    return 1
+  fi
+  
+  # Get repository name
+  local repo_name=$(basename $(git rev-parse --show-toplevel))
+  if [[ $? -ne 0 ]]; then
+    echo "❌ Error: Could not determine repository name"
+    return 1
+  fi
+  
+  # Set up paths - replace / with - for filesystem compatibility
+  local clean_branch_name=$(echo "$branch_name" | sed 's/\//-/g')
+  local worktree_dir="../${repo_name}__${clean_branch_name}"
+  
+  # Check if directory already exists
+  if [[ -d "$worktree_dir" ]]; then
+    echo "❌ Error: Directory $worktree_dir already exists"
+    return 1
+  fi
+  
+  # Verify base branch exists
+  if ! git rev-parse --verify "$base_branch" > /dev/null 2>&1; then
+    echo "❌ Error: Base branch '$base_branch' does not exist"
+    return 1
+  fi
+  
+  # Create the worktree with new branch
+  echo "🌳 Creating git worktree..."
+  echo "📁 Directory: $worktree_dir"
+  echo "🌿 New branch: $branch_name"
+  echo "🔗 Base branch: $base_branch"
+  echo ""
+  
+  if git worktree add -b "$branch_name" "$worktree_dir" "$base_branch"; then
+    echo "✅ Worktree created successfully!"
+    echo ""
+    echo "To switch to your new worktree:"
+    echo "  cd $worktree_dir"
+    echo ""
+    echo "To view all worktrees:"
+    echo "  gwte"
+  else
+    echo "❌ Failed to create worktree"
+    return 1
+  fi
+}
+
 # Convenience aliases
 alias font='switch_font'
 alias fonthelp='switch_font help'
