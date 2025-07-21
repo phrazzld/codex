@@ -1,0 +1,243 @@
+#!/bin/bash
+# tt-review-patterns - Pattern detection and evolution review using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+# Function to detect default branch
+get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-patterns" \
+        --output-file "CODE_REVIEW_PATTERNS.md" \
+        --description "Detects pattern adherence, evolution, and premature abstractions"
+
+    # Parse arguments for base branch
+    local base_branch=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating pattern analysis for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Pattern Detection and Evolution Review
+
+Analyze code for pattern consistency, emergence, and appropriate abstraction timing based on leyline philosophy.
+
+**FOCUS**: Review changes for pattern adherence, detect emerging patterns, and identify premature or missing abstractions using the "rule of three".
+
+## Pattern Analysis Framework
+
+### 1. Pattern Consistency
+- **Established Patterns**: Does new code follow existing patterns?
+- **Pattern Deviation**: Valid reason for deviation or inconsistency?
+- **Pattern Documentation**: Are patterns discoverable?
+
+### 2. Rule of Three Detection
+- **Duplication Analysis**: Count similar implementations
+- **Abstraction Readiness**: Have we seen this 3+ times?
+- **Premature Abstraction**: Abstracted with <3 instances?
+- **Missing Abstraction**: 3+ instances without extraction?
+
+### 3. Pattern Evolution
+- **Emerging Patterns**: New patterns forming in codebase
+- **Pattern Migration**: Old patterns being replaced
+- **Pattern Stability**: Has pattern proven itself over time?
+
+### 4. Anti-Pattern Detection
+- **God Objects**: Classes accumulating too many responsibilities
+- **Anemic Models**: Data classes with no behavior
+- **Feature Envy**: Code more interested in other objects
+- **Primitive Obsession**: Overuse of primitives instead of domain objects
+- **Shotgun Surgery**: Changes require many small edits
+
+### 5. Architectural Patterns
+- **Layering**: Proper separation of concerns
+- **Dependency Direction**: Dependencies flow inward
+- **Module Boundaries**: Clear, well-defined interfaces
+- **Hexagonal/Ports-Adapters**: Core domain isolation
+
+## Output Format
+```
+# Pattern Analysis Report
+
+## 🔴 CRITICAL PATTERN VIOLATIONS
+### [Pattern Violation] - CRITICAL
+- **Location**: file_path:line_numbers
+- **Pattern Violated**: [Which established pattern]
+- **Current Approach**: [What was done instead]
+- **Impact**: [Confusion, maintenance burden]
+- **Fix**: [How to align with pattern]
+- **Example**:
+  ```language
+  // Current (violates pattern)
+  ```
+  ```language
+  // Pattern-aligned version
+  ```
+
+## 🟡 PATTERN OPPORTUNITIES
+### Abstraction Ready (Rule of Three)
+- **Pattern**: [Repeated implementation found]
+- **Locations**: [3+ instances found at:]
+  - file1:lines
+  - file2:lines
+  - file3:lines
+- **Suggested Abstraction**: [What to extract]
+- **Benefits**: [DRY, consistency, single source of truth]
+
+### Premature Abstraction Detected
+- **Location**: file_path:line_numbers
+- **Issue**: Only [X] instances found (need 3+)
+- **Current Abstraction**: [What was abstracted too early]
+- **Recommendation**: [Inline until pattern stabilizes]
+
+## 🔍 EMERGING PATTERNS
+### [New Pattern Name]
+- **Instances Found**: X occurrences
+- **Locations**: [Where pattern is emerging]
+- **Description**: [What the pattern does]
+- **Maturity**: [Experimental|Stabilizing|Ready]
+- **Action**: [Watch|Document|Formalize]
+
+## ⚠️ ANTI-PATTERNS DETECTED
+### [Anti-Pattern Name]
+- **Type**: [God Object|Feature Envy|etc]
+- **Location**: file_path:line_numbers
+- **Symptoms**: [What indicates the anti-pattern]
+- **Refactoring**: [How to eliminate]
+
+## 📊 PATTERN METRICS
+### Consistency Analysis
+- Files Following Patterns: X/Y (Z%)
+- Pattern Violations: N instances
+- Undocumented Patterns: M found
+
+### Abstraction Health
+- Premature Abstractions: X found
+- Missing Abstractions (3+ duplicates): Y opportunities
+- Well-Timed Abstractions: Z instances
+
+### Pattern Evolution
+- New Patterns Emerging: X
+- Patterns Being Replaced: Y
+- Stable Patterns: Z
+
+## 🎯 PATTERN RECOMMENDATIONS
+### Immediate Actions
+1. **Extract These Abstractions**: [Ready per rule of three]
+2. **Fix These Violations**: [Breaking established patterns]
+3. **Inline These Abstractions**: [Premature, <3 instances]
+
+### Medium-term Evolution
+1. **Document These Patterns**: [Emerging as standards]
+2. **Watch These Duplications**: [2 instances, might need abstraction soon]
+3. **Migrate From**: [Old patterns to replace]
+
+### Pattern Governance
+1. **Add to Style Guide**: [Patterns that have proven valuable]
+2. **Create Examples**: [Reference implementations]
+3. **Automate Checks**: [Patterns that can be linted]
+
+## ✨ EXEMPLARY PATTERNS
+### [Good Pattern Usage]
+- **Location**: file_path:line_numbers
+- **Pattern**: [Which pattern well-applied]
+- **Why Exemplary**: [What makes this a good example]
+
+## ✅ SUMMARY
+- Pattern Consistency Score: [X/10]
+- Anti-Patterns Found: Y
+- Abstraction Opportunities: Z
+- Pattern Evolution Health: [Healthy|Concerning|Chaotic]
+
+**Recommendation**: [ENFORCE patterns | EVOLVE patterns | DOCUMENT patterns]
+```
+
+Remember: Patterns should emerge from real needs, not theoretical possibilities. Wait for the third instance.
+EOF
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

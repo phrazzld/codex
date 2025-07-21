@@ -1,0 +1,223 @@
+#!/bin/bash
+# tt-review-obviousness - Code clarity and self-evidence review using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+# Function to detect default branch
+get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-obviousness" \
+        --output-file "CODE_REVIEW_OBVIOUSNESS.md" \
+        --description "Analyzes code clarity and self-evidence based on leyline philosophy"
+
+    # Parse arguments for base branch
+    local base_branch=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating obviousness analysis for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Code Obviousness Review
+
+Analyze code for self-evidence and clarity based on leyline philosophy principles. Code should be immediately understandable without requiring mental translation.
+
+**FOCUS**: Review changed lines (+ in diff) for obviousness violations. Look for code that requires implicit knowledge or mental gymnastics to understand.
+
+## Obviousness Principles (from leyline)
+
+### 1. Naming Clarity
+- **Variables**: Describe content, not type (e.g., `users` not `userList`)
+- **Functions**: Describe what they do, not how (e.g., `calculateTotal` not `sumArray`)
+- **Classes**: Match domain concepts exactly
+- **Constants**: Self-documenting names (no magic numbers/strings)
+- **Parameters**: Intent-revealing names
+
+### 2. Explicit Dependencies
+- **Constructor Injection**: Dependencies passed in, not created internally
+- **Clear Imports**: All dependencies visible at file top
+- **No Hidden State**: No reliance on global state or singletons
+- **Configuration**: Explicit, not assumed
+
+### 3. Control Flow Clarity
+- **Early Returns**: Guard clauses instead of deep nesting
+- **Single Purpose**: Each function does one clear thing
+- **No Surprise Side Effects**: Command-query separation
+- **Obvious Error Paths**: Clear what happens when things go wrong
+
+### 4. Context and Intent
+- **Self-Documenting Code**: Code explains what it does
+- **Why Comments**: Comments explain why, not what
+- **Domain Language**: Use terms from the problem domain
+- **No Tribal Knowledge**: Don't require insider information
+
+### 5. Discoverability
+- **Obvious Entry Points**: Clear where to start reading
+- **Consistent Patterns**: Follow established conventions
+- **Searchable Names**: Avoid abbreviations and acronyms
+- **Clear Relationships**: Module dependencies are obvious
+
+## Output Format
+```
+# Obviousness Analysis
+
+## 🔴 CRITICAL CLARITY ISSUES
+### [Issue Title] - CRITICAL
+- **Location**: file_path:line_numbers
+- **Obviousness Score**: [1-10, where 10 is perfectly obvious]
+- **Problem**: [What makes this non-obvious]
+- **Hidden Knowledge Required**: [What you need to know to understand]
+- **Impact**: [How this confuses developers]
+- **Fix**: [Specific way to make obvious]
+- **Example**:
+  ```language
+  // Current (non-obvious)
+  ```
+  ```language
+  // Obvious version
+  ```
+
+## 🟡 MODERATE CLARITY ISSUES
+### [Issue Title] - MEDIUM
+- **Location**: file_path:line_numbers
+- **Issue**: [What could be clearer]
+- **Confusion Point**: [Where developers might stumble]
+- **Improvement**: [How to clarify]
+
+## 🟢 MINOR IMPROVEMENTS
+### [Improvement Title] - LOW
+- **Location**: file_path:line_numbers
+- **Current**: [Slightly unclear element]
+- **Better**: [More obvious alternative]
+
+## 📊 OBVIOUSNESS METRICS
+### Naming Analysis
+- Cryptic Names: X occurrences
+- Abbreviated Names: Y occurrences
+- Type-in-Name Anti-pattern: Z occurrences
+- Domain Misalignment: W occurrences
+
+### Dependency Clarity
+- Hidden Dependencies: X found
+- Implicit State Usage: Y instances
+- Unclear Injection: Z cases
+
+### Control Flow
+- Deep Nesting (>3 levels): X instances
+- Surprise Side Effects: Y found
+- Mixed Commands/Queries: Z violations
+
+### Documentation Gaps
+- Missing "Why" Comments: X locations
+- Tribal Knowledge Required: Y instances
+- Undocumented Gotchas: Z found
+
+## 🎯 IMPROVEMENT PRIORITIES
+1. **Immediate Fixes**: [Most confusing elements that block understanding]
+2. **Quick Wins**: [Easy clarity improvements with high impact]
+3. **Systematic Issues**: [Patterns of non-obviousness to address]
+
+## ✨ POSITIVE OBSERVATIONS
+### [Good Practice]
+- **Location**: file_path:line_numbers
+- **Why It's Obvious**: [What makes this clear]
+- **Pattern to Replicate**: [How to apply elsewhere]
+
+## ✅ SUMMARY
+- Overall Obviousness Score: [X/10]
+- Critical Issues: X (must fix)
+- Total Clarity Debt: Y issues
+- Estimated Confusion Cost: [High/Medium/Low]
+
+**Recommendation**: [BLOCKED if critical issues | NEEDS WORK if many issues | GOOD if mostly clear]
+```
+
+Remember: If code requires explanation, it's not obvious enough. Strive for code that explains itself.
+EOF
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

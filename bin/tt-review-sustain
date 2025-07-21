@@ -1,0 +1,287 @@
+#!/bin/bash
+# tt-review-sustain - Deep maintainability analysis using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+# Function to detect default branch
+get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-sustain" \
+        --output-file "CODE_REVIEW_SUSTAIN.md" \
+        --description "Deep maintainability analysis for long-term code sustainability"
+
+    # Parse arguments for base branch
+    local base_branch=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating deep maintainability analysis for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Deep Maintainability Analysis
+
+Comprehensive analysis of code sustainability, focusing on long-term maintainability, evolution readiness, and team scalability.
+
+**FOCUS**: Evaluate changes for their impact on long-term maintenance, considering future developers, changing requirements, and codebase evolution.
+
+## Maintainability Dimensions
+
+### 1. Cognitive Load
+- **Complexity Budget**: Mental effort required to understand
+- **Concept Count**: Number of ideas to hold in memory
+- **Indirection Levels**: Jumps needed to understand flow
+- **Implicit Knowledge**: Unstated assumptions required
+
+### 2. Change Readiness
+- **Modification Points**: How many places to change for new requirements
+- **Ripple Effects**: Changes that cascade through system
+- **Extension Points**: How new features can be added
+- **Deprecation Path**: How old features can be removed
+
+### 3. Knowledge Distribution
+- **Bus Factor**: Single points of knowledge failure
+- **Documentation Debt**: Critical knowledge not written down
+- **Onboarding Cost**: Time for new developer productivity
+- **Tribal Knowledge**: Information only in people's heads
+
+### 4. Technical Debt
+- **Shortcuts Taken**: Temporary solutions becoming permanent
+- **Deferred Decisions**: Punting on important choices
+- **Accumulating Complexity**: Gradual degradation
+- **Missing Abstractions**: Patterns not yet extracted
+
+### 5. Evolution Patterns
+- **Growth Direction**: Where code will likely expand
+- **Flexibility Points**: Where change is anticipated
+- **Rigidity Zones**: Where change is expensive
+- **Architectural Drift**: Deviation from intended design
+
+### 6. Team Scalability
+- **Parallel Work**: Can multiple devs work simultaneously?
+- **Clear Ownership**: Who maintains what?
+- **Integration Points**: Where work comes together
+- **Communication Overhead**: Coordination required
+
+## Output Format
+```
+# Maintainability Analysis Report
+
+## 🧠 COGNITIVE LOAD ASSESSMENT
+### High Cognitive Load Areas
+- **Location**: file_path:line_numbers
+- **Complexity Score**: [1-10, where 10 is mind-bending]
+- **Contributing Factors**:
+  - [ ] Deep nesting (X levels)
+  - [ ] Many variables in scope (Y)
+  - [ ] Non-obvious control flow
+  - [ ] Hidden side effects
+- **Simplification Strategy**: [How to reduce load]
+- **Example Refactoring**: [Before/after snippet]
+
+## 🔄 CHANGE READINESS SCORE
+### Brittle Code Detected
+- **Location**: file_path:line_numbers
+- **Brittleness Type**: [Shotgun surgery|Rigid structure|etc]
+- **Change Scenario**: "If we need to [common change]..."
+- **Current Impact**: Must modify X files, Y locations
+- **Improved Design**: [More flexible approach]
+
+### Missing Extension Points
+- **Functionality**: [What might need extending]
+- **Current Limitation**: [Why it's hard to extend]
+- **Suggested Pattern**: [Strategy|Template|Plugin|etc]
+
+## 👥 KNOWLEDGE DISTRIBUTION
+### Bus Factor Risks
+- **Critical Knowledge**: [What only one person knows]
+- **Location**: file_path or component
+- **Risk Level**: [HIGH|MEDIUM|LOW]
+- **Mitigation**:
+  - [ ] Document the why
+  - [ ] Pair programming session
+  - [ ] Architecture decision record
+  - [ ] Code walkthrough video
+
+### Documentation Gaps
+- **Missing "Why"**: [Decisions without rationale]
+- **Complex Without Explanation**: [Needs documentation]
+- **Gotchas Not Documented**: [Surprising behavior]
+
+## 💸 TECHNICAL DEBT INVENTORY
+### New Debt Incurred
+- **Type**: [Shortcut|Hack|TODO|Compromise]
+- **Location**: file_path:line_numbers
+- **Reason**: [Why the shortcut was taken]
+- **Interest Rate**: [How fast this will cause pain]
+- **Payment Plan**: [When/how to address]
+
+### Debt Payment Opportunities
+- **Existing Debt**: [What could be fixed now]
+- **Effort**: [Hours/days to fix]
+- **Benefit**: [Maintenance savings]
+
+## 📈 EVOLUTION READINESS
+### Growth Predictions
+- **Likely Changes**: [Based on patterns and domain]
+- **Current Flexibility**: [Well-prepared|Neutral|Rigid]
+- **Recommended Preparations**: [Refactoring to enable]
+
+### Architectural Alignment
+- **Intended Architecture**: [Original design]
+- **Current State**: [How it's evolved]
+- **Drift Corrections**: [Realignment needed]
+
+## 👥 TEAM SCALABILITY
+### Parallel Work Analysis
+- **Module Independence**: [Can work in isolation?]
+- **Integration Complexity**: [How hard to merge work]
+- **Ownership Clarity**: [Clear|Fuzzy|Undefined]
+
+### Onboarding Impact
+- **New Developer Time**: [Hours to understand]
+- **Key Concepts**: [What they must learn]
+- **Improvement**: [How to ease onboarding]
+
+## 📊 MAINTAINABILITY METRICS
+### Quantitative Measures
+- **Cyclomatic Complexity**: Avg X, Max Y
+- **Cognitive Complexity**: Avg X, Max Y
+- **Coupling Score**: [Afferent/Efferent]
+- **Cohesion Score**: [LCOM score]
+- **Test Coverage**: X% (maintainability safety net)
+
+### Qualitative Assessment
+- **Readability**: [Excellent|Good|Fair|Poor]
+- **Consistency**: [Uniform|Mostly|Varied|Chaotic]
+- **Predictability**: [Obvious|Learnable|Surprising]
+- **Evolvability**: [Flexible|Neutral|Rigid]
+
+## 🎯 SUSTAINABILITY RECOMMENDATIONS
+### Immediate Improvements (This PR)
+1. **Reduce Complexity**: [Specific simplifications]
+2. **Document Decisions**: [What needs explaining]
+3. **Add Extension Points**: [Where flexibility needed]
+
+### Short-term Refactoring (Next Sprint)
+1. **Extract Patterns**: [Repeated code to consolidate]
+2. **Clarify Boundaries**: [Modules to separate]
+3. **Pay Down Debt**: [Quick wins]
+
+### Long-term Evolution (Quarter)
+1. **Architectural Improvements**: [Major refactoring]
+2. **Knowledge Sharing**: [Documentation/training]
+3. **Tool/Process Changes**: [Supporting sustainability]
+
+## ✨ SUSTAINABILITY STRENGTHS
+### What's Done Well
+- **Pattern**: [Maintainable approach used]
+- **Example**: [Where it shines]
+- **Replicate**: [How to apply elsewhere]
+
+## ⚠️ SUSTAINABILITY RISKS
+### Future Pain Points
+- **Risk**: [What will cause problems]
+- **Timeline**: [When pain will hit]
+- **Prevention**: [How to avoid]
+
+## ✅ SUMMARY
+- **Maintainability Grade**: [A|B|C|D|F]
+- **Cognitive Load**: [Low|Medium|High|Extreme]
+- **Change Readiness**: [Flexible|Neutral|Rigid]
+- **Team Scalability**: [Ready|Limited|Blocked]
+- **Technical Debt**: [Managed|Growing|Critical]
+
+**Long-term Viability**: [SUSTAINABLE | NEEDS WORK | AT RISK]
+
+**Key Message**: [One paragraph on the most important sustainability concern]
+```
+
+Remember: Code is written once but maintained forever. Optimize for the forever.
+EOF
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

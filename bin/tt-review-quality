@@ -1,0 +1,226 @@
+#!/bin/bash
+# tt-review-quality - General code quality review using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+# Function to detect default branch
+get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-quality" \
+        --output-file "CODE_REVIEW_QUALITY.md" \
+        --description "Performs comprehensive code quality review"
+
+    # Parse arguments for base branch
+    local base_branch=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating comprehensive code quality review for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Comprehensive Code Quality Review
+
+Evaluate changed code for maintainability, readability, testability, and adherence to best practices.
+
+**FOCUS**: Review changed lines (+ in diff) for overall code quality, excluding security and critical bugs (covered by other reviews).
+
+## Quality Dimensions
+
+### 1. Maintainability
+- **Readability**: Clear intent, self-documenting code
+- **Naming**: Meaningful, consistent, intention-revealing names
+- **Structure**: Logical organization, proper separation
+- **Documentation**: Useful comments (why, not what)
+- **DRY Principle**: Appropriate code reuse
+
+### 2. Testability
+- **Test Coverage**: Are changes properly tested?
+- **Test Quality**: Clear test names, focused assertions
+- **Mockability**: Can components be tested in isolation?
+- **Edge Cases**: Are boundary conditions covered?
+
+### 3. Design & Architecture
+- **SOLID Principles**: Single responsibility, open/closed, etc.
+- **Coupling/Cohesion**: Loose coupling, high cohesion
+- **Patterns**: Appropriate use of design patterns
+- **Dependencies**: Clean dependency management
+
+### 4. Error Handling & Robustness
+- **Error Handling**: Consistent, appropriate error handling
+- **Defensive Programming**: Input validation, null checks
+- **Resource Management**: Proper cleanup, no leaks
+- **Logging**: Appropriate logging levels and context
+
+### 5. Performance & Efficiency
+- **Algorithm Choice**: Appropriate data structures/algorithms
+- **Resource Usage**: Memory, CPU, I/O efficiency
+- **Caching**: Appropriate use of caching
+- **Lazy Loading**: Deferred computation where beneficial
+
+### 6. Code Standards
+- **Language Idioms**: Following language-specific best practices
+- **Framework Conventions**: Using framework features properly
+- **Consistency**: Consistent style throughout changes
+- **Modern Features**: Using appropriate language features
+
+## Output Format
+```
+# Code Quality Review
+
+## 🔴 MAJOR QUALITY ISSUES
+### [Issue Title] - HIGH
+- **Quality Aspect**: [Maintainability/Testability/Design]
+- **Location**: file_path:line_numbers
+- **Problem**: [What makes this low quality]
+- **Impact**: [How this affects the codebase]
+- **Improvement**: [Specific better approach]
+- **Example**:
+  ```language
+  // Current approach
+  ```
+  ```language
+  // Improved approach
+  ```
+
+## 🟡 MODERATE CONCERNS
+### [Concern Title] - MEDIUM
+- **Quality Aspect**: [Category]
+- **Location**: file_path:line_numbers
+- **Issue**: [Quality concern]
+- **Suggestion**: [How to improve]
+- **Benefit**: [Why this matters]
+
+## 🟢 MINOR IMPROVEMENTS
+### [Improvement Title] - LOW
+- **Location**: file_path:line_numbers
+- **Current**: [What could be better]
+- **Better**: [Suggested improvement]
+- **Type**: [Style/Convention/Idiom]
+
+## 📋 MISSING ELEMENTS
+### Tests
+- [ ] Unit tests for [functionality]
+- [ ] Integration tests for [interaction]
+- [ ] Edge case coverage for [scenario]
+
+### Documentation
+- [ ] API documentation for [public methods]
+- [ ] README updates for [new features]
+- [ ] Code comments for [complex logic]
+
+## ✨ POSITIVE OBSERVATIONS
+### [Good Practice Title]
+- **Location**: file_path:line_numbers
+- **Strength**: [What was done well]
+- **Why Good**: [Why this is exemplary]
+
+## 📊 QUALITY METRICS
+- **Maintainability Score**: [HIGH|MEDIUM|LOW]
+- **Test Coverage**: [Adequate|Needs Work|Missing]
+- **Code Clarity**: [Excellent|Good|Fair|Poor]
+- **Design Quality**: [Well-structured|Acceptable|Needs Refactoring]
+
+## 🎯 IMPROVEMENT PRIORITIES
+1. **Must Fix**: [Critical quality issues affecting maintainability]
+2. **Should Improve**: [Important enhancements for long-term health]
+3. **Consider**: [Nice-to-have improvements]
+
+## ✅ SUMMARY
+- Major Issues: X (blocking merge)
+- Moderate Concerns: Y (should address)
+- Minor Improvements: Z (optional)
+- Missing Tests: A
+- Missing Docs: B
+
+Overall Quality Assessment: [EXCELLENT|GOOD|ACCEPTABLE|NEEDS WORK]
+```
+
+Focus on actionable improvements that enhance long-term maintainability and developer experience.
+EOF
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

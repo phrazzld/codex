@@ -1,0 +1,201 @@
+#!/bin/bash
+# tt-review-security - Security vulnerability review using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+# Function to detect default branch
+get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-security" \
+        --output-file "CODE_REVIEW_SECURITY.md" \
+        --description "Performs security vulnerability review for code changes"
+
+    # Parse arguments for base branch
+    local base_branch=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating security vulnerability review for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Security Vulnerability Review
+
+Perform thorough security analysis of changed code to identify vulnerabilities and risks.
+
+**FOCUS**: Review ONLY changed lines (+ in diff) for security vulnerabilities.
+
+## Security Review Checklist
+
+### 1. Input Validation & Injection
+- **SQL Injection**: Parameterized queries, prepared statements
+- **Command Injection**: Shell command execution, system calls
+- **XSS**: Unescaped user input in HTML/JavaScript
+- **Path Traversal**: File system access with user input
+- **LDAP/XML/NoSQL Injection**: Other injection vectors
+
+### 2. Authentication & Authorization
+- **Weak Authentication**: Password policies, MFA
+- **Session Management**: Secure cookies, session fixation
+- **Access Control**: Privilege escalation, IDOR
+- **JWT Issues**: Algorithm confusion, weak secrets
+
+### 3. Data Protection
+- **Sensitive Data Exposure**: Logging passwords, PII
+- **Hardcoded Secrets**: API keys, passwords in code
+- **Weak Cryptography**: Outdated algorithms, poor randomness
+- **Insecure Storage**: Plaintext passwords, unencrypted data
+
+### 4. Common Vulnerabilities
+- **SSRF**: Server-side request forgery
+- **XXE**: XML external entity injection
+- **Deserialization**: Unsafe object deserialization
+- **Race Conditions**: TOCTOU vulnerabilities
+- **Resource Exhaustion**: DoS vulnerabilities
+
+### 5. Dependencies & Configuration
+- **Vulnerable Dependencies**: Known CVEs
+- **Insecure Defaults**: Debug mode, verbose errors
+- **CORS Misconfig**: Overly permissive policies
+- **Security Headers**: Missing or misconfigured
+
+## Output Format
+```
+# Security Review Report
+
+## 🚨 CRITICAL VULNERABILITIES
+### [Vulnerability Title] - CRITICAL
+- **Type**: [Injection/Auth/Crypto/etc]
+- **Location**: file_path:line_numbers
+- **Vulnerability**: [Specific security flaw]
+- **Attack Vector**: [How it can be exploited]
+- **Impact**: [Data breach/RCE/privilege escalation]
+- **Fix**: [Specific remediation with code example]
+- **CWE**: [CWE-XXX reference if applicable]
+
+## ⚠️ HIGH RISK ISSUES
+### [Issue Title] - HIGH
+- **Type**: [Category]
+- **Location**: file_path:line_numbers
+- **Risk**: [Security concern]
+- **Exploit Scenario**: [How an attacker could use this]
+- **Remediation**: [How to fix]
+
+## 🔍 MEDIUM RISK CONCERNS
+### [Concern Title] - MEDIUM
+- **Type**: [Category]
+- **Location**: file_path:line_numbers
+- **Issue**: [What's wrong]
+- **Best Practice**: [What should be done]
+
+## ℹ️ LOW RISK / DEFENSE IN DEPTH
+### [Issue Title] - LOW
+- **Location**: file_path:line_numbers
+- **Recommendation**: [Security hardening suggestion]
+
+## 🛡️ SECURITY CHECKLIST
+- [ ] All user inputs validated and sanitized
+- [ ] Authentication properly implemented
+- [ ] Sensitive data encrypted at rest and in transit
+- [ ] No hardcoded secrets or credentials
+- [ ] Dependencies up to date with no known CVEs
+- [ ] Security headers properly configured
+- [ ] Error messages don't leak sensitive info
+
+## 📊 SUMMARY
+- Critical: X vulnerabilities (MUST fix before deploy)
+- High: Y issues (Should fix before merge)
+- Medium: Z concerns (Plan to address)
+- Low: W recommendations (Consider for hardening)
+
+Security Risk Level: [CRITICAL|HIGH|MEDIUM|LOW]
+```
+
+Prioritize real exploitable vulnerabilities over theoretical risks.
+EOF
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

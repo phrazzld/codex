@@ -1,0 +1,148 @@
+#!/bin/bash
+# tt-review-leyline - Full codebase philosophy alignment review using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-leyline" \
+        --output-file "CODE_REVIEW_LEYLINE.md" \
+        --description "Performs full codebase philosophy alignment review against leyline documents"
+
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    echo "Generating full codebase leyline philosophy review..."
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Leyline Philosophy Alignment Review
+
+Perform a comprehensive evaluation of the ENTIRE codebase against the development philosophy and leyline documents provided.
+
+**IMPORTANT**: This is NOT a diff review. Evaluate the complete codebase for philosophy alignment, patterns, and architectural decisions.
+
+## Philosophy Evaluation Framework
+
+Based on leyline documents and development philosophy, evaluate:
+
+### 1. Core Principles
+- **Simplicity First**: Is complexity justified? Are abstractions necessary?
+- **Explicit Over Implicit**: Are contracts, dependencies, and behaviors clear?
+- **Testability**: Is the code structured for easy testing without heavy mocking?
+- **Modularity**: Are components properly separated with clear boundaries?
+- **Maintainability**: Will future developers understand and modify this easily?
+
+### 2. Architectural Patterns
+- **Separation of Concerns**: Business logic vs infrastructure vs presentation
+- **Dependency Direction**: Do dependencies flow correctly (inward)?
+- **Layer Violations**: Any bypassing of architectural boundaries?
+- **Coupling**: Are modules appropriately decoupled?
+
+### 3. Code Quality Standards
+- **Naming**: Consistent, meaningful, and intention-revealing
+- **Error Handling**: Consistent patterns, appropriate granularity
+- **Configuration**: Properly externalized, environment-aware
+- **Security**: Following security best practices throughout
+- **Performance**: Appropriate algorithms and data structures
+
+### 4. Technical Practices
+- **Testing Strategy**: Unit vs integration balance, test quality
+- **Documentation**: Focus on "why" not "what", self-documenting code
+- **Logging**: Structured, contextual, with correlation IDs where needed
+- **Monitoring**: Observable systems with appropriate metrics
+
+## Review Process
+
+1. **Study Leyline Documents**: Thoroughly understand the philosophy
+2. **Survey Codebase Structure**: Understand overall architecture
+3. **Pattern Analysis**: Identify recurring patterns (good and bad)
+4. **Deep Dive Key Areas**: Examine critical components in detail
+5. **Systemic Issues**: Find cross-cutting concerns
+
+## Output Format
+```
+# Leyline Philosophy Alignment Review
+
+## 🎯 PHILOSOPHY ALIGNMENT SCORE
+Overall: [EXCELLENT|GOOD|MODERATE|POOR]
+- Simplicity: [score/10]
+- Explicitness: [score/10]
+- Testability: [score/10]
+- Modularity: [score/10]
+- Maintainability: [score/10]
+
+## 🚨 CRITICAL VIOLATIONS
+### [Violation Title]
+- **Pattern**: [What philosophy principle is violated]
+- **Locations**: [Representative examples with file paths]
+- **Impact**: [Why this matters for long-term health]
+- **Remediation**: [How to align with philosophy]
+
+## ⚠️ SIGNIFICANT DEVIATIONS
+### [Deviation Title]
+- **Philosophy Gap**: [Which principle isn't followed]
+- **Examples**: [Specific instances]
+- **Recommendation**: [Path to improvement]
+
+## 💡 IMPROVEMENT OPPORTUNITIES
+### [Opportunity Title]
+- **Current State**: [What exists now]
+- **Ideal State**: [What philosophy suggests]
+- **Migration Path**: [How to get there]
+
+## ✨ EXEMPLARY PATTERNS
+### [Good Pattern Title]
+- **Philosophy Alignment**: [Which principles are well-demonstrated]
+- **Examples**: [Where this is done well]
+- **Why It Works**: [What makes this a good example]
+
+## 📊 ANALYSIS BY COMPONENT
+### [Component/Module Name]
+- **Alignment Score**: [X/10]
+- **Strengths**: [What aligns well]
+- **Gaps**: [What needs work]
+- **Priority**: [HIGH|MEDIUM|LOW]
+
+## 🎯 RECOMMENDATIONS
+1. **Immediate Actions**: [Top 3-5 critical fixes]
+2. **Short-term Goals**: [Next sprint/month improvements]
+3. **Long-term Vision**: [Architectural evolution]
+
+## 📈 METRICS
+- Files Analyzed: [X]
+- Philosophy Violations: [Critical: X, Major: Y, Minor: Z]
+- Technical Debt Score: [Estimated days to full alignment]
+- Test Coverage Alignment: [Current vs philosophy ideal]
+```
+
+Remember: Focus on patterns and systemic issues, not individual line violations. Provide actionable guidance for improving philosophy alignment.
+EOF
+
+    # No context needed for full codebase review
+    tt_set_context ""
+
+    # Target the entire codebase (current directory)
+    # Let thinktank handle file discovery
+    tt_set_target_files ""
+}
+
+# Main execution
+tt_main "$@"
+tt_run

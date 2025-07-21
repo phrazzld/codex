@@ -1,0 +1,196 @@
+#!/bin/bash
+# tt-review-ship - Minimal safety review for rapid delivery using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+# Function to detect default branch
+get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-ship" \
+        --output-file "CODE_REVIEW_SHIP.md" \
+        --description "Minimal safety checks for rapid delivery - focus on ship-stoppers only"
+
+    # Parse arguments for base branch
+    local base_branch=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Running rapid ship safety check for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Ship Safety Check - Minimal Review for Rapid Delivery
+
+**MISSION**: Identify ONLY ship-stopping issues. This is NOT a comprehensive review - it's a safety net for rapid delivery.
+
+**FOCUS**: Critical bugs, security holes, and data corruption risks that would cause immediate production issues.
+
+## Ship-Stopper Checklist
+
+### 1. Will It Crash? 🔥
+- **Null/Undefined**: Dereferencing without checks
+- **Array Bounds**: Out of bounds access
+- **Type Errors**: Runtime type mismatches
+- **Infinite Loops**: Obvious non-terminating loops
+- **Resource Exhaustion**: Unbounded memory/CPU usage
+
+### 2. Will It Corrupt Data? 💾
+- **SQL Injection**: Raw SQL with user input
+- **Race Conditions**: Concurrent writes without locks
+- **Wrong Database**: Prod credentials in code
+- **Data Loss**: DELETE without WHERE, overwrites
+- **Schema Mismatches**: Code/DB out of sync
+
+### 3. Will It Breach Security? 🔒
+- **Exposed Secrets**: API keys, passwords in code
+- **Auth Bypass**: Missing auth checks
+- **Open Endpoints**: Unprotected routes
+- **XSS**: Unescaped user input in HTML
+- **Privilege Escalation**: User can access admin
+
+### 4. Will It Break the Build? 🏗️
+- **Import Errors**: Missing dependencies
+- **Syntax Errors**: Code won't compile/parse
+- **Test Failures**: Existing tests now fail
+- **Config Issues**: Missing required config
+
+## Output Format
+```
+# ⚡ SHIP SAFETY REPORT
+
+## 🚨 SHIP STOPPERS (MUST FIX NOW)
+### [Critical Issue]
+- **Severity**: BLOCKER
+- **Location**: file:line
+- **What Breaks**: [Crash/Data Loss/Security Breach]
+- **Quick Fix**: [Minimal change to ship safely]
+- **Time Estimate**: [5 min/30 min/2 hours]
+
+## ⚠️ SHIP WARNINGS (Fix within 24 hours)
+### [High Risk Issue]
+- **Severity**: HIGH
+- **Location**: file:line
+- **Risk**: [What could go wrong]
+- **Mitigation**: [How to reduce risk]
+- **TODO**: [Track for immediate follow-up]
+
+## ✅ SHIP DECISION
+**Can Ship**: [YES with conditions | NO - blockers found]
+
+### If YES with conditions:
+- **Conditions**: [What must be done first]
+- **Follow-up Required**: [What to fix immediately after]
+- **Risk Accepted**: [What we're accepting temporarily]
+
+### If NO:
+- **Blocking Issues**: [List of must-fix items]
+- **Estimated Fix Time**: [Total time to unblock]
+- **Quick Path**: [Fastest way to make shippable]
+
+## 📋 POST-SHIP CHECKLIST
+After shipping, immediately:
+- [ ] Fix any accepted warnings
+- [ ] Add missing tests
+- [ ] Document any shortcuts taken
+- [ ] Schedule full review if skipped
+```
+
+**REMEMBER**: 
+- This is for RAPID delivery - be pragmatic
+- Flag only REAL blockers, not style issues
+- Suggest QUICK fixes, not perfect solutions
+- Track debt for later cleanup
+
+**NOT IN SCOPE**:
+- Code style or formatting
+- Performance (unless catastrophic)
+- Maintainability (track for later)
+- Test coverage (unless zero tests)
+- Documentation (track for later)
+EOF
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

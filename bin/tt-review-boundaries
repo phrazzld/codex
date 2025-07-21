@@ -1,0 +1,245 @@
+#!/bin/bash
+# tt-review-boundaries - Module boundaries and dependency review using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+# Function to detect default branch
+get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-boundaries" \
+        --output-file "CODE_REVIEW_BOUNDARIES.md" \
+        --description "Validates module separation, boundaries, and dependency clarity"
+
+    # Parse arguments for base branch
+    local base_branch=""
+    
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+    
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating boundary and dependency analysis for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Module Boundaries and Dependencies Review
+
+Analyze code for proper module separation, clear boundaries, and explicit dependencies based on leyline philosophy.
+
+**FOCUS**: Review changes for boundary violations, improper dependencies, and coupling issues.
+
+## Boundary Analysis Framework
+
+### 1. Module Cohesion
+- **Single Responsibility**: Each module has one clear purpose
+- **High Cohesion**: Related functionality stays together
+- **Clear Purpose**: Module's role is obvious from structure
+- **Self-Contained**: Minimal external dependencies
+
+### 2. Dependency Direction
+- **Inward Dependencies**: Domain never depends on infrastructure
+- **Layer Respect**: Dependencies flow in one direction
+- **No Circular Dependencies**: A→B→C never leads back to A
+- **Stable Dependencies**: Depend on abstractions, not concretions
+
+### 3. Interface Design
+- **Clear Contracts**: Interfaces define explicit boundaries
+- **Minimal Surface**: Small, focused public APIs
+- **Stable Interfaces**: Changes don't cascade
+- **Domain Language**: Interfaces use business terms
+
+### 4. Coupling Analysis
+- **Loose Coupling**: Modules can change independently
+- **No Feature Envy**: Code uses its own data
+- **Law of Demeter**: Don't reach through objects
+- **Dependency Injection**: External dependencies are explicit
+
+### 5. Architectural Boundaries
+- **Core Domain**: Pure business logic, no frameworks
+- **Application Layer**: Use cases and orchestration
+- **Infrastructure**: External systems and frameworks
+- **Clear Adapters**: Translation at boundaries
+
+## Output Format
+```
+# Boundary and Dependency Analysis
+
+## 🔴 CRITICAL BOUNDARY VIOLATIONS
+### [Violation Type] - CRITICAL
+- **Location**: file_path:line_numbers
+- **Violation**: [Layer breach|Circular dependency|etc]
+- **Current Structure**: [How boundaries are crossed]
+- **Impact**: [Coupling, rigidity, cascade changes]
+- **Fix**: [How to restore proper boundaries]
+- **Diagram**:
+  ```
+  Current (Violation):
+  Domain → Infrastructure → Database
+     ↑________________________|
+  
+  Fixed:
+  Domain ← Application → Infrastructure → Database
+  ```
+
+## 🟡 DEPENDENCY ISSUES
+### [Issue Type] - MEDIUM
+- **Location**: file_path:line_numbers
+- **Problem**: [Hidden dependency|Wrong direction|etc]
+- **Current Dependency**: A depends on B
+- **Should Be**: B depends on A (or use interface)
+- **Refactoring Steps**: [How to fix]
+
+## 🔍 COUPLING CONCERNS
+### High Coupling Detected
+- **Between**: ModuleA ↔ ModuleB
+- **Coupling Type**: [Data|Control|Content|Common|etc]
+- **Evidence**: [Multiple touchpoints, shared state, etc]
+- **Decoupling Strategy**: [Interface extraction, event-driven, etc]
+
+### Feature Envy
+- **Location**: file_path:line_numbers
+- **Envious Code**: [Code more interested in other module]
+- **Target Module**: [Where code logically belongs]
+- **Move Strategy**: [How to relocate functionality]
+
+## 📊 BOUNDARY METRICS
+### Module Analysis
+- Modules with Clear Boundaries: X/Y
+- Boundary Violations: Z instances
+- Average Module Cohesion: [High|Medium|Low]
+
+### Dependency Health
+- Circular Dependencies: X cycles found
+- Wrong-Direction Dependencies: Y instances
+- Hidden Dependencies: Z detected
+- Dependency Depth: Max N levels
+
+### Coupling Measurements
+- Afferent Coupling (Ca): [Incoming dependencies]
+- Efferent Coupling (Ce): [Outgoing dependencies]
+- Instability (I = Ce/(Ca+Ce)): [0-1 score]
+- Abstractness: [Ratio of interfaces to implementations]
+
+## 🎯 ARCHITECTURAL RECOMMENDATIONS
+### Immediate Fixes
+1. **Break These Cycles**: [Circular dependencies to resolve]
+2. **Reverse These Dependencies**: [Wrong direction flows]
+3. **Extract These Interfaces**: [Reduce coupling points]
+
+### Boundary Improvements
+1. **Strengthen These Boundaries**: [Weak separation points]
+2. **Create These Adapters**: [Missing translation layers]
+3. **Isolate These Concerns**: [Mixed responsibilities]
+
+### Long-term Architecture
+1. **Module Reorganization**: [Better cohesion grouping]
+2. **Layer Clarification**: [Clearer architectural layers]
+3. **Interface Evolution**: [More stable contracts]
+
+## ✨ GOOD BOUNDARY EXAMPLES
+### [Well-Designed Module]
+- **Location**: file_path or module
+- **Boundary Strength**: [What makes it well-separated]
+- **Pattern**: [Reusable approach]
+
+## ⚠️ BOUNDARY RISKS
+### Future Coupling Risks
+- **Potential Issue**: [Emerging coupling pattern]
+- **Warning Signs**: [What to watch for]
+- **Prevention**: [How to maintain boundaries]
+
+## ✅ SUMMARY
+- Boundary Health Score: [X/10]
+- Critical Violations: X
+- Dependency Issues: Y
+- Coupling Score: [Low|Medium|High]
+- Architecture Stability: [Stable|At Risk|Degrading]
+
+**Recommendation**: [REFACTOR boundaries | MONITOR coupling | MAINTAIN separation]
+```
+
+Remember: Good fences make good neighbors. Clear boundaries enable independent evolution.
+EOF
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

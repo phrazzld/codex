@@ -14,6 +14,7 @@ TT_CONTEXT_CONTENT=""
 TT_TARGET_FILES=""
 TT_TEMP_DIR=""
 TT_DRY_RUN=false
+TT_OUTPUT_DIR=""
 
 # Configuration functions
 tt_set_config() {
@@ -163,6 +164,9 @@ tt_execute_thinktank() {
         exit 1
     fi
     
+    # Generate output directory name
+    local output_dir="thinktank_output_${TT_CONFIG_TEMPLATE_NAME}_$(date +%Y%m%d_%H%M%S)"
+    
     # Build command
     local cmd_args=("$instruction_file")
     
@@ -179,6 +183,9 @@ tt_execute_thinktank() {
         read -ra leyline_array <<< "$leyline_files"
         cmd_args+=("${leyline_array[@]}")
     fi
+    
+    # Add output directory flag
+    cmd_args+=("--output-dir" "$output_dir")
     
     if [[ "$TT_DRY_RUN" == true ]]; then
         echo "DRY RUN - Would execute:"
@@ -202,30 +209,45 @@ tt_execute_thinktank() {
     
     # Execute thinktank
     echo "Running thinktank analysis..."
-    thinktank "${cmd_args[@]}"
+    if thinktank "${cmd_args[@]}"; then
+        # Store the output directory for later use
+        TT_OUTPUT_DIR="$output_dir"
+        return 0
+    else
+        return 1
+    fi
 }
 
 # Handle thinktank output robustly
 tt_handle_output() {
-    # Find the most recent output directory created by thinktank
-    local latest_output_dir
-    latest_output_dir=$(find . -maxdepth 1 -name "thinktank-*" -type d -newermt '1 minute ago' 2>/dev/null | sort -r | head -1)
+    # Use the output directory we specified
+    local output_dir="$TT_OUTPUT_DIR"
     
-    if [[ -n "$latest_output_dir" ]]; then
+    if [[ -z "$output_dir" ]]; then
+        echo "Error: No output directory recorded" >&2
+        return 1
+    fi
+    
+    if [[ -d "$output_dir" ]]; then
         # Look for the main output file in the directory
+        # Thinktank typically creates a file named after the model
         local output_file
-        output_file=$(find "$latest_output_dir" -name "*.md" -type f | head -1)
+        output_file=$(find "$output_dir" -name "*.md" -type f | head -1)
         
         if [[ -n "$output_file" ]]; then
             cp "$output_file" "$TT_CONFIG_OUTPUT_FILE"
             echo "✓ Created $TT_CONFIG_OUTPUT_FILE"
+            # Clean up the output directory
+            rm -rf "$output_dir"
             return 0
         else
-            echo "Warning: Could not find output file in $latest_output_dir" >&2
+            echo "Warning: Could not find output file in $output_dir" >&2
+            echo "Directory contents:" >&2
+            ls -la "$output_dir" >&2
             return 1
         fi
     else
-        echo "Warning: Could not find thinktank output directory" >&2
+        echo "Warning: Output directory $output_dir does not exist" >&2
         echo "Make sure thinktank executed successfully" >&2
         return 1
     fi
