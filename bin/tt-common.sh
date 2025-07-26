@@ -164,9 +164,6 @@ tt_execute_thinktank() {
         exit 1
     fi
     
-    # Generate output directory name
-    local output_dir="thinktank_output_${TT_CONFIG_TEMPLATE_NAME}_$(date +%Y%m%d_%H%M%S)"
-    
     # Build command
     local cmd_args=("$instruction_file")
     
@@ -183,9 +180,6 @@ tt_execute_thinktank() {
         read -ra leyline_array <<< "$leyline_files"
         cmd_args+=("${leyline_array[@]}")
     fi
-    
-    # Add output directory flag
-    cmd_args+=("--output-dir" "$output_dir")
     
     if [[ "$TT_DRY_RUN" == true ]]; then
         echo "DRY RUN - Would execute:"
@@ -207,20 +201,46 @@ tt_execute_thinktank() {
         return 0
     fi
     
-    # Execute thinktank
+    # Execute thinktank and capture output
     echo "Running thinktank analysis..."
-    if thinktank "${cmd_args[@]}"; then
-        # Store the output directory for later use
-        TT_OUTPUT_DIR="$output_dir"
-        return 0
-    else
-        return 1
+    local thinktank_output
+    local thinktank_exit_code
+    
+    # Run thinktank and capture both stdout/stderr
+    thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1)
+    thinktank_exit_code=$?
+    
+    # Print the output so user can see progress
+    echo "$thinktank_output"
+    
+    # Extract the output directory from thinktank's output
+    # Look for "Output directory:" or "Outputs saved to:" patterns
+    local output_dir
+    output_dir=$(echo "$thinktank_output" | grep -E "(Output directory:|Outputs saved to:)" | tail -1 | sed -E 's/.*(thinktank_[0-9]+_[0-9]+_[0-9]+).*/\1/')
+    
+    if [[ -z "$output_dir" ]]; then
+        # Fallback: look for the most recent thinktank directory
+        output_dir=$(find . -maxdepth 1 -name "thinktank_*" -type d -newermt '1 minute ago' 2>/dev/null | sort -r | head -1 | xargs basename 2>/dev/null)
     fi
+    
+    # Check if we found an output directory
+    if [[ -n "$output_dir" && -d "$output_dir" ]]; then
+        TT_OUTPUT_DIR="$output_dir"
+        # Consider partial success (some models succeeded) as success
+        if [[ "$thinktank_output" =~ "Synthesis: ✓ completed" ]] || [[ "$thinktank_output" =~ "synthesis.md" ]]; then
+            echo "Thinktank completed with synthesis"
+            return 0
+        fi
+    fi
+    
+    # If we got here, something went wrong
+    echo "Warning: Thinktank may have failed or produced no output" >&2
+    return 1
 }
 
 # Handle thinktank output robustly
 tt_handle_output() {
-    # Use the output directory we specified
+    # Use the output directory we found
     local output_dir="$TT_OUTPUT_DIR"
     
     if [[ -z "$output_dir" ]]; then
@@ -229,16 +249,23 @@ tt_handle_output() {
     fi
     
     if [[ -d "$output_dir" ]]; then
-        # Look for the main output file in the directory
-        # Thinktank typically creates a file named after the model
+        # Look specifically for synthesis files first
+        local synthesis_file
+        synthesis_file=$(find "$output_dir" -name "*-synthesis.md" -type f | head -1)
+        
+        # If no synthesis file, look for any .md file
         local output_file
-        output_file=$(find "$output_dir" -name "*.md" -type f | head -1)
+        if [[ -n "$synthesis_file" ]]; then
+            output_file="$synthesis_file"
+        else
+            output_file=$(find "$output_dir" -name "*.md" -type f | head -1)
+        fi
         
         if [[ -n "$output_file" ]]; then
             cp "$output_file" "$TT_CONFIG_OUTPUT_FILE"
-            echo "✓ Created $TT_CONFIG_OUTPUT_FILE"
-            # Clean up the output directory
-            rm -rf "$output_dir"
+            echo "✓ Created $TT_CONFIG_OUTPUT_FILE from $(basename "$output_file")"
+            # Don't clean up - user might want to inspect other outputs
+            echo "Output directory preserved: $output_dir"
             return 0
         else
             echo "Warning: Could not find output file in $output_dir" >&2
@@ -248,7 +275,8 @@ tt_handle_output() {
         fi
     else
         echo "Warning: Output directory $output_dir does not exist" >&2
-        echo "Make sure thinktank executed successfully" >&2
+        echo "Current directory contents:" >&2
+        ls -d thinktank_* 2>/dev/null || echo "No thinktank directories found" >&2
         return 1
     fi
 }
