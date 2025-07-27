@@ -210,6 +210,12 @@ tt_execute_thinktank() {
     thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1)
     thinktank_exit_code=$?
     
+    # Check if thinktank failed
+    if [[ $thinktank_exit_code -ne 0 ]]; then
+        echo "Error: thinktank failed with exit code $thinktank_exit_code" >&2
+        return 1
+    fi
+    
     # Print the output so user can see progress
     echo "$thinktank_output"
     
@@ -258,7 +264,12 @@ tt_handle_output() {
         if [[ -n "$synthesis_file" ]]; then
             output_file="$synthesis_file"
         else
-            output_file=$(find "$output_dir" -name "*.md" -type f | head -1)
+            local md_files=($(find "$output_dir" -name "*.md" -type f))
+            if [[ ${#md_files[@]} -eq 1 ]]; then
+                output_file="${md_files[0]}"
+            elif [[ ${#md_files[@]} -gt 1 ]]; then
+                echo "Warning: Multiple output files found but no synthesis file. Cannot determine correct output." >&2
+            fi
         fi
         
         if [[ -n "$output_file" ]]; then

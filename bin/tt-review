@@ -91,7 +91,7 @@ for review in "${REVIEWS[@]}"; do
     
     if [ "$review" = "leyline" ]; then
         # Leyline doesn't need base branch (full codebase review)
-        if tt-review-$review; then
+        if "tt-review-$review"; then
             SUCCESSFUL_REVIEWS+=("$review")
             echo "✅ $review review completed"
         else
@@ -100,7 +100,7 @@ for review in "${REVIEWS[@]}"; do
         fi
     else
         # Other reviews need base branch
-        if tt-review-$review $BASE_BRANCH; then
+        if "tt-review-$review" "$BASE_BRANCH"; then
             SUCCESSFUL_REVIEWS+=("$review")
             echo "✅ $review review completed"
         else
@@ -129,7 +129,8 @@ echo "📊 Review Summary"
 echo "================"
 echo "Successful: ${#SUCCESSFUL_REVIEWS[@]} reviews"
 for review in "${SUCCESSFUL_REVIEWS[@]}"; do
-    echo "  ✅ CODE_REVIEW_${review^^}.md"
+    upper_review=$(echo "$review" | tr '[:lower:]' '[:upper:]')
+    echo "  ✅ CODE_REVIEW_${upper_review}.md"
 done
 
 if [ ${#FAILED_REVIEWS[@]} -gt 0 ]; then
@@ -147,7 +148,7 @@ fi
 echo ""
 
 # Exit status
-if [ ${#FAILED_REVIEWS[@]} -eq 0 ]; then
+if [ ${#FAILED_REVIEWS[@]} -eq 0 ] && { [ ${#SUCCESSFUL_REVIEWS[@]} -le 1 ] || [ "$SYNTHESIS_SUCCESS" = true ]; }; then
     echo "✅ All reviews completed successfully!"
     exit 0
 else

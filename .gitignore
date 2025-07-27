@@ -1,14 +1,20 @@
+# Dotfiles (force include)
 !*/.zshrc
 !*/.aliases
 !*/.env
 !*/.fun
 !*/.tmux.conf
+
+# Development tools
 .tool-versions
+**/.claude/settings.local.json
+
+# OS-specific files
 .DS_Store
+
+# Deprecated glance artifacts
 **/glance.md
 .glance-output.md
-
-**/.claude/settings.local.json
 
 # Python virtual environment
 bin/thinktank-venv/
@@ -28,5 +34,12 @@ bin/thinktank-venv/
 **/dist/
 **/build/
 
+# Logs and temporary directories
 logs/
 .vercel
+
+# Thinktank output
+thinktank.log
+thinktank_*/
+CODE_REVIEW_*.md
+TODO.md

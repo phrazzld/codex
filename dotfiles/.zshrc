@@ -106,3 +106,6 @@ fi
 # --- PROJECT-SPECIFIC EXPORTS ---
 # Codex directory for thinktank integration
 export CODEX_DIR="/Users/phaedrus/Development/codex"
+
+# opencode
+export PATH=/Users/phaedrus/.opencode/bin:$PATH
