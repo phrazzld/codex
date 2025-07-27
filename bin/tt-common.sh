@@ -226,7 +226,7 @@ tt_execute_thinktank() {
     
     if [[ -z "$output_dir" ]]; then
         # Fallback: look for the most recent thinktank directory
-        output_dir=$(find . -maxdepth 1 -name "thinktank_*" -type d -newermt '1 minute ago' 2>/dev/null | sort -r | head -1 | xargs basename 2>/dev/null)
+        output_dir=$(find . -maxdepth 1 -name "thinktank_*" -type d -mmin -1 2>/dev/null | sort -r | head -1 | xargs basename 2>/dev/null)
     fi
     
     # Check if we found an output directory
@@ -290,6 +290,102 @@ tt_handle_output() {
         ls -d thinktank_* 2>/dev/null || echo "No thinktank directories found" >&2
         return 1
     fi
+}
+
+# Get the default git branch (main or master)
+tt_get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+# Set up a diff-based review with common git operations
+# Usage: tt_setup_diff_review "$@"
+# This function handles:
+# - Argument parsing for base branch and flags
+# - Git diff generation
+# - Context setting with PR details
+# - Target files setting
+tt_setup_diff_review() {
+    # Parse arguments for base branch
+    local base_branch=""
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(tt_get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating review for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
 }
 
 # Main execution function

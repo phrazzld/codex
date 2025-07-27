@@ -4,28 +4,6 @@
 # Source the shared library
 source "$(dirname "$0")/tt-common.sh"
 
-# Function to detect default branch
-get_default_branch() {
-    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
-
-    if [[ -n "$default_branch" ]]; then
-        echo "$default_branch"
-        return
-    fi
-
-    if git show-ref --verify --quiet refs/heads/main; then
-        if git show-ref --verify --quiet refs/heads/master; then
-            echo "master"
-        else
-            echo "main"
-        fi
-    elif git show-ref --verify --quiet refs/heads/master; then
-        echo "master"
-    else
-        echo "master"
-    fi
-}
-
 tt_main() {
     # Configure this script
     tt_set_config \
@@ -33,57 +11,8 @@ tt_main() {
         --output-file "CODE_REVIEW_BOUNDARIES.md" \
         --description "Validates module separation, boundaries, and dependency clarity"
 
-    # Parse arguments for base branch
-    local base_branch=""
-    
-    while [[ $# -gt 0 ]]; do
-        case $1 in
-            -h|--help)
-                tt_show_usage
-                exit 0
-                ;;
-            --dry-run)
-                TT_DRY_RUN=true
-                shift
-                ;;
-            *)
-                base_branch="$1"
-                shift
-                ;;
-        esac
-    done
-    
-    # Use default branch if none specified
-    if [[ -z "$base_branch" ]]; then
-        base_branch=$(get_default_branch)
-    fi
-
-    # Get current branch name
-    local current_branch
-    current_branch=$(git branch --show-current)
-
-    if [[ -z "$current_branch" ]]; then
-        echo "Error: Not on a branch" >&2
-        exit 1
-    fi
-
-    # Get list of changed files
-    local changed_files
-    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
-
-    if [[ -z "$changed_files" ]]; then
-        echo "No changes detected between $current_branch and $base_branch"
-        exit 0
-    fi
-
-    local file_count
-    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
-
-    echo "Generating boundary and dependency analysis for $file_count files..."
-
-    # Get the diff content
-    local diff_content
-    diff_content=$(git diff "$base_branch")
+    # Use the shared function for git diff setup
+    tt_setup_diff_review "$@"
 
     # Set the template content
     tt_set_template << 'EOF'
@@ -225,19 +154,6 @@ Analyze code for proper module separation, clear boundaries, and explicit depend
 
 Remember: Good fences make good neighbors. Clear boundaries enable independent evolution.
 EOF
-
-    # Set the context with PR details and diff
-    tt_set_context "## PR Details
-Branch: $current_branch
-Files Changed: $file_count
-
-## Diff
-\`\`\`diff
-$diff_content
-\`\`\`"
-
-    # Set the target files (changed files)
-    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
 }
 
 # Main execution

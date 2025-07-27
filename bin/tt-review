@@ -71,7 +71,7 @@ if [ "$DRY_RUN" = true ]; then
     echo "DRY RUN - Showing what would be executed:"
     echo ""
     for review in "${REVIEWS[@]}"; do
-        echo "Would run: tt-review-$review $BASE_BRANCH"
+        echo "Would run: tt-review-$review \"$BASE_BRANCH\""
     done
     if [ ${#REVIEWS[@]} -gt 1 ]; then
         echo "Would run: tt-review-synthesis"
@@ -91,7 +91,7 @@ for review in "${REVIEWS[@]}"; do
     
     if [ "$review" = "leyline" ]; then
         # Leyline doesn't need base branch (full codebase review)
-        if "tt-review-$review"; then
+        if tt-review-"$review"; then
             SUCCESSFUL_REVIEWS+=("$review")
             echo "✅ $review review completed"
         else
@@ -100,7 +100,7 @@ for review in "${REVIEWS[@]}"; do
         fi
     else
         # Other reviews need base branch
-        if "tt-review-$review" "$BASE_BRANCH"; then
+        if tt-review-"$review" "$BASE_BRANCH"; then
             SUCCESSFUL_REVIEWS+=("$review")
             echo "✅ $review review completed"
         else
