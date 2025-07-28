@@ -167,9 +167,36 @@ tt_execute_thinktank() {
     # Build command
     local cmd_args=("$instruction_file")
     
+    # Get system temp directory base for validation
+    local temp_base=$(dirname $(mktemp -u))
+    
+    # Smart validation for instruction file path
+    if [[ "$instruction_file" = /* ]]; then
+        # Absolute paths allowed only in temp directory
+        if [[ "$instruction_file" != "$temp_base"/* ]] || [[ "$instruction_file" = *..* ]]; then
+            echo "Error: Absolute paths only allowed in temp directory" >&2
+            return 1
+        fi
+        # Additional security: check for symlinks
+        if [[ -L "$instruction_file" ]]; then
+            echo "Error: Symbolic links not allowed for instruction files" >&2
+            return 1
+        fi
+    elif [[ "$instruction_file" = *..* ]]; then
+        echo "Error: Path traversal not allowed" >&2
+        return 1
+    fi
+    
     # Add target files if specified
     if [[ -n "$target_files" ]]; then
         read -ra target_array <<< "$target_files"
+        # Validate each target file path
+        for file in "${target_array[@]}"; do
+            if [[ "$file" = /* ]] || [[ "$file" = *..* ]]; then
+                echo "Error: Target file paths must be relative without '..' components: $file" >&2
+                return 1
+            fi
+        done
         cmd_args+=("${target_array[@]}")
     else
         cmd_args+=("$TT_CONFIG_TARGET_DIRECTORY")
@@ -178,6 +205,13 @@ tt_execute_thinktank() {
     # Add leyline files if found
     if [[ -n "$leyline_files" ]]; then
         read -ra leyline_array <<< "$leyline_files"
+        # Validate each leyline file path
+        for file in "${leyline_array[@]}"; do
+            if [[ "$file" = /* ]] || [[ "$file" = *..* ]]; then
+                echo "Error: Leyline file paths must be relative without '..' components: $file" >&2
+                return 1
+            fi
+        done
         cmd_args+=("${leyline_array[@]}")
     fi
     
@@ -273,6 +307,11 @@ tt_handle_output() {
         fi
         
         if [[ -n "$output_file" ]]; then
+            # Validate output path to prevent path traversal
+            if [[ "$TT_CONFIG_OUTPUT_FILE" = /* ]] || [[ "$TT_CONFIG_OUTPUT_FILE" = *..* ]]; then
+                echo "Error: Output file must be a relative path without '..' components" >&2
+                return 1
+            fi
             cp "$output_file" "$TT_CONFIG_OUTPUT_FILE"
             echo "✓ Created $TT_CONFIG_OUTPUT_FILE from $(basename "$output_file")"
             # Don't clean up - user might want to inspect other outputs
@@ -341,6 +380,12 @@ tt_setup_diff_review() {
                 ;;
         esac
     done
+
+    # Validate branch name format to prevent command injection
+    if [[ -n "$base_branch" ]] && [[ ! "$base_branch" =~ ^[a-zA-Z0-9/_.-]+$ ]]; then
+        echo "Error: Invalid branch name format. Only alphanumeric characters, /, _, ., and - are allowed." >&2
+        exit 1
+    fi
 
     # Use default branch if none specified
     if [[ -z "$base_branch" ]]; then
