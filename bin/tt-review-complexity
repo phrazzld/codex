@@ -1,0 +1,108 @@
+#!/bin/bash
+# tt-review-complexity - Code complexity and simplification review using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-complexity" \
+        --output-file "CODE_REVIEW_COMPLEXITY.md" \
+        --description "Analyzes code complexity and identifies simplification opportunities"
+
+    # Use the shared function for git diff setup
+    tt_setup_diff_review "$@"
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Code Complexity and Simplification Review
+
+Analyze changed code for unnecessary complexity and identify opportunities for simplification.
+
+**FOCUS**: Review changed lines (+ in diff) for over-engineering, unnecessary abstractions, and opportunities to simplify.
+
+## Complexity Indicators to Identify
+
+### 1. Over-Engineering
+- **Premature Abstraction**: Interfaces/classes with single implementation
+- **Unnecessary Patterns**: Design patterns where simple code suffices
+- **Gold Plating**: Features beyond current requirements
+- **YAGNI Violations**: "You Aren't Gonna Need It" - future-proofing
+
+### 2. Code Complexity
+- **Deep Nesting**: More than 3 levels of indentation
+- **Long Methods**: Functions doing too many things
+- **Complex Conditionals**: Hard-to-follow boolean logic
+- **Parameter Overload**: Functions with too many parameters
+
+### 3. Abstraction Issues
+- **Leaky Abstractions**: Implementation details bleeding through
+- **Wrong Level**: Abstractions at inappropriate layers
+- **Indirection Overload**: Too many layers between intent and implementation
+- **Framework Obsession**: Using frameworks where vanilla code works
+
+### 4. Simplification Opportunities
+- **Duplicate Logic**: Similar code that could be unified
+- **Dead Code**: Unused functions, variables, imports
+- **Verbose Patterns**: Code that could be more concise
+- **Configuration Complexity**: Over-configurable systems
+
+## Output Format
+```
+# Complexity Analysis
+
+## 🔴 HIGH COMPLEXITY ISSUES
+### [Issue Title] - HIGH
+- **Location**: file_path:line_numbers
+- **Complexity Type**: [over-engineering/deep-nesting/abstraction]
+- **Current**: [What makes it complex]
+- **Simplified**: [Concrete simpler approach]
+- **Benefit**: [Readability/maintenance improvement]
+- **Example**:
+  ```language
+  // Current complex code
+  ```
+  ```language
+  // Simplified version
+  ```
+
+## 🟡 MODERATE COMPLEXITY
+### [Issue Title] - MEDIUM
+- **Location**: file_path:line_numbers
+- **Issue**: [What could be simpler]
+- **Suggestion**: [How to simplify]
+- **Trade-off**: [Any downsides to consider]
+
+## 🟢 SIMPLIFICATION OPPORTUNITIES
+### [Opportunity Title] - LOW
+- **Location**: file_path:line_numbers
+- **Current**: [Existing approach]
+- **Alternative**: [Simpler option]
+- **Effort**: [Easy/Medium/Hard to refactor]
+
+## 📊 METRICS
+- Cyclomatic Complexity: [Notable functions >10]
+- Nesting Depth: [Files with >3 levels]
+- Abstraction Layers: [Excessive indirection]
+- LOC Reduction Potential: [Estimated % reducible]
+
+## 🎯 REFACTORING PRIORITIES
+1. **Quick Wins**: [Easy simplifications with high impact]
+2. **Strategic Simplifications**: [Larger refactors worth doing]
+3. **Technical Debt**: [Complex areas needing future attention]
+
+## ✅ SUMMARY
+- High Complexity Issues: X
+- Simplification Opportunities: Y
+- Estimated Refactoring Effort: [hours/days]
+- Code Clarity Improvement: [HIGH|MEDIUM|LOW]
+```
+
+Remember: Favor simple, explicit code over clever abstractions. The best code is code that doesn't exist.
+EOF
+}
+
+# Main execution
+tt_main "$@"
+tt_run

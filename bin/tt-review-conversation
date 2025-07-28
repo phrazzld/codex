@@ -1,0 +1,170 @@
+#!/bin/bash
+# tt-review-conversation - Generate questions for code review discussions using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-conversation" \
+        --output-file "CODE_REVIEW_CONVERSATION.md" \
+        --description "Generates thoughtful questions to facilitate code review discussions"
+
+    # Use the shared function for git diff setup
+    tt_setup_diff_review "$@"
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Code Review Conversation Generator
+
+Generate thoughtful questions that promote learning, uncover hidden assumptions, and improve code quality through dialogue.
+
+**GOAL**: Create questions that lead to insights, not just criticisms. Foster collaborative improvement and shared understanding.
+
+## Question Categories
+
+### 1. Design Decisions
+- Why this approach over alternatives?
+- What trade-offs were considered?
+- How does this fit the larger architecture?
+- What constraints influenced this design?
+
+### 2. Future Evolution
+- How will this handle future requirements?
+- What happens when scale increases 10x?
+- Where might this pattern break down?
+- What's the migration path if we need to change?
+
+### 3. Hidden Assumptions
+- What domain knowledge is assumed?
+- What invariants must hold true?
+- What external dependencies exist?
+- What error conditions are possible?
+
+### 4. Learning Opportunities
+- What pattern is being introduced here?
+- How does this improve on previous approaches?
+- What can the team learn from this?
+- Should this become a standard pattern?
+
+### 5. Edge Cases & Robustness
+- What happens in failure scenarios?
+- How does this handle concurrent access?
+- What about empty/null/extreme inputs?
+- Are there timing/ordering dependencies?
+
+### 6. Alternative Perspectives
+- How would a new developer understand this?
+- What would operations team need to know?
+- How does this affect other teams/services?
+- What's the user's perspective on this change?
+
+## Output Format
+```
+# Code Review Discussion Guide
+
+## 🤔 Key Design Questions
+### About [Component/Pattern/Decision]
+**Context**: [Brief description of what the code does]
+**Question**: [Thoughtful question about the approach]
+**Why This Matters**: [Impact on maintainability/performance/etc]
+**Discussion Points**:
+- [Specific aspect to explore]
+- [Alternative to consider]
+- [Trade-off to evaluate]
+
+## 🔮 Future-Proofing Questions
+### Regarding [Scalability/Flexibility/Evolution]
+**Current Assumption**: [What the code assumes today]
+**Question**: [How will this handle future scenarios?]
+**Scenarios to Consider**:
+- [Specific future change]
+- [Growth pattern]
+- [New requirement type]
+
+## 💡 Learning & Pattern Questions
+### Pattern: [Identified Pattern or Approach]
+**Question**: [Is this a pattern we want to standardize?]
+**Benefits**:
+- [Why this pattern helps]
+- [Problems it solves]
+**Considerations**:
+- [When to use it]
+- [When to avoid it]
+**Team Learning**: [What everyone can learn from this]
+
+## 🎯 Clarification Questions
+### About [Unclear/Complex Section]
+**Question**: [What needs clarification]
+**Current Understanding**: [What seems to be happening]
+**Seeking**: [Specific information needed]
+**Documentation Opportunity**: [What should be documented]
+
+## 🛡️ Robustness Questions
+### Error Handling in [Component]
+**Question**: [What happens when X fails?]
+**Current Behavior**: [What the code does now]
+**Edge Cases to Discuss**:
+- [Specific failure mode]
+- [Unusual input]
+- [Resource constraint]
+
+## 🤝 Cross-Team Impact Questions
+### For [Other Team/Service/Component]
+**Question**: [How does this affect X team?]
+**Touchpoints**: [Where systems interact]
+**Communication Needed**: [What to coordinate]
+
+## 🎓 Knowledge Sharing Prompts
+### Domain Knowledge
+**Question**: [Can you explain the business rule behind X?]
+**Current Implementation**: [How it's coded]
+**Business Context**: [Why it matters]
+**Documentation**: [Where this should be captured]
+
+## 💭 "What If" Scenarios
+### Scenario: [Hypothetical situation]
+**Question**: [How would the code handle this?]
+**Current Design**: [Current capability]
+**Implications**: [What would need to change]
+
+## 🔄 Refactoring Discussion
+### Opportunity: [Potential improvement]
+**Question**: [Should we refactor X while we're here?]
+**Current State**: [What exists]
+**Improved State**: [What it could be]
+**Effort vs. Benefit**: [Trade-off analysis]
+
+## 📚 Best Practices Discussion
+### Practice: [Relevant best practice]
+**Question**: [How can we better apply X principle?]
+**Current Alignment**: [How well we follow it]
+**Improvement Path**: [Steps to better adherence]
+
+## 🎯 Action Items from Discussion
+Based on these questions, consider:
+1. **Documentation**: What needs to be written down?
+2. **Patterns**: What should become team standards?
+3. **Refactoring**: What improvements to schedule?
+4. **Learning**: What knowledge to share with team?
+5. **Process**: What development process to adjust?
+
+## 💬 Conversation Starters
+Pick 3-5 questions from above that are most relevant to this PR and use them to start a meaningful discussion. The goal is mutual learning and code improvement, not just approval.
+
+**Remember**: Great code reviews are conversations, not inspections.
+```
+
+Focus on questions that:
+- Promote learning over criticism
+- Uncover hidden complexity
+- Explore alternatives constructively
+- Share knowledge across the team
+- Improve future development
+EOF
+}
+
+# Main execution
+tt_main "$@"
+tt_run

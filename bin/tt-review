@@ -2,71 +2,156 @@
 
 # Function to display usage
 usage() {
-    echo "Usage: $0 [base_branch]"
+    echo "Usage: $0 [options] [base_branch]"
     echo "  base_branch: Branch to compare against (default: auto-detected main/master)"
     echo ""
-    echo "Performs two-pass code review:"
-    echo "  1. Diff-focused review (bugs, functional issues) -> CODE_REVIEW_DIFF.md"
-    echo "  2. Philosophy alignment review (standards, patterns) -> CODE_REVIEW_PHILOSOPHY.md"
+    echo "Options:"
+    echo "  -h, --help    Show this help message"
+    echo "  --full        Run all 5 review types (default: bugs + quality only)"
+    echo "  --dry-run     Show what would be executed without running"
     echo ""
-    echo "For individual reviews, use:"
-    echo "  tt-review-diff       - Only diff-focused review"
-    echo "  tt-review-philosophy - Only philosophy review"
+    echo "Default mode runs:"
+    echo "  - tt-review-bugs (critical issues)"
+    echo "  - tt-review-quality (code quality)"
+    echo ""
+    echo "Full mode (--full) additionally runs:"
+    echo "  - tt-review-complexity (simplification opportunities)"
+    echo "  - tt-review-security (vulnerability detection)"
+    echo "  - tt-review-leyline (philosophy alignment - full codebase)"
+    echo ""
+    echo "Individual review commands:"
+    echo "  tt-review-bugs       - Critical bugs and correctness"
+    echo "  tt-review-quality    - General code quality"
+    echo "  tt-review-complexity - Simplification opportunities"
+    echo "  tt-review-security   - Security vulnerabilities"
+    echo "  tt-review-leyline    - Full codebase philosophy check"
+    echo "  tt-review-synthesis  - Combine multiple review outputs"
     exit 1
 }
 
 # Parse arguments
-if [ "$1" = "-h" ] || [ "$1" = "--help" ]; then
-    usage
-fi
+FULL_MODE=false
+DRY_RUN=false
+BASE_BRANCH=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        -h|--help)
+            usage
+            ;;
+        --full)
+            FULL_MODE=true
+            shift
+            ;;
+        --dry-run)
+            DRY_RUN=true
+            shift
+            ;;
+        *)
+            BASE_BRANCH="$1"
+            shift
+            ;;
+    esac
+done
 
 echo ""
-echo "Running two-pass code review..."
+echo "🔍 Smart Code Review System"
+echo "=========================="
 
-# Track success/failure of each pass
-DIFF_SUCCESS=0
-PHILOSOPHY_SUCCESS=0
-
-# Pass 1: Diff-focused review
-echo "Pass 1: Running diff-focused review..."
-if tt-review-diff "$@"; then
-    DIFF_SUCCESS=1
-    echo "✓ Diff review completed successfully"
+# Determine which reviews to run
+if [ "$FULL_MODE" = true ]; then
+    echo "Mode: FULL (all 5 review types + synthesis)"
+    REVIEWS=("bugs" "quality" "complexity" "security" "leyline")
 else
-    echo "✗ Diff review failed"
+    echo "Mode: STANDARD (bugs + quality)"
+    REVIEWS=("bugs" "quality")
+fi
+
+if [ "$DRY_RUN" = true ]; then
+    echo "DRY RUN - Showing what would be executed:"
+    echo ""
+    for review in "${REVIEWS[@]}"; do
+        echo "Would run: tt-review-$review \"$BASE_BRANCH\""
+    done
+    if [ ${#REVIEWS[@]} -gt 1 ]; then
+        echo "Would run: tt-review-synthesis"
+    fi
+    exit 0
 fi
 
 echo ""
 
-# Pass 2: Philosophy-alignment review
-echo "Pass 2: Running philosophy-alignment review..."
-if tt-review-philosophy "$@"; then
-    PHILOSOPHY_SUCCESS=1
-    echo "✓ Philosophy review completed successfully"
-else
-    echo "✗ Philosophy review failed"
-fi
+# Track successful reviews
+SUCCESSFUL_REVIEWS=()
+FAILED_REVIEWS=()
 
-echo ""
+# Run each review
+for review in "${REVIEWS[@]}"; do
+    echo "▶️  Running $review review..."
+    
+    if [ "$review" = "leyline" ]; then
+        # Leyline doesn't need base branch (full codebase review)
+        if tt-review-"$review"; then
+            SUCCESSFUL_REVIEWS+=("$review")
+            echo "✅ $review review completed"
+        else
+            FAILED_REVIEWS+=("$review")
+            echo "❌ $review review failed"
+        fi
+    else
+        # Other reviews need base branch
+        if tt-review-"$review" "$BASE_BRANCH"; then
+            SUCCESSFUL_REVIEWS+=("$review")
+            echo "✅ $review review completed"
+        else
+            FAILED_REVIEWS+=("$review")
+            echo "❌ $review review failed"
+        fi
+    fi
+    echo ""
+done
+
+# Run synthesis if we have multiple successful reviews
+if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 1 ]; then
+    echo "🔀 Running synthesis on ${#SUCCESSFUL_REVIEWS[@]} review reports..."
+    if tt-review-synthesis; then
+        echo "✅ Synthesis completed"
+        SYNTHESIS_SUCCESS=true
+    else
+        echo "❌ Synthesis failed"
+        SYNTHESIS_SUCCESS=false
+    fi
+    echo ""
+fi
 
 # Summary
-if [ $DIFF_SUCCESS -eq 1 ] && [ $PHILOSOPHY_SUCCESS -eq 1 ]; then
-    echo "Two-pass code review complete!"
-    echo "📋 Functional issues: CODE_REVIEW_DIFF.md"
-    echo "📐 Philosophy alignment: CODE_REVIEW_PHILOSOPHY.md"
+echo "📊 Review Summary"
+echo "================"
+echo "Successful: ${#SUCCESSFUL_REVIEWS[@]} reviews"
+for review in "${SUCCESSFUL_REVIEWS[@]}"; do
+    upper_review=$(echo "$review" | tr '[:lower:]' '[:upper:]')
+    echo "  ✅ CODE_REVIEW_${upper_review}.md"
+done
+
+if [ ${#FAILED_REVIEWS[@]} -gt 0 ]; then
+    echo "Failed: ${#FAILED_REVIEWS[@]} reviews"
+    for review in "${FAILED_REVIEWS[@]}"; do
+        echo "  ❌ $review"
+    done
+fi
+
+if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 1 ] && [ "$SYNTHESIS_SUCCESS" = true ]; then
+    echo ""
+    echo "📋 Unified report: CODE_REVIEW_SYNTHESIS.md"
+fi
+
+echo ""
+
+# Exit status
+if [ ${#FAILED_REVIEWS[@]} -eq 0 ] && { [ ${#SUCCESSFUL_REVIEWS[@]} -le 1 ] || [ "$SYNTHESIS_SUCCESS" = true ]; }; then
+    echo "✅ All reviews completed successfully!"
     exit 0
-elif [ $DIFF_SUCCESS -eq 1 ]; then
-    echo "Partial success: Diff review completed, philosophy review failed"
-    echo "📋 Functional issues: CODE_REVIEW_DIFF.md"
-    echo "Run 'tt-review-philosophy' to retry the failed review"
-    exit 1
-elif [ $PHILOSOPHY_SUCCESS -eq 1 ]; then
-    echo "Partial success: Philosophy review completed, diff review failed"
-    echo "📐 Philosophy alignment: CODE_REVIEW_PHILOSOPHY.md"
-    echo "Run 'tt-review-diff' to retry the failed review"
-    exit 1
 else
-    echo "Both reviews failed"
-    echo "Try running 'tt-review-diff' and 'tt-review-philosophy' individually"
+    echo "⚠️  Some reviews failed. Check individual outputs for details."
     exit 1
 fi

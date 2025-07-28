@@ -1,0 +1,189 @@
+#!/bin/bash
+# tt-review-synthesis - Synthesize multiple review outputs using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-synthesis" \
+        --output-file "CODE_REVIEW_SYNTHESIS.md" \
+        --description "Synthesizes multiple code review outputs into unified report"
+
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                shift
+                ;;
+        esac
+    done
+
+    # Find all review output files
+    local review_files=""
+    local file_count=0
+    
+    if [[ -f "CODE_REVIEW_BUGS.md" ]]; then
+        review_files="CODE_REVIEW_BUGS.md"
+        ((file_count++))
+    fi
+    
+    if [[ -f "CODE_REVIEW_QUALITY.md" ]]; then
+        review_files="$review_files CODE_REVIEW_QUALITY.md"
+        ((file_count++))
+    fi
+    
+    if [[ -f "CODE_REVIEW_COMPLEXITY.md" ]]; then
+        review_files="$review_files CODE_REVIEW_COMPLEXITY.md"
+        ((file_count++))
+    fi
+    
+    if [[ -f "CODE_REVIEW_SECURITY.md" ]]; then
+        review_files="$review_files CODE_REVIEW_SECURITY.md"
+        ((file_count++))
+    fi
+    
+    if [[ -f "CODE_REVIEW_LEYLINE.md" ]]; then
+        review_files="$review_files CODE_REVIEW_LEYLINE.md"
+        ((file_count++))
+    fi
+
+    if [[ $file_count -eq 0 ]]; then
+        echo "No review files found to synthesize"
+        echo "Run individual tt-review-* commands first"
+        exit 1
+    fi
+
+    echo "Synthesizing $file_count review reports..."
+
+    # Read all review files
+    local all_reviews=""
+    for file in $review_files; do
+        all_reviews="$all_reviews
+
+## From $file:
+$(cat "$file")"
+    done
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Code Review Synthesis
+
+You are provided with multiple specialized code review reports. Your task is to synthesize them into a unified, actionable review report.
+
+## Synthesis Goals
+
+1. **Deduplicate**: Identify issues mentioned across multiple reviews
+2. **Prioritize**: Create unified priority ranking based on severity and impact
+3. **Cross-reference**: Connect related issues across different dimensions
+4. **Patterns**: Identify systemic issues that appear in multiple contexts
+5. **Action Plan**: Create clear, prioritized action items
+
+## Synthesis Process
+
+1. **Extract All Issues**: Gather all issues from all reports
+2. **Categorize by Severity**: Critical > High > Medium > Low
+3. **Identify Overlaps**: Find issues mentioned in multiple reviews
+4. **Detect Patterns**: Look for recurring themes or systemic problems
+5. **Create Unified View**: Merge related issues, preserve unique ones
+6. **Generate Action Plan**: Prioritized list of what to fix
+
+## Output Format
+```
+# Unified Code Review Report
+
+## 📊 REVIEW SUMMARY
+- Reviews Analyzed: [List of review types]
+- Total Issues Found: X (Y unique after deduplication)
+- Critical Issues: A
+- High Priority: B
+- Medium Priority: C
+- Low Priority: D
+
+## 🚨 CRITICAL ISSUES (MUST FIX)
+### 1. [Issue Title]
+- **Found In**: [Which reviews flagged this]
+- **Type**: [Bug/Security/Quality/etc]
+- **Location**: file_path:line_numbers
+- **Impact**: [Combined impact assessment]
+- **Fix**: [Consolidated remediation approach]
+
+## ⚠️ HIGH PRIORITY ISSUES
+### 1. [Issue Title]
+- **Found In**: [Which reviews]
+- **Category**: [Type of issue]
+- **Details**: [Merged description]
+- **Action**: [What to do]
+
+## 🔍 MEDIUM PRIORITY CONCERNS
+[Similar format, grouped by theme]
+
+## 💡 LOW PRIORITY IMPROVEMENTS
+[Similar format, optional enhancements]
+
+## 🎯 SYSTEMIC PATTERNS
+### [Pattern Name]
+- **Observed In**: [Multiple locations/reviews]
+- **Root Cause**: [Underlying issue]
+- **Strategic Fix**: [How to address systematically]
+
+## 📈 QUALITY METRICS SUMMARY
+- **Code Quality Score**: [Aggregate assessment]
+- **Security Risk Level**: [From security review]
+- **Complexity Score**: [From complexity review]
+- **Philosophy Alignment**: [From leyline review if present]
+- **Test Coverage Gap**: [From quality review]
+
+## 🗺️ IMPROVEMENT ROADMAP
+### Immediate Actions (Before Merge)
+1. [Critical bug/security fixes]
+2. [Blocking quality issues]
+
+### Short-term Improvements (This Sprint)
+1. [High priority items]
+2. [Important refactoring]
+
+### Long-term Goals (Technical Debt)
+1. [Systemic improvements]
+2. [Architecture evolution]
+
+## ✅ CHECKLIST FOR MERGE
+- [ ] All critical bugs fixed
+- [ ] Security vulnerabilities addressed
+- [ ] Tests added for new functionality
+- [ ] Documentation updated
+- [ ] Code review feedback incorporated
+
+## 🏁 FINAL ASSESSMENT
+**Merge Readiness**: [BLOCKED|CONDITIONAL|READY]
+- Blocking Issues: X
+- Required Changes: Y
+- Recommended Improvements: Z
+
+**Overall Risk**: [CRITICAL|HIGH|MEDIUM|LOW]
+**Technical Debt Impact**: [Increased|Neutral|Decreased]
+```
+
+Provide a clear, actionable synthesis that helps developers understand the full picture and prioritize their work effectively.
+EOF
+
+    # Set the context with all reviews
+    tt_set_context "## Code Review Reports
+$all_reviews"
+
+    # Set target to the review files themselves
+    tt_set_target_files "$review_files"
+}
+
+# Main execution
+tt_main "$@"
+tt_run

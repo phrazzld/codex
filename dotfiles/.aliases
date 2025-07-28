@@ -10,6 +10,7 @@ alias compress='tar czf'
 alias decompress='tar xzf'
 alias f='fzf --bind "enter:execute(nvim {})"'
 alias c='claude'
+alias cw='clauditor --watch'
 alias e='node $DEVELOPMENT/elevator/dist/cli.js'
 alias cub='ccusage blocks --live'
 

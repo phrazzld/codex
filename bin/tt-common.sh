@@ -14,6 +14,7 @@ TT_CONTEXT_CONTENT=""
 TT_TARGET_FILES=""
 TT_TEMP_DIR=""
 TT_DRY_RUN=false
+TT_OUTPUT_DIR=""
 
 # Configuration functions
 tt_set_config() {
@@ -166,9 +167,36 @@ tt_execute_thinktank() {
     # Build command
     local cmd_args=("$instruction_file")
     
+    # Get system temp directory base for validation
+    local temp_base=$(dirname $(mktemp -u))
+    
+    # Smart validation for instruction file path
+    if [[ "$instruction_file" = /* ]]; then
+        # Absolute paths allowed only in temp directory
+        if [[ "$instruction_file" != "$temp_base"/* ]] || [[ "$instruction_file" = *..* ]]; then
+            echo "Error: Absolute paths only allowed in temp directory" >&2
+            return 1
+        fi
+        # Additional security: check for symlinks
+        if [[ -L "$instruction_file" ]]; then
+            echo "Error: Symbolic links not allowed for instruction files" >&2
+            return 1
+        fi
+    elif [[ "$instruction_file" = *..* ]]; then
+        echo "Error: Path traversal not allowed" >&2
+        return 1
+    fi
+    
     # Add target files if specified
     if [[ -n "$target_files" ]]; then
         read -ra target_array <<< "$target_files"
+        # Validate each target file path
+        for file in "${target_array[@]}"; do
+            if [[ "$file" = /* ]] || [[ "$file" = *..* ]]; then
+                echo "Error: Target file paths must be relative without '..' components: $file" >&2
+                return 1
+            fi
+        done
         cmd_args+=("${target_array[@]}")
     else
         cmd_args+=("$TT_CONFIG_TARGET_DIRECTORY")
@@ -177,6 +205,13 @@ tt_execute_thinktank() {
     # Add leyline files if found
     if [[ -n "$leyline_files" ]]; then
         read -ra leyline_array <<< "$leyline_files"
+        # Validate each leyline file path
+        for file in "${leyline_array[@]}"; do
+            if [[ "$file" = /* ]] || [[ "$file" = *..* ]]; then
+                echo "Error: Leyline file paths must be relative without '..' components: $file" >&2
+                return 1
+            fi
+        done
         cmd_args+=("${leyline_array[@]}")
     fi
     
@@ -200,35 +235,218 @@ tt_execute_thinktank() {
         return 0
     fi
     
-    # Execute thinktank
+    # Execute thinktank and capture output
     echo "Running thinktank analysis..."
-    thinktank "${cmd_args[@]}"
+    local thinktank_output
+    local thinktank_exit_code
+    
+    # Run thinktank and capture both stdout/stderr
+    thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1)
+    thinktank_exit_code=$?
+    
+    # Print the output so user can see progress
+    echo "$thinktank_output"
+    
+    # Handle different exit codes
+    # Exit code 0: Complete success
+    # Exit code 4: Partial success (some models failed but synthesis completed)
+    # Other codes: Failure
+    if [[ $thinktank_exit_code -eq 0 ]]; then
+        echo "Thinktank completed successfully"
+    elif [[ $thinktank_exit_code -eq 4 ]]; then
+        echo "Thinktank completed with partial success (some models failed)"
+        # Continue to check for synthesis output
+    else
+        echo "Error: thinktank failed with exit code $thinktank_exit_code" >&2
+        return 1
+    fi
+    
+    # Extract the output directory from thinktank's output
+    # Look for "Output directory:" or "Outputs saved to:" patterns
+    local output_dir
+    output_dir=$(echo "$thinktank_output" | grep -E "(Output directory:|Outputs saved to:)" | tail -1 | sed -E 's/.*(thinktank_[0-9]+_[0-9]+_[0-9]+).*/\1/')
+    
+    if [[ -z "$output_dir" ]]; then
+        # Fallback: look for the most recent thinktank directory
+        output_dir=$(find . -maxdepth 1 -name "thinktank_*" -type d -mmin -1 2>/dev/null | sort -r | head -1 | xargs basename 2>/dev/null)
+    fi
+    
+    # Check if we found an output directory
+    if [[ -n "$output_dir" && -d "$output_dir" ]]; then
+        TT_OUTPUT_DIR="$output_dir"
+        # Check for synthesis completion
+        if [[ "$thinktank_output" =~ "Synthesis: ✓ completed" ]] || [[ "$thinktank_output" =~ "synthesis.md" ]]; then
+            if [[ $thinktank_exit_code -eq 4 ]]; then
+                echo "✓ Synthesis completed despite some model failures"
+            else
+                echo "✓ Synthesis completed successfully"
+            fi
+            return 0
+        else
+            echo "Warning: Output directory found but no synthesis detected" >&2
+            echo "Check $output_dir for partial results" >&2
+        fi
+    else
+        echo "Warning: Could not find thinktank output directory" >&2
+    fi
+    
+    # If we got here, we couldn't complete the synthesis
+    return 1
 }
 
 # Handle thinktank output robustly
 tt_handle_output() {
-    # Find the most recent output directory created by thinktank
-    local latest_output_dir
-    latest_output_dir=$(find . -maxdepth 1 -name "thinktank-*" -type d -newermt '1 minute ago' 2>/dev/null | sort -r | head -1)
+    # Use the output directory we found
+    local output_dir="$TT_OUTPUT_DIR"
     
-    if [[ -n "$latest_output_dir" ]]; then
-        # Look for the main output file in the directory
+    if [[ -z "$output_dir" ]]; then
+        echo "Error: No output directory recorded" >&2
+        return 1
+    fi
+    
+    if [[ -d "$output_dir" ]]; then
+        # Look specifically for synthesis files first
+        local synthesis_file
+        synthesis_file=$(find "$output_dir" -name "*-synthesis.md" -type f | head -1)
+        
+        # If no synthesis file, look for any .md file
         local output_file
-        output_file=$(find "$latest_output_dir" -name "*.md" -type f | head -1)
+        if [[ -n "$synthesis_file" ]]; then
+            output_file="$synthesis_file"
+        else
+            local md_files=($(find "$output_dir" -name "*.md" -type f))
+            if [[ ${#md_files[@]} -eq 1 ]]; then
+                output_file="${md_files[0]}"
+            elif [[ ${#md_files[@]} -gt 1 ]]; then
+                echo "Warning: Multiple output files found but no synthesis file. Cannot determine correct output." >&2
+            fi
+        fi
         
         if [[ -n "$output_file" ]]; then
+            # Validate output path to prevent path traversal
+            if [[ "$TT_CONFIG_OUTPUT_FILE" = /* ]] || [[ "$TT_CONFIG_OUTPUT_FILE" = *..* ]]; then
+                echo "Error: Output file must be a relative path without '..' components" >&2
+                return 1
+            fi
             cp "$output_file" "$TT_CONFIG_OUTPUT_FILE"
-            echo "✓ Created $TT_CONFIG_OUTPUT_FILE"
+            echo "✓ Created $TT_CONFIG_OUTPUT_FILE from $(basename "$output_file")"
+            # Don't clean up - user might want to inspect other outputs
+            echo "Output directory preserved: $output_dir"
             return 0
         else
-            echo "Warning: Could not find output file in $latest_output_dir" >&2
+            echo "Warning: Could not find output file in $output_dir" >&2
+            echo "Directory contents:" >&2
+            ls -la "$output_dir" >&2
             return 1
         fi
     else
-        echo "Warning: Could not find thinktank output directory" >&2
-        echo "Make sure thinktank executed successfully" >&2
+        echo "Warning: Output directory $output_dir does not exist" >&2
+        echo "Current directory contents:" >&2
+        ls -d thinktank_* 2>/dev/null || echo "No thinktank directories found" >&2
         return 1
     fi
+}
+
+# Get the default git branch (main or master)
+tt_get_default_branch() {
+    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+
+    if [[ -n "$default_branch" ]]; then
+        echo "$default_branch"
+        return
+    fi
+
+    if git show-ref --verify --quiet refs/heads/main; then
+        if git show-ref --verify --quiet refs/heads/master; then
+            echo "master"
+        else
+            echo "main"
+        fi
+    elif git show-ref --verify --quiet refs/heads/master; then
+        echo "master"
+    else
+        echo "master"
+    fi
+}
+
+# Set up a diff-based review with common git operations
+# Usage: tt_setup_diff_review "$@"
+# This function handles:
+# - Argument parsing for base branch and flags
+# - Git diff generation
+# - Context setting with PR details
+# - Target files setting
+tt_setup_diff_review() {
+    # Parse arguments for base branch
+    local base_branch=""
+
+    while [[ $# -gt 0 ]]; do
+        case $1 in
+            -h|--help)
+                tt_show_usage
+                exit 0
+                ;;
+            --dry-run)
+                TT_DRY_RUN=true
+                shift
+                ;;
+            *)
+                base_branch="$1"
+                shift
+                ;;
+        esac
+    done
+
+    # Validate branch name format to prevent command injection
+    if [[ -n "$base_branch" ]] && [[ ! "$base_branch" =~ ^[a-zA-Z0-9/_.-]+$ ]]; then
+        echo "Error: Invalid branch name format. Only alphanumeric characters, /, _, ., and - are allowed." >&2
+        exit 1
+    fi
+
+    # Use default branch if none specified
+    if [[ -z "$base_branch" ]]; then
+        base_branch=$(tt_get_default_branch)
+    fi
+
+    # Get current branch name
+    local current_branch
+    current_branch=$(git branch --show-current)
+
+    if [[ -z "$current_branch" ]]; then
+        echo "Error: Not on a branch" >&2
+        exit 1
+    fi
+
+    # Get list of changed files
+    local changed_files
+    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+
+    if [[ -z "$changed_files" ]]; then
+        echo "No changes detected between $current_branch and $base_branch"
+        exit 0
+    fi
+
+    local file_count
+    file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
+
+    echo "Generating review for $file_count files..."
+
+    # Get the diff content
+    local diff_content
+    diff_content=$(git diff "$base_branch")
+
+    # Set the context with PR details and diff
+    tt_set_context "## PR Details
+Branch: $current_branch
+Files Changed: $file_count
+
+## Diff
+\`\`\`diff
+$diff_content
+\`\`\`"
+
+    # Set the target files (changed files)
+    tt_set_target_files "$(echo "$changed_files" | tr '\n' ' ')"
 }
 
 # Main execution function

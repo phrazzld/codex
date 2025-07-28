@@ -1,0 +1,112 @@
+#!/bin/bash
+# tt-review-ship - Minimal safety review for rapid delivery using shared library
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-ship" \
+        --output-file "CODE_REVIEW_SHIP.md" \
+        --description "Minimal safety checks for rapid delivery - focus on ship-stoppers only"
+
+    # Use the shared function for git diff setup
+    tt_setup_diff_review "$@"
+
+    # Set the template content
+    tt_set_template << 'EOF'
+# Ship Safety Check - Minimal Review for Rapid Delivery
+
+**MISSION**: Identify ONLY ship-stopping issues. This is NOT a comprehensive review - it's a safety net for rapid delivery.
+
+**FOCUS**: Critical bugs, security holes, and data corruption risks that would cause immediate production issues.
+
+## Ship-Stopper Checklist
+
+### 1. Will It Crash? 🔥
+- **Null/Undefined**: Dereferencing without checks
+- **Array Bounds**: Out of bounds access
+- **Type Errors**: Runtime type mismatches
+- **Infinite Loops**: Obvious non-terminating loops
+- **Resource Exhaustion**: Unbounded memory/CPU usage
+
+### 2. Will It Corrupt Data? 💾
+- **SQL Injection**: Raw SQL with user input
+- **Race Conditions**: Concurrent writes without locks
+- **Wrong Database**: Prod credentials in code
+- **Data Loss**: DELETE without WHERE, overwrites
+- **Schema Mismatches**: Code/DB out of sync
+
+### 3. Will It Breach Security? 🔒
+- **Exposed Secrets**: API keys, passwords in code
+- **Auth Bypass**: Missing auth checks
+- **Open Endpoints**: Unprotected routes
+- **XSS**: Unescaped user input in HTML
+- **Privilege Escalation**: User can access admin
+
+### 4. Will It Break the Build? 🏗️
+- **Import Errors**: Missing dependencies
+- **Syntax Errors**: Code won't compile/parse
+- **Test Failures**: Existing tests now fail
+- **Config Issues**: Missing required config
+
+## Output Format
+```
+# ⚡ SHIP SAFETY REPORT
+
+## 🚨 SHIP STOPPERS (MUST FIX NOW)
+### [Critical Issue]
+- **Severity**: BLOCKER
+- **Location**: file:line
+- **What Breaks**: [Crash/Data Loss/Security Breach]
+- **Quick Fix**: [Minimal change to ship safely]
+- **Time Estimate**: [5 min/30 min/2 hours]
+
+## ⚠️ SHIP WARNINGS (Fix within 24 hours)
+### [High Risk Issue]
+- **Severity**: HIGH
+- **Location**: file:line
+- **Risk**: [What could go wrong]
+- **Mitigation**: [How to reduce risk]
+- **TODO**: [Track for immediate follow-up]
+
+## ✅ SHIP DECISION
+**Can Ship**: [YES with conditions | NO - blockers found]
+
+### If YES with conditions:
+- **Conditions**: [What must be done first]
+- **Follow-up Required**: [What to fix immediately after]
+- **Risk Accepted**: [What we're accepting temporarily]
+
+### If NO:
+- **Blocking Issues**: [List of must-fix items]
+- **Estimated Fix Time**: [Total time to unblock]
+- **Quick Path**: [Fastest way to make shippable]
+
+## 📋 POST-SHIP CHECKLIST
+After shipping, immediately:
+- [ ] Fix any accepted warnings
+- [ ] Add missing tests
+- [ ] Document any shortcuts taken
+- [ ] Schedule full review if skipped
+```
+
+**REMEMBER**: 
+- This is for RAPID delivery - be pragmatic
+- Flag only REAL blockers, not style issues
+- Suggest QUICK fixes, not perfect solutions
+- Track debt for later cleanup
+
+**NOT IN SCOPE**:
+- Code style or formatting
+- Performance (unless catastrophic)
+- Maintainability (track for later)
+- Test coverage (unless zero tests)
+- Documentation (track for later)
+EOF
+}
+
+# Main execution
+tt_main "$@"
+tt_run

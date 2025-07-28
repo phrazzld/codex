@@ -51,6 +51,55 @@
     - new web store assets
     - fresh coat of paint in the ui
 
+## TT-REVIEW SYSTEM ENHANCEMENTS
+
+### High Priority (Next Sprint)
+- **Add BATS test suite** for core functions in tt-common.sh
+  - Test tt_execute_thinktank, tt_handle_output, argument parsing
+  - Mock thinktank calls for unit tests
+  - Add integration tests for full workflow
+  - *Rationale*: Shell scripts are critical for CI/CD but harder to test
+  - *Effort*: Medium (2-3 days)
+  - *Reference*: PR #13 code review
+
+- **Make output parsing more robust** (bin/tt-common.sh:225)
+  - Replace brittle regex with JSON parsing if thinktank supports it
+  - Add multiple fallback patterns for different versions
+  - *Rationale*: Current parsing is fragile and could break with thinktank updates
+  - *Effort*: Low (1 day)
+
+- **Standardize argument handling patterns**
+  - Some scripts use tt_setup_diff_review, others parse manually
+  - Create consistent approach across all scripts
+  - *Rationale*: Inconsistency makes maintenance harder
+  - *Effort*: Low (1 day)
+
+- **Dynamic review discovery in synthesis** (bin/tt-review-synthesis:35-58)
+  - Replace hardcoded file list with: `find . -name "CODE_REVIEW_*.md"`
+  - *Rationale*: Manual maintenance required when adding new review types
+  - *Effort*: Low (few hours)
+
+### Medium Priority (Technical Debt)
+- **Add parallel review execution option**
+  - Run multiple reviews concurrently for faster results
+  - *Rationale*: Sequential execution is slow for full reviews
+  - *Effort*: Medium (2 days)
+
+- **Optimize large diff handling** 
+  - Stream processing instead of loading all into memory
+  - *Rationale*: Current approach could fail on very large PRs
+  - *Effort*: Medium (1-2 days)
+
+- **Add configuration file support**
+  - Allow .tt-review.yml for project-specific settings
+  - *Rationale*: Hard-coded values limit flexibility
+  - *Effort*: Medium (2 days)
+
+- **Improve error message consistency**
+  - Standardize error format and logging levels
+  - *Rationale*: Better debugging and user experience
+  - *Effort*: Low (1 day)
+
 ## backburner
 
 - **ai real estate property staging**
