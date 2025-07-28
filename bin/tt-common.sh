@@ -244,14 +244,22 @@ tt_execute_thinktank() {
     thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1)
     thinktank_exit_code=$?
     
-    # Check if thinktank failed
-    if [[ $thinktank_exit_code -ne 0 ]]; then
+    # Print the output so user can see progress
+    echo "$thinktank_output"
+    
+    # Handle different exit codes
+    # Exit code 0: Complete success
+    # Exit code 4: Partial success (some models failed but synthesis completed)
+    # Other codes: Failure
+    if [[ $thinktank_exit_code -eq 0 ]]; then
+        echo "Thinktank completed successfully"
+    elif [[ $thinktank_exit_code -eq 4 ]]; then
+        echo "Thinktank completed with partial success (some models failed)"
+        # Continue to check for synthesis output
+    else
         echo "Error: thinktank failed with exit code $thinktank_exit_code" >&2
         return 1
     fi
-    
-    # Print the output so user can see progress
-    echo "$thinktank_output"
     
     # Extract the output directory from thinktank's output
     # Look for "Output directory:" or "Outputs saved to:" patterns
@@ -266,15 +274,23 @@ tt_execute_thinktank() {
     # Check if we found an output directory
     if [[ -n "$output_dir" && -d "$output_dir" ]]; then
         TT_OUTPUT_DIR="$output_dir"
-        # Consider partial success (some models succeeded) as success
+        # Check for synthesis completion
         if [[ "$thinktank_output" =~ "Synthesis: ✓ completed" ]] || [[ "$thinktank_output" =~ "synthesis.md" ]]; then
-            echo "Thinktank completed with synthesis"
+            if [[ $thinktank_exit_code -eq 4 ]]; then
+                echo "✓ Synthesis completed despite some model failures"
+            else
+                echo "✓ Synthesis completed successfully"
+            fi
             return 0
+        else
+            echo "Warning: Output directory found but no synthesis detected" >&2
+            echo "Check $output_dir for partial results" >&2
         fi
+    else
+        echo "Warning: Could not find thinktank output directory" >&2
     fi
     
-    # If we got here, something went wrong
-    echo "Warning: Thinktank may have failed or produced no output" >&2
+    # If we got here, we couldn't complete the synthesis
     return 1
 }
 
