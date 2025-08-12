@@ -41,32 +41,18 @@ done
 # Toggle the theme
 if [[ "$is_light" == "true" ]]; then
     echo "Current theme is light ($current_theme), switching to dark mode..."
-    "$ALACRITTY_THEME_SCRIPT" rose_pine
-    if [[ $? -eq 0 ]]; then
+    if "$ALACRITTY_THEME_SCRIPT" rose_pine; then
         echo "✓ Switched to dark mode (Rose Pine)"
     fi
     
-    # Update Claude config to match
-    claude config set theme dark
-    if [[ $? -eq 0 ]]; then
-        echo "✓ Updated Claude theme to dark"
-    else
-        echo "✗ Failed to switch to dark mode"
-        exit 1
-    fi
+    # Claude Code theme change removed - not supported by API
+    # claude config set theme dark
 else
     echo "Current theme is dark ($current_theme), switching to light mode..."
-    "$ALACRITTY_THEME_SCRIPT" rose_pine_dawn
-    if [[ $? -eq 0 ]]; then
+    if "$ALACRITTY_THEME_SCRIPT" rose_pine_dawn; then
         echo "✓ Switched to light mode (Rose Pine Dawn)"
     fi
     
-    # Update Claude config to match
-    claude config set theme light
-    if [[ $? -eq 0 ]]; then
-        echo "✓ Updated Claude theme to light"
-    else
-        echo "✗ Failed to switch to light mode"
-        exit 1
-    fi
+    # Claude Code theme change removed - not supported by API
+    # claude config set theme light
 fi

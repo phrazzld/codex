@@ -1,0 +1,31 @@
+#!/bin/bash
+# Demo script to show the improved PR-aware review functionality
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+echo "=== Code Review Script Demo ==="
+echo ""
+echo "The tt-review-* scripts now support smart PR detection!"
+echo ""
+echo "Usage examples:"
+echo "  1. Auto-detect PR (when on a PR branch):"
+echo "     tt-review-bugs"
+echo ""
+echo "  2. Specify a PR number:"
+echo "     tt-review-bugs --pr 97"
+echo ""
+echo "  3. Specify a base branch:"
+echo "     tt-review-bugs origin/main"
+echo ""
+echo "  4. Dry run mode:"
+echo "     tt-review-bugs --dry-run"
+echo ""
+echo "Key improvements:"
+echo "  - Automatically detects if you're in a PR context"
+echo "  - Uses GitHub PR diff for accurate change detection"
+echo "  - Fetches latest remote state to avoid stale comparisons"
+echo "  - Falls back to smart git merge-base detection"
+echo "  - Shows clear comparison info (e.g., 'Merge base abc123 to HEAD')"
+echo ""
+echo "Try running 'tt-review-bugs' now to see the improvements!"

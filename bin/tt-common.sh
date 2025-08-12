@@ -128,14 +128,34 @@ tt_parse_args() {
 
 # Show usage information
 tt_show_usage() {
-    local script_name=$(basename "$0")
-    echo "Usage: $script_name [options]"
+    local script_name
+    script_name=$(basename "$0")
+    echo "Usage: $script_name [options] [base_branch]"
     echo "  $TT_CONFIG_DESCRIPTION"
     echo ""
     echo "Options:"
     echo "  -h, --help     Show this help message"
     echo "  --dry-run      Show what would be executed without running"
+    
+    # Add PR option for diff-based reviews
+    if [[ "$script_name" =~ ^tt-review- ]]; then
+        echo "  --pr <number>  Review a specific PR by number"
+    fi
+    
     echo ""
+    
+    if [[ "$script_name" =~ ^tt-review- ]]; then
+        echo "Arguments:"
+        echo "  base_branch    Branch to compare against (default: auto-detect)"
+        echo ""
+        echo "Examples:"
+        echo "  $script_name                  # Auto-detect PR or use default branch"
+        echo "  $script_name --pr 123         # Review specific PR #123"
+        echo "  $script_name origin/main      # Compare against origin/main"
+        echo "  $script_name --dry-run        # Show what would be done"
+        echo ""
+    fi
+    
     if [[ -n "$TT_CONFIG_REQUIRES_INPUT_FILE" ]]; then
         echo "Requires: $TT_CONFIG_REQUIRES_INPUT_FILE"
         echo ""
@@ -168,7 +188,8 @@ tt_execute_thinktank() {
     local cmd_args=("$instruction_file")
     
     # Get system temp directory base for validation
-    local temp_base=$(dirname $(mktemp -u))
+    local temp_base
+    temp_base=$(dirname "$(mktemp -u)")
     
     # Smart validation for instruction file path
     if [[ "$instruction_file" = /* ]]; then
@@ -220,7 +241,7 @@ tt_execute_thinktank() {
         echo "thinktank ${cmd_args[*]}"
         echo ""
         if [[ -n "$leyline_files" ]]; then
-            echo "Leyline files found: $(echo $leyline_files | wc -w | tr -d ' ') files"
+            echo "Leyline files found: $(echo "$leyline_files" | wc -w | tr -d ' ') files"
         else
             echo "No leyline files found"
         fi
@@ -275,7 +296,7 @@ tt_execute_thinktank() {
     if [[ -n "$output_dir" && -d "$output_dir" ]]; then
         TT_OUTPUT_DIR="$output_dir"
         # Check for synthesis completion
-        if [[ "$thinktank_output" =~ "Synthesis: ✓ completed" ]] || [[ "$thinktank_output" =~ "synthesis.md" ]]; then
+        if [[ "$thinktank_output" =~ "Synthesis: ✓ completed" ]] || [[ "$thinktank_output" =~ synthesis\.md ]]; then
             if [[ $thinktank_exit_code -eq 4 ]]; then
                 echo "✓ Synthesis completed despite some model failures"
             else
@@ -314,7 +335,8 @@ tt_handle_output() {
         if [[ -n "$synthesis_file" ]]; then
             output_file="$synthesis_file"
         else
-            local md_files=($(find "$output_dir" -name "*.md" -type f))
+            local md_files
+            mapfile -t md_files < <(find "$output_dir" -name "*.md" -type f)
             if [[ ${#md_files[@]} -eq 1 ]]; then
                 output_file="${md_files[0]}"
             elif [[ ${#md_files[@]} -gt 1 ]]; then
@@ -349,7 +371,8 @@ tt_handle_output() {
 
 # Get the default git branch (main or master)
 tt_get_default_branch() {
-    local default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
+    local default_branch
+    default_branch=$(git symbolic-ref refs/remotes/origin/HEAD 2>/dev/null | sed 's@^refs/remotes/origin/@@')
 
     if [[ -n "$default_branch" ]]; then
         echo "$default_branch"
@@ -373,12 +396,14 @@ tt_get_default_branch() {
 # Usage: tt_setup_diff_review "$@"
 # This function handles:
 # - Argument parsing for base branch and flags
-# - Git diff generation
-# - Context setting with PR details
+# - Git diff generation with PR awareness
+# - Smart base branch detection
+# - Context setting with accurate PR details
 # - Target files setting
 tt_setup_diff_review() {
     # Parse arguments for base branch
     local base_branch=""
+    local pr_number=""
 
     while [[ $# -gt 0 ]]; do
         case $1 in
@@ -389,6 +414,10 @@ tt_setup_diff_review() {
             --dry-run)
                 TT_DRY_RUN=true
                 shift
+                ;;
+            --pr)
+                pr_number="$2"
+                shift 2
                 ;;
             *)
                 base_branch="$1"
@@ -403,11 +432,6 @@ tt_setup_diff_review() {
         exit 1
     fi
 
-    # Use default branch if none specified
-    if [[ -z "$base_branch" ]]; then
-        base_branch=$(tt_get_default_branch)
-    fi
-
     # Get current branch name
     local current_branch
     current_branch=$(git branch --show-current)
@@ -417,28 +441,114 @@ tt_setup_diff_review() {
         exit 1
     fi
 
-    # Get list of changed files
+    # Initialize variables for diff content
     local changed_files
-    changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+    local diff_content
+    local file_count
+    local comparison_info=""
+    local pr_context=""
+
+    # Check if we're in a PR context (either explicit PR number or auto-detect)
+    local in_pr_context=false
+    local pr_base_branch=""
+    
+    if command -v gh >/dev/null 2>&1; then
+        if [[ -n "$pr_number" ]]; then
+            # Explicit PR number provided
+            if gh pr view "$pr_number" >/dev/null 2>&1; then
+                in_pr_context=true
+                pr_info=$(gh pr view "$pr_number" --json baseRefName,headRefName,number,title)
+                pr_base_branch=$(echo "$pr_info" | jq -r .baseRefName)
+                pr_context="PR #$(echo "$pr_info" | jq -r .number): $(echo "$pr_info" | jq -r .title)"
+            else
+                echo "Warning: PR #$pr_number not found, falling back to branch comparison" >&2
+            fi
+        elif gh pr view >/dev/null 2>&1; then
+            # Auto-detect current PR
+            in_pr_context=true
+            pr_info=$(gh pr view --json baseRefName,headRefName,number,title)
+            pr_base_branch=$(echo "$pr_info" | jq -r .baseRefName)
+            pr_context="PR #$(echo "$pr_info" | jq -r .number): $(echo "$pr_info" | jq -r .title)"
+        fi
+    fi
+
+    # Determine base branch
+    if [[ "$in_pr_context" == true ]] && [[ -n "$pr_base_branch" ]]; then
+        base_branch="$pr_base_branch"
+        echo "Detected PR context: reviewing against base branch '$base_branch'"
+    elif [[ -z "$base_branch" ]]; then
+        base_branch=$(tt_get_default_branch)
+        echo "No base branch specified, using default: $base_branch"
+    fi
+
+    # Fetch latest remote state to ensure accurate comparison
+    echo "Fetching latest state of origin/$base_branch..."
+    if ! git fetch origin "$base_branch" >/dev/null 2>&1; then
+        echo "Warning: Could not fetch origin/$base_branch, using local state" >&2
+    fi
+
+    # Use PR diff if available, otherwise use smart git diff
+    if [[ "$in_pr_context" == true ]]; then
+        echo "Using GitHub PR diff for accurate change detection..."
+        
+        # Get changed files from PR
+        changed_files=$(gh pr diff --name-only 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+        
+        # Get diff content from PR
+        diff_content=$(gh pr diff 2>/dev/null || echo "Failed to get PR diff")
+        
+        comparison_info="GitHub PR diff (exact PR changes)"
+    else
+        # Find the merge base for accurate comparison
+        local merge_base
+        if git rev-parse "origin/$base_branch" >/dev/null 2>&1; then
+            merge_base=$(git merge-base "origin/$base_branch" HEAD 2>/dev/null || echo "")
+            
+            if [[ -n "$merge_base" ]]; then
+                echo "Found merge base: ${merge_base:0:8}"
+                comparison_info="Merge base ${merge_base:0:8} to HEAD"
+                
+                # Use three-dot diff to show only changes in current branch
+                changed_files=$(git diff --name-only "$merge_base"..HEAD 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+                diff_content=$(git diff "$merge_base"..HEAD)
+            else
+                echo "Warning: Could not find merge base, using direct comparison" >&2
+                comparison_info="Direct comparison against origin/$base_branch"
+                changed_files=$(git diff --name-only "origin/$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+                diff_content=$(git diff "origin/$base_branch")
+            fi
+        else
+            # Fallback to local branch if origin not available
+            echo "Warning: origin/$base_branch not found, using local $base_branch" >&2
+            comparison_info="Local $base_branch to HEAD"
+            changed_files=$(git diff --name-only "$base_branch" 2>/dev/null | while read -r file; do [[ -f "$file" ]] && echo "$file"; done || true)
+            diff_content=$(git diff "$base_branch")
+        fi
+    fi
 
     if [[ -z "$changed_files" ]]; then
         echo "No changes detected between $current_branch and $base_branch"
         exit 0
     fi
 
-    local file_count
     file_count=$(echo "$changed_files" | wc -l | tr -d ' ')
 
     echo "Generating review for $file_count files..."
-
-    # Get the diff content
-    local diff_content
-    diff_content=$(git diff "$base_branch")
+    echo "Comparison: $comparison_info"
 
     # Set the context with PR details and diff
-    tt_set_context "## PR Details
-Branch: $current_branch
-Files Changed: $file_count
+    local context_header="## Review Context
+Current Branch: $current_branch
+Base Branch: $base_branch
+Comparison: $comparison_info
+Files Changed: $file_count"
+
+    if [[ -n "$pr_context" ]]; then
+        context_header="$context_header
+$pr_context"
+    fi
+
+    tt_set_context "$context_header
 
 ## Diff
 \`\`\`diff

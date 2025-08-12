@@ -1,183 +1,76 @@
-# PROJECT BACKLOG
+# Project Backlog
 
-## ACTIVE
+**misty step marketing site** - elegant consulting & dev services landing page
 
-- **misty step marketing site**
-  - tight, punchy, elegant
-  - testament to ui/ux/design/our aesthetic
-  - focus on consulting and development services:
-    - integrating ai into your business
-    - staff augmentation
-    - building ai-powered features
-    - streamlining operations with ai tools and custom software
-    - etc
+**thinktank** - cli for multi-llm synthesis and wisdom of crowds
 
-- **thinktank**
-  - cli for sending arbitrary instructions and context to an arbitrary set of llm models
-  - automatically synthesize their outputs to "wisdom of crowds" the llms
+**switchboard** - rust proxy for claude code with middleware pipeline
 
-- **switchboard**
-  - rust cli for proxying claude code
-  - see the requests and responses and activity
-  - ultimately intercept and manipulate, enable hijacking requests that would be going to anthropic to go to other providers
-  - sanity check requests and responses more easily with custom middleware
+**scry** - ai-enhanced spaced repetition learning app (anki killer)
 
-- **scry**
-  - anki killer
-  - ai-enhanced srs
-  - go api, react native mobile app
-  - ux: user captures "memos", tidbits they want to remember
-  - we automatically transform those tidbits into large sets of quizzes -- multiple choice questions for now, but ultimately free response questions and other quiz types
-  - user is always reviewing -- core ui is review and everything else punches out from there
-  - user, during a review, can add a memo, postpone the current item, edit the current item, delete the current item, or generate more items like it (eg more but easier, more but harder)
+**gitpulse** - github analytics for deep code contribution insights
 
-- **gitpulse**
-  - github app, get quantitative and qualitative analysis of github activity across your repositories, organizations, contributors
-  - use ai to see more than "number of commits" -- get deep understanding of who knows what how well what *kind* of work has been done, etc
-  - good for individual contributors to get an understanding of what they've been doing
-  - good for managers to see what their team has been doing
-  - ultimately integrate with project management software etc to make assigning work easier, create visibility into dev velocity, etc
+**brainrot publishing house** - zoomer translations of classic literature
 
-- **brainrot publishing house**
-  - comedic yet faithful terminally online zoomer brainrot translations of classic public domain works
-  - graphic novelizations
-  - brainrot cliffnotes of authors, series, subjects
-  - in general: ai-enhanced culture/media/publishing company
+**time is money** - chrome extension showing prices as work hours
 
-- **time is money**
-  - chrome extension for seeing prices as hours of work
-  - needs some polish and upgrades to stay alive
-    - v3 manifest migration
-    - new web store assets
-    - fresh coat of paint in the ui
+**ai real estate staging** - transform empty room photos into staged listings
 
-## TT-REVIEW SYSTEM ENHANCEMENTS
+**ai app store assets** - generate complete app store listing visuals
 
-### High Priority (Next Sprint)
-- **Add BATS test suite** for core functions in tt-common.sh
-  - Test tt_execute_thinktank, tt_handle_output, argument parsing
-  - Mock thinktank calls for unit tests
-  - Add integration tests for full workflow
-  - *Rationale*: Shell scripts are critical for CI/CD but harder to test
-  - *Effort*: Medium (2-3 days)
-  - *Reference*: PR #13 code review
+**resumake** - ai resume generator with cv-to-targeted-resume pipeline
 
-- **Make output parsing more robust** (bin/tt-common.sh:225)
-  - Replace brittle regex with JSON parsing if thinktank supports it
-  - Add multiple fallback patterns for different versions
-  - *Rationale*: Current parsing is fragile and could break with thinktank updates
-  - *Effort*: Low (1 day)
+**glance** - recursive ai project summarizer with cascading context
 
-- **Standardize argument handling patterns**
-  - Some scripts use tt_setup_diff_review, others parse manually
-  - Create consistent approach across all scripts
-  - *Rationale*: Inconsistency makes maintenance harder
-  - *Effort*: Low (1 day)
+**handoff** - clipboard tool for formatted directory contents
 
-- **Dynamic review discovery in synthesis** (bin/tt-review-synthesis:35-58)
-  - Replace hardcoded file list with: `find . -name "CODE_REVIEW_*.md"`
-  - *Rationale*: Manual maintenance required when adding new review types
-  - *Effort*: Low (few hours)
+**vanity** - personal site with quotes, books, maps, projects
 
-### Medium Priority (Technical Debt)
-- **Add parallel review execution option**
-  - Run multiple reviews concurrently for faster results
-  - *Rationale*: Sequential execution is slow for full reviews
-  - *Effort*: Medium (2 days)
+**phone dermatologist** - skin change tracking with ai risk assessment
 
-- **Optimize large diff handling** 
-  - Stream processing instead of loading all into memory
-  - *Rationale*: Current approach could fail on very large PRs
-  - *Effort*: Medium (1-2 days)
+**superwire** - personalized news aggregator with autogen political cartoons
 
-- **Add configuration file support**
-  - Allow .tt-review.yml for project-specific settings
-  - *Rationale*: Hard-coded values limit flexibility
-  - *Effort*: Medium (2 days)
+**sous/chefbot** - ai personalized recipe exploration
 
-- **Improve error message consistency**
-  - Standardize error format and logging levels
-  - *Rationale*: Better debugging and user experience
-  - *Effort*: Low (1 day)
+**rolodex** - relationship growth diary with ai insights
 
-## backburner
+**bitcoin wallet** - self-custody btc wallet
 
-- **ai real estate property staging**
-  - input: photos of empty rooms, moods (or buyer personas)
-  - output: high quality photorealistic targeted staged photos
+**white hat bitcoin deanonymizer** - privacy self-audit tool
 
-- **ai app store promo image generator**
-  - take app name, context blob about what it does who it's for etc
-  - output comprehensive app store listing assets
+**claude web server** - autonomous self-maintaining revenue-generating server
 
-- **resumake**
-  - ai powered resume generator
-  - upload context, eg old resume, stream of consciousness about your professional history and situation, maybe job listing of job you're targeting
-  - we generate clarifying questions for you to answer
-  - then we synthesize into a base cv -- comprehensive, long, exhaustive -- as well as a targeted resume -- tight, punchy, derived from the cv, focused on your job description
-  - probably all markdown to start
-  - ultimately break out into more customization, but keep it simple clean elegant
+**stylish book tracker** - beautiful reading list app
 
-- **glance**
-  - script for generating ai summaries of your project
-  - starts at the deepest directory, generates a glance.md file of the contents of that directory, works its way up (to mitigate context window length). if current directory contains a directory, use that directory's glance.md file instead of its contents -- results in a whole project full of glance files, each with great context
+**timeline creator** - visual timeline generation tool
 
-- **handoff**
-  - easily grab a full directory worth of content and put it on your clipboard or in an output file, formatted with context tags
+**family tree creator** - genealogy visualization app
 
-- **vanity**
-  - personal website
-  - show quotes i like, books i've read and am reading, map of where i've been, projects i've built, etc
+**workout app** - simple fitbod/7-minute workout replacement
 
-- **phone dermatologist**
-  - basically version control photos of your skin
-  - ai analyzes changes, suggests visiting proper dermatologist when risk threshold gets crossed
+**prayer app** - simplified hallow with core prayers and audio
 
-- **superwire**
-  - meridian competitor: news aggregator / personalized intelligence briefing
-  - anyzine
-  - autogen political cartoons
-  - you are borderline retarded aka devil's advocate
+**intellectual arena** - timed multiplayer debate game
 
-- **sous, chefbot**
-  - ai personalized recipe exploration
+**famous speeches** - curated historical speech collection
 
-- **rolodex**
-  - "growth diary" for relationships
-  - chat about each of your relationships
-  - log what you know about each person and when you speak / engage
-  - get insights and reminders, suggested check-ins and activities, etc
+**accountabilibuddy** - ai accountability partner chatbot
 
-- **bitcoin wallet**
+**hos** - reclaim.ai competitor for calendar/todo automation
 
-- **white hat bitcoin self audit deanonymizer for privacy**
+**bucket list helper** - life goals tracking and planning
 
-- **claude run web server**
-  - accepts user inputs for feature requests
-  - let ai loose on a server and have it try to maintain itself and generate revenue and build new features etc
+**photo coloring book** - convert photos to printable coloring pages
 
-- **stylish book tracker**
+**one-link uptime alert** - dead-simple status page and alerts for solo devs
 
-- **timeline creator**
+**unspendable** - web app showing which utxos are unspendable in current fee market
 
-- **family tree creator**
+**hallow / insight timer replacement** - meditation and prayer timer app
 
-- **simple fitbod / seven minute workout app replacement**
+**apple health alt with better exportability** - health data tracking with full export control
 
-- **simplified trimmed down hallow replacement**
-  - just core prayers, with audio: liturgy of the hours, rosary
+**fitbod replacement** - workout tracking and planning app
 
-- **intellectual arena game / debate gym**
-  - take a position (or get assigned one)
-  - some kind of clocked urgent "respond to this point" or "take down this attack" thing
-  - maybe multiplayer
-
-- **famous speeches app**
-
-- **accountabilibuddy chatbot**
-
-- **hos**
-  - reclaim.ai competitor, calendar / todo list integration that manages your schedule and todo list for you
-
-- **bucket list helper**
+**mobile go app** - mobile version of the board game Go
 
