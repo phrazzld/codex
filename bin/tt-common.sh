@@ -256,17 +256,15 @@ tt_execute_thinktank() {
         return 0
     fi
     
-    # Execute thinktank and capture output
+    # Execute thinktank and capture output while showing in real-time
     echo "Running thinktank analysis..."
     local thinktank_output
     local thinktank_exit_code
     
-    # Run thinktank and capture both stdout/stderr
-    thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1)
-    thinktank_exit_code=$?
-    
-    # Print the output so user can see progress
-    echo "$thinktank_output"
+    # Run thinktank and capture both stdout/stderr while also displaying to user
+    # Using tee to show output in real-time via /dev/tty (terminal)
+    thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1 | tee /dev/tty)
+    thinktank_exit_code=${PIPESTATUS[0]}  # Get exit code of thinktank, not tee
     
     # Handle different exit codes
     # Exit code 0: Complete success

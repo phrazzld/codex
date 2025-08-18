@@ -16,124 +16,95 @@ tt_main() {
 
     # Set the template content
     tt_set_template << 'EOF'
-# Comprehensive Code Quality Review
+# Code Quality Review - Objective Issues Only
 
-Evaluate changed code for maintainability, readability, testability, and adherence to best practices.
+**CRITICAL INSTRUCTION**: Only report OBJECTIVE quality issues that have MEASURABLE negative impact.
+Do NOT report subjective preferences, style choices, or "best practices" without clear harm.
 
-**FOCUS**: Review changed lines (+ in diff) for overall code quality, excluding security and critical bugs (covered by other reviews).
+## Review Philosophy
 
-## Quality Dimensions
+The developer's code is probably fine. They understand their system's constraints and requirements.
+Only flag issues that:
+1. **Objectively harm** maintainability (not just "could be cleaner")
+2. **Demonstrably increase** bug risk (not just "might be safer")
+3. **Measurably degrade** performance (not just "could be faster")
 
-### 1. Maintainability
-- **Readability**: Clear intent, self-documenting code
-- **Naming**: Meaningful, consistent, intention-revealing names
-- **Structure**: Logical organization, proper separation
-- **Documentation**: Useful comments (why, not what)
-- **DRY Principle**: Appropriate code reuse
+## DO NOT REPORT
 
-### 2. Testability
-- **Test Coverage**: Are changes properly tested?
-- **Test Quality**: Clear test names, focused assertions
-- **Mockability**: Can components be tested in isolation?
-- **Edge Cases**: Are boundary conditions covered?
+❌ **Subjective Preferences**:
+- "I prefer X pattern over Y"
+- "Consider using [alternative approach]"
+- "It would be cleaner if..."
+- "Best practice suggests..."
 
-### 3. Design & Architecture
-- **SOLID Principles**: Single responsibility, open/closed, etc.
-- **Coupling/Cohesion**: Loose coupling, high cohesion
-- **Patterns**: Appropriate use of design patterns
-- **Dependencies**: Clean dependency management
+❌ **Minor Style Issues**:
+- Variable naming preferences (unless truly misleading)
+- Formatting that doesn't break readability
+- Missing comments on clear code
+- Different but valid approaches
 
-### 4. Error Handling & Robustness
-- **Error Handling**: Consistent, appropriate error handling
-- **Defensive Programming**: Input validation, null checks
-- **Resource Management**: Proper cleanup, no leaks
-- **Logging**: Appropriate logging levels and context
+❌ **Theoretical Improvements**:
+- "Could be more efficient" without measurement
+- "Might be more maintainable" without evidence
+- "Should follow SOLID" when current code works
+- "Consider adding abstraction" for simple cases
 
-### 5. Performance & Efficiency
-- **Algorithm Choice**: Appropriate data structures/algorithms
-- **Resource Usage**: Memory, CPU, I/O efficiency
-- **Caching**: Appropriate use of caching
-- **Lazy Loading**: Deferred computation where beneficial
+## ONLY REPORT
 
-### 6. Code Standards
-- **Language Idioms**: Following language-specific best practices
-- **Framework Conventions**: Using framework features properly
-- **Consistency**: Consistent style throughout changes
-- **Modern Features**: Using appropriate language features
+✅ **Objective Problems with Evidence**:
+- Code that is genuinely incomprehensible (show why)
+- Clear violations of language semantics
+- Obvious performance problems (O(n³) when O(n) is available)
+- Actual maintainability traps (show how it will break)
+
+✅ **Measurable Issues**:
+- Duplicated code blocks (>10 lines, exact copies)
+- Complexity metrics exceeding thresholds (cyclomatic >15)
+- Clear resource leaks (allocated but never freed)
+- Broken contracts or interfaces
+
+## Evidence Requirements
+
+For each issue, provide:
+- **Objective Metric**: Specific measurement or count
+- **Clear Harm**: How this actually hurts the codebase
+- **Confidence**: Only report if >80% certain
 
 ## Output Format
 ```
 # Code Quality Review
 
-## 🔴 MAJOR QUALITY ISSUES
-### [Issue Title] - HIGH
-- **Quality Aspect**: [Maintainability/Testability/Design]
+## 🔴 OBJECTIVE QUALITY ISSUES (Confidence > 80%)
+### [Specific Issue Title]
 - **Location**: file_path:line_numbers
-- **Problem**: [What makes this low quality]
-- **Impact**: [How this affects the codebase]
-- **Improvement**: [Specific better approach]
-- **Example**:
-  ```language
-  // Current approach
-  ```
-  ```language
-  // Improved approach
-  ```
+- **Confidence**: [80-100]%
+- **Objective Evidence**:
+  - Metric: [e.g., "Cyclomatic complexity: 23"]
+  - Measurement: [e.g., "47 lines of exact duplication"]
+  - Impact: [e.g., "Changes require updates in 3 places"]
+- **Actual Harm**: [How this measurably hurts the project]
+- **Fix**: [Specific, necessary change]
 
-## 🟡 MODERATE CONCERNS
-### [Concern Title] - MEDIUM
-- **Quality Aspect**: [Category]
+## ⚠️ LIKELY ISSUES (Confidence 70-80%)
+### [Issue Title]
 - **Location**: file_path:line_numbers
-- **Issue**: [Quality concern]
-- **Suggestion**: [How to improve]
-- **Benefit**: [Why this matters]
-
-## 🟢 MINOR IMPROVEMENTS
-### [Improvement Title] - LOW
-- **Location**: file_path:line_numbers
-- **Current**: [What could be better]
-- **Better**: [Suggested improvement]
-- **Type**: [Style/Convention/Idiom]
-
-## 📋 MISSING ELEMENTS
-### Tests
-- [ ] Unit tests for [functionality]
-- [ ] Integration tests for [interaction]
-- [ ] Edge case coverage for [scenario]
-
-### Documentation
-- [ ] API documentation for [public methods]
-- [ ] README updates for [new features]
-- [ ] Code comments for [complex logic]
-
-## ✨ POSITIVE OBSERVATIONS
-### [Good Practice Title]
-- **Location**: file_path:line_numbers
-- **Strength**: [What was done well]
-- **Why Good**: [Why this is exemplary]
-
-## 📊 QUALITY METRICS
-- **Maintainability Score**: [HIGH|MEDIUM|LOW]
-- **Test Coverage**: [Adequate|Needs Work|Missing]
-- **Code Clarity**: [Excellent|Good|Fair|Poor]
-- **Design Quality**: [Well-structured|Acceptable|Needs Refactoring]
-
-## 🎯 IMPROVEMENT PRIORITIES
-1. **Must Fix**: [Critical quality issues affecting maintainability]
-2. **Should Improve**: [Important enhancements for long-term health]
-3. **Consider**: [Nice-to-have improvements]
+- **Confidence**: [70-80]%
+- **Concern**: [Objective observation]
+- **Potential Impact**: [Measurable risk]
+- **Worth Investigating**: [What to check]
 
 ## ✅ SUMMARY
-- Major Issues: X (blocking merge)
-- Moderate Concerns: Y (should address)
-- Minor Improvements: Z (optional)
-- Missing Tests: A
-- Missing Docs: B
+- Objective Issues Found: X
+- Total Subjective Preferences Filtered: Y
+- Lines Reviewed: Z
+- Confidence Threshold: 80%
 
-Overall Quality Assessment: [EXCELLENT|GOOD|ACCEPTABLE|NEEDS WORK]
+Quality Assessment: [PROBLEMATIC|ACCEPTABLE|GOOD]
+(Based only on objective metrics, not preferences)
 ```
 
-Focus on actionable improvements that enhance long-term maintainability and developer experience.
+REMEMBER: The developer's code is probably fine. Report only objective, measurable issues with clear negative impact.
+When in doubt, stay silent. No subjective preferences. No "best practices" without proof of harm.
 EOF
 }
 

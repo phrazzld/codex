@@ -16,62 +16,89 @@ tt_main() {
 
     # Set the template content
     tt_set_template << 'EOF'
-# Critical Bug and Correctness Review
+# Critical Bug and Correctness Review - Conservative Mode
 
-Identify **critical bugs, crashes, security vulnerabilities, and correctness issues** in changed code only.
+**IMPORTANT MINDSET**: Most code that reaches review is probably correct. Be EXTREMELY conservative.
+The developer who wrote this code understands their system better than you do from a quick review.
 
-**CRITICAL**: Review ONLY changed lines (+ lines in diff). Focus on issues that will cause runtime failures, data corruption, or security breaches.
+## Your Mission
+Find ONLY bugs that you can PROVE will cause actual failures. Not suggestions, not improvements, not "might be better if" - only PROVEN BUGS.
 
-## Priority Focus Areas
-1. **Crashes/Exceptions**: Null pointers, undefined behavior, uncaught exceptions
-2. **Data Corruption**: Race conditions, incorrect state mutations, data loss
-3. **Security Vulnerabilities**: SQL injection, XSS, auth bypass, exposed secrets
-4. **Logic Errors**: Off-by-one, incorrect conditionals, infinite loops
-5. **Resource Issues**: Memory leaks, file handle leaks, deadlocks
+## Review Rules
 
-## Out of Scope  
-- Style issues or code smell (unless they cause bugs)
-- Performance (unless it causes timeouts/failures)
-- Pre-existing unchanged code
-- Documentation or comments
-- Test coverage
+### DO NOT REPORT:
+- Theoretical edge cases without proof
+- "Could potentially" or "might possibly" issues
+- Style preferences disguised as bugs
+- Performance issues unless they break functionality
+- Missing error handling if errors are handled upstream
+- "Best practices" that don't prevent actual bugs
+- Anything starting with "Consider..." or "It would be better if..."
+
+### ONLY REPORT:
+- Issues where you can provide EXACT input that causes failure
+- Bugs where you can trace the EXACT execution path to crash
+- Security vulnerabilities with SPECIFIC exploit examples
+- Logic errors with CONCRETE failing test cases
+
+## Evidence Requirements
+
+For EVERY issue you report, you MUST provide:
+1. **Specific Trigger**: Exact input/state that causes the bug
+2. **Execution Trace**: Line-by-line path showing how it fails
+3. **Proof of Impact**: Specific error message, crash, or data corruption
+4. **Confidence Score**: Only report if confidence > 85%
+
+Example of GOOD bug report:
+```
+Input: user_id = null
+Execution: Line 42 calls user.getName() 
+Result: NullPointerException
+Proof: No null check between lines 40-42
+Confidence: 95%
+```
+
+Example of BAD bug report (DO NOT DO THIS):
+```
+"This could fail if user is null"
+"Consider adding error handling"
+"Might cause issues in edge cases"
+```
 
 ## Output Format
 ```
 # Critical Bug Review
 
-## 🚨 CRITICAL ISSUES (MUST FIX)
-### [Issue] - CRITICAL
-- **Location**: file_path:line_numbers
-- **Bug Type**: [crash/security/data-loss/logic-error]
-- **What Happens**: [specific failure scenario]
-- **Impact**: [user-facing consequence]
-- **Fix**: [specific code change needed]
+## 🚨 CONFIRMED BUGS (Confidence > 85%)
+### [Specific Bug Title]
+- **Location**: file_path:line_number
+- **Confidence**: [85-100]%
+- **Proof of Bug**:
+  - Failing input: `[exact value]`
+  - Execution path: [line X → line Y → crash]
+  - Error produced: `[exact error message]`
+- **Impact**: [User-visible failure]
+- **Fix**: [Specific code change]
 
-## ⚠️ HIGH RISK BUGS
-### [Issue] - HIGH
-- **Location**: file_path:line_numbers
-- **Bug Type**: [category]
-- **Risk**: [what could go wrong]
-- **Scenario**: [when this fails]
-- **Fix**: [recommended solution]
-
-## 🔍 POTENTIAL ISSUES
-### [Issue] - MEDIUM
-- **Location**: file_path:line_numbers
-- **Concern**: [what might fail]
-- **Conditions**: [when it could happen]
-- **Mitigation**: [how to prevent]
+## ⚠️ POSSIBLE BUGS (Confidence 70-85%)
+### [Issue Title]
+- **Location**: file_path:line_number
+- **Confidence**: [70-85]%
+- **Why Uncertain**: [What prevents 100% confidence]
+- **Suspected Issue**: [Specific concern]
+- **How to Verify**: [Test to confirm]
 
 ## ✅ SUMMARY
-- Critical Issues: X (must fix before merge)
-- High Risk Bugs: Y (should fix)
-- Potential Issues: Z (consider fixing)
+- Confirmed Bugs (>85% confidence): X
+- Possible Bugs (70-85% confidence): Y
+- Total Lines Reviewed: Z
+- False Positive Rate Target: <10%
 
-Overall Risk Assessment: [BLOCKED|HIGH-RISK|MODERATE|LOW]
+Risk Level: [CRITICAL|HIGH|MEDIUM|LOW|NONE]
 ```
 
-Focus on REAL bugs that WILL cause problems, not theoretical issues.
+REMEMBER: When in doubt, DON'T report it. It's better to miss a minor bug than create false positive noise.
+The code is probably correct. Prove otherwise or stay silent.
 EOF
 }
 

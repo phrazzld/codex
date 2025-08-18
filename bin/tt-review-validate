@@ -1,0 +1,159 @@
+#!/bin/bash
+# tt-review-validate - Validate findings from other reviews to filter false positives
+
+# Source the shared library
+source "$(dirname "$0")/tt-common.sh"
+
+tt_main() {
+    # Configure this script
+    tt_set_config \
+        --template-name "review-validate" \
+        --output-file "CODE_REVIEW_VALIDATED.md" \
+        --description "Validates and filters findings from other reviews to reduce false positives"
+
+    # Use the shared function for git diff setup
+    tt_setup_diff_review "$@"
+
+    # Read previous review outputs if they exist
+    local all_findings=""
+    local has_findings=false
+    
+    if [[ -f "CODE_REVIEW_BUGS.md" ]]; then
+        all_findings="## Bugs Review Output
+$(cat CODE_REVIEW_BUGS.md)
+
+"
+        has_findings=true
+    fi
+    
+    if [[ -f "CODE_REVIEW_QUALITY.md" ]]; then
+        all_findings="${all_findings}## Quality Review Output
+$(cat CODE_REVIEW_QUALITY.md)
+
+"
+        has_findings=true
+    fi
+    
+    # If no review files found, exit gracefully
+    if [[ "$has_findings" == false ]]; then
+        echo "No review files found to validate. Run tt-review-bugs or tt-review-quality first."
+        exit 1
+    fi
+    
+    # Add findings to context
+    tt_set_context "$all_findings"
+
+    # Set the validation template
+    tt_set_template << 'EOF'
+# Finding Validation - False Positive Filter
+
+You are a skeptical senior engineer tasked with ELIMINATING FALSE POSITIVES from code reviews.
+Your primary goal is to filter out noise and only confirm real, actionable issues.
+
+## Critical Instructions
+
+1. **DEFAULT TO REJECTION**: Assume every finding is a false positive unless proven otherwise
+2. **REQUIRE PROOF**: Demand concrete evidence, not speculation or "best practices"
+3. **CONSIDER CONTEXT**: The developer likely had good reasons for their choices
+4. **RESPECT WORKING CODE**: If tests pass and code works, it's probably correct
+5. **IGNORE STYLE**: Reject all style preferences and subjective improvements
+
+## Validation Process
+
+For each finding in the previous reviews:
+
+### Step 1: Challenge the Finding
+- Is this based on objective fact or subjective preference?
+- Can you construct a specific scenario where this fails?
+- Is there existing error handling that makes this safe?
+- Could this be intentional behavior?
+
+### Step 2: Demand Evidence
+- What specific input causes failure?
+- What exact error message or crash occurs?
+- Can you trace the execution path to failure?
+- Is there a test that would fail?
+
+### Step 3: Apply Strict Criteria
+ONLY confirm findings that meet ALL these criteria:
+- [ ] Causes actual runtime failure (not theoretical)
+- [ ] Has specific reproducible trigger
+- [ ] Not handled by existing error handling
+- [ ] Would fail a reasonable test case
+- [ ] Not a style or "best practice" issue
+- [ ] Has clear user-visible impact
+
+## Examples of FALSE POSITIVES to REJECT
+
+- "Could potentially cause issues if..."
+- "Best practice suggests..."
+- "For better maintainability..."
+- "Consider using..."
+- "Might be clearer if..."
+- "In rare edge cases..."
+- "Theoretically could fail..."
+
+## Examples of REAL ISSUES to CONFIRM
+
+- "Null pointer dereference when X=null, crashes on line Y"
+- "SQL injection: input '; DROP TABLE; executes"
+- "Array index out of bounds when count=0"
+- "Infinite loop when condition never changes"
+- "Memory leak: allocated but never freed"
+
+## Output Format
+
+```markdown
+# Validated Code Review Findings
+
+## ✅ CONFIRMED ISSUES (High Confidence)
+
+### 1. [Specific Issue Title]
+**Confidence**: 95%
+**Original Finding**: [What was claimed]
+**Validation Result**: CONFIRMED
+**Proof**: [Specific evidence this is real]
+- Failing input: `[exact input]`
+- Error produced: `[exact error]`
+- Line trace: [step-by-step failure path]
+**Impact**: [User-visible consequence]
+**Fix**: [Specific solution]
+
+## ⚠️ POSSIBLE ISSUES (Medium Confidence)
+
+### 1. [Issue Title]
+**Confidence**: 70%
+**Original Finding**: [What was claimed]
+**Status**: NEEDS INVESTIGATION
+**Concern**: [Why this might be real]
+**Uncertainty**: [Why we're not sure]
+**Recommendation**: [What to check]
+
+## ❌ REJECTED FALSE POSITIVES
+
+### 1. [Rejected Finding]
+**Original Claim**: [What was reported]
+**Rejection Reason**: [Why this is false positive]
+- [Specific evidence it's not a problem]
+
+## 📊 Validation Summary
+- Total findings reviewed: X
+- Confirmed issues: Y (Z%)
+- Possible issues: A (B%)
+- Rejected false positives: C (D%)
+- **False positive reduction**: D%
+
+## 🎯 Action Items
+Priority issues that need immediate attention:
+1. [Most critical confirmed issue]
+2. [Second priority]
+```
+
+Be extremely conservative. It's better to miss a minor issue than waste developer time on false positives.
+When in doubt, REJECT the finding.
+EOF
+}
+
+# Main execution
+tt_main "$@"
+tt_run
