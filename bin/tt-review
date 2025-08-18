@@ -33,23 +33,47 @@ echo ""
 
 # Run bug review with real-time output
 echo "▶️  Checking for bugs and correctness issues..."
-if tt-review-bugs "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
-    SUCCESSFUL_REVIEWS+=("bugs")
-    echo "✅ Bug review completed"
+if [ -t 1 ]; then
+    # Interactive: show output in real-time
+    if tt-review-bugs "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
+        SUCCESSFUL_REVIEWS+=("bugs")
+        echo "✅ Bug review completed"
+    else
+        FAILED_REVIEWS+=("bugs")
+        echo "❌ Bug review failed"
+    fi
 else
-    FAILED_REVIEWS+=("bugs")
-    echo "❌ Bug review failed"
+    # Non-interactive: just capture and check
+    if tt-review-bugs "$BASE_BRANCH" 2>&1 | grep -q "Analysis complete"; then
+        SUCCESSFUL_REVIEWS+=("bugs")
+        echo "✅ Bug review completed"
+    else
+        FAILED_REVIEWS+=("bugs")
+        echo "❌ Bug review failed"
+    fi
 fi
 echo ""
 
 # Run quality review with real-time output
 echo "▶️  Checking code quality and maintainability..."
-if tt-review-quality "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
-    SUCCESSFUL_REVIEWS+=("quality")
-    echo "✅ Quality review completed"
+if [ -t 1 ]; then
+    # Interactive: show output in real-time
+    if tt-review-quality "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
+        SUCCESSFUL_REVIEWS+=("quality")
+        echo "✅ Quality review completed"
+    else
+        FAILED_REVIEWS+=("quality")
+        echo "❌ Quality review failed"
+    fi
 else
-    FAILED_REVIEWS+=("quality")
-    echo "❌ Quality review failed"
+    # Non-interactive: just capture and check
+    if tt-review-quality "$BASE_BRANCH" 2>&1 | grep -q "Analysis complete"; then
+        SUCCESSFUL_REVIEWS+=("quality")
+        echo "✅ Quality review completed"
+    else
+        FAILED_REVIEWS+=("quality")
+        echo "❌ Quality review failed"
+    fi
 fi
 echo ""
 
@@ -60,12 +84,24 @@ if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 0 ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
     
-    if tt-review-validate "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
-        SUCCESSFUL_REVIEWS+=("validate")
-        echo "✅ Validation completed"
+    if [ -t 1 ]; then
+        # Interactive: show output in real-time
+        if tt-review-validate "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
+            SUCCESSFUL_REVIEWS+=("validate")
+            echo "✅ Validation completed"
+        else
+            # Validation failure is not critical - continue to synthesis
+            echo "⚠️  Validation had issues but continuing..."
+        fi
     else
-        # Validation failure is not critical - continue to synthesis
-        echo "⚠️  Validation had issues but continuing..."
+        # Non-interactive: just capture and check
+        if tt-review-validate "$BASE_BRANCH" 2>&1 | grep -q "Analysis complete"; then
+            SUCCESSFUL_REVIEWS+=("validate")
+            echo "✅ Validation completed"
+        else
+            # Validation failure is not critical - continue to synthesis
+            echo "⚠️  Validation had issues but continuing..."
+        fi
     fi
     echo ""
 fi
@@ -77,12 +113,24 @@ if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 1 ]; then
     echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
     echo ""
     
-    if tt-review-synthesis 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
-        echo "✅ Synthesis completed"
-        SYNTHESIS_SUCCESS=true
+    if [ -t 1 ]; then
+        # Interactive: show output in real-time
+        if tt-review-synthesis 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
+            echo "✅ Synthesis completed"
+            SYNTHESIS_SUCCESS=true
+        else
+            echo "❌ Synthesis failed"
+            SYNTHESIS_SUCCESS=false
+        fi
     else
-        echo "❌ Synthesis failed"
-        SYNTHESIS_SUCCESS=false
+        # Non-interactive: just capture and check
+        if tt-review-synthesis 2>&1 | grep -q "Analysis complete"; then
+            echo "✅ Synthesis completed"
+            SYNTHESIS_SUCCESS=true
+        else
+            echo "❌ Synthesis failed"
+            SYNTHESIS_SUCCESS=false
+        fi
     fi
     echo ""
 fi

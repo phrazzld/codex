@@ -262,9 +262,16 @@ tt_execute_thinktank() {
     local thinktank_exit_code
     
     # Run thinktank and capture both stdout/stderr while also displaying to user
-    # Using tee to show output in real-time via /dev/tty (terminal)
-    thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1 | tee /dev/tty)
-    thinktank_exit_code=${PIPESTATUS[0]}  # Get exit code of thinktank, not tee
+    # Check if stdout is a TTY before using tee /dev/tty to avoid CI failures
+    if [ -t 1 ]; then
+        # Interactive terminal: show output in real-time
+        thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1 | tee /dev/tty)
+        thinktank_exit_code=${PIPESTATUS[0]}  # Get exit code of thinktank, not tee
+    else
+        # Non-interactive (CI/cron): just capture output
+        thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1)
+        thinktank_exit_code=$?
+    fi
     
     # Handle different exit codes
     # Exit code 0: Complete success
