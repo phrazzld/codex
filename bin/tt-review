@@ -171,7 +171,7 @@ if [ ${#FAILED_REVIEWS[@]} -eq 0 ]; then
     exit 0
 elif [ ${#SUCCESSFUL_REVIEWS[@]} -gt 0 ]; then
     echo "⚠️  Review completed with some issues. Check reports for findings."
-    exit 0
+    exit 1  # Changed from exit 0 - CI should fail when any reviews fail
 else
     echo "❌ Review failed. Please check the output above for errors."
     exit 1
