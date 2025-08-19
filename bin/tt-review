@@ -35,7 +35,8 @@ echo ""
 echo "▶️  Checking for bugs and correctness issues..."
 if [ -t 1 ]; then
     # Interactive: show output in real-time
-    if tt-review-bugs "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
+    tt-review-bugs "$BASE_BRANCH" 2>&1 | tee /dev/tty > /dev/null
+    if [ ${PIPESTATUS[0]} -eq 0 ]; then
         SUCCESSFUL_REVIEWS+=("bugs")
         echo "✅ Bug review completed"
     else
@@ -43,8 +44,8 @@ if [ -t 1 ]; then
         echo "❌ Bug review failed"
     fi
 else
-    # Non-interactive: just capture and check
-    if tt-review-bugs "$BASE_BRANCH" 2>&1 | grep -q "Analysis complete"; then
+    # Non-interactive: just capture output
+    if tt-review-bugs "$BASE_BRANCH" 2>&1; then
         SUCCESSFUL_REVIEWS+=("bugs")
         echo "✅ Bug review completed"
     else
@@ -58,7 +59,8 @@ echo ""
 echo "▶️  Checking code quality and maintainability..."
 if [ -t 1 ]; then
     # Interactive: show output in real-time
-    if tt-review-quality "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
+    tt-review-quality "$BASE_BRANCH" 2>&1 | tee /dev/tty > /dev/null
+    if [ ${PIPESTATUS[0]} -eq 0 ]; then
         SUCCESSFUL_REVIEWS+=("quality")
         echo "✅ Quality review completed"
     else
@@ -66,8 +68,8 @@ if [ -t 1 ]; then
         echo "❌ Quality review failed"
     fi
 else
-    # Non-interactive: just capture and check
-    if tt-review-quality "$BASE_BRANCH" 2>&1 | grep -q "Analysis complete"; then
+    # Non-interactive: just capture output
+    if tt-review-quality "$BASE_BRANCH" 2>&1; then
         SUCCESSFUL_REVIEWS+=("quality")
         echo "✅ Quality review completed"
     else
@@ -86,7 +88,8 @@ if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 0 ]; then
     
     if [ -t 1 ]; then
         # Interactive: show output in real-time
-        if tt-review-validate "$BASE_BRANCH" 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
+        tt-review-validate "$BASE_BRANCH" 2>&1 | tee /dev/tty > /dev/null
+        if [ ${PIPESTATUS[0]} -eq 0 ]; then
             SUCCESSFUL_REVIEWS+=("validate")
             echo "✅ Validation completed"
         else
@@ -94,8 +97,8 @@ if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 0 ]; then
             echo "⚠️  Validation had issues but continuing..."
         fi
     else
-        # Non-interactive: just capture and check
-        if tt-review-validate "$BASE_BRANCH" 2>&1 | grep -q "Analysis complete"; then
+        # Non-interactive: just capture output
+        if tt-review-validate "$BASE_BRANCH" 2>&1; then
             SUCCESSFUL_REVIEWS+=("validate")
             echo "✅ Validation completed"
         else
@@ -115,7 +118,8 @@ if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 1 ]; then
     
     if [ -t 1 ]; then
         # Interactive: show output in real-time
-        if tt-review-synthesis 2>&1 | tee /dev/tty | grep -q "Analysis complete"; then
+        tt-review-synthesis 2>&1 | tee /dev/tty > /dev/null
+        if [ ${PIPESTATUS[0]} -eq 0 ]; then
             echo "✅ Synthesis completed"
             SYNTHESIS_SUCCESS=true
         else
@@ -123,8 +127,8 @@ if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 1 ]; then
             SYNTHESIS_SUCCESS=false
         fi
     else
-        # Non-interactive: just capture and check
-        if tt-review-synthesis 2>&1 | grep -q "Analysis complete"; then
+        # Non-interactive: just capture output
+        if tt-review-synthesis 2>&1; then
             echo "✅ Synthesis completed"
             SYNTHESIS_SUCCESS=true
         else
