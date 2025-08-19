@@ -40,8 +40,11 @@ $(cat CODE_REVIEW_QUALITY.md)
         exit 1
     fi
     
-    # Add findings to context
-    tt_set_context "$all_findings"
+    # Add findings to context (append to existing diff context, don't replace)
+    tt_set_context "${TT_CONTEXT_CONTENT}
+
+## Previous Review Findings
+${all_findings}"
 
     # Set the validation template
     tt_set_template << 'EOF'
