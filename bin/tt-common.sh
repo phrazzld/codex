@@ -256,17 +256,30 @@ tt_execute_thinktank() {
         return 0
     fi
     
-    # Execute thinktank and capture output
+    # Execute thinktank and capture output while showing in real-time
     echo "Running thinktank analysis..."
     local thinktank_output
     local thinktank_exit_code
+    local tt_out_file
     
-    # Run thinktank and capture both stdout/stderr
-    thinktank_output=$(thinktank "${cmd_args[@]}" 2>&1)
-    thinktank_exit_code=$?
+    # Create temp file to capture output while preserving PIPESTATUS
+    tt_out_file=$(mktemp)
     
-    # Print the output so user can see progress
-    echo "$thinktank_output"
+    # Run thinktank and capture both stdout/stderr while also displaying to user
+    # Check if stdout is a TTY before using tee /dev/tty to avoid CI failures
+    if [ -t 1 ]; then
+        # Interactive terminal: show output in real-time and capture to file
+        thinktank "${cmd_args[@]}" 2>&1 | tee /dev/tty | tee "$tt_out_file" > /dev/null
+        thinktank_exit_code=${PIPESTATUS[0]}  # Now this works - captures thinktank's exit code
+    else
+        # Non-interactive (CI/cron): just capture to file
+        thinktank "${cmd_args[@]}" 2>&1 | tee "$tt_out_file" > /dev/null
+        thinktank_exit_code=${PIPESTATUS[0]}  # Captures thinktank's exit code
+    fi
+    
+    # Read captured output from temp file
+    thinktank_output=$(<"$tt_out_file")
+    rm -f "$tt_out_file"
     
     # Handle different exit codes
     # Exit code 0: Complete success

@@ -1,157 +1,182 @@
 #!/bin/bash
 
-# Function to display usage
-usage() {
-    echo "Usage: $0 [options] [base_branch]"
-    echo "  base_branch: Branch to compare against (default: auto-detected main/master)"
-    echo ""
-    echo "Options:"
-    echo "  -h, --help    Show this help message"
-    echo "  --full        Run all 5 review types (default: bugs + quality only)"
-    echo "  --dry-run     Show what would be executed without running"
-    echo ""
-    echo "Default mode runs:"
-    echo "  - tt-review-bugs (critical issues)"
-    echo "  - tt-review-quality (code quality)"
-    echo ""
-    echo "Full mode (--full) additionally runs:"
-    echo "  - tt-review-complexity (simplification opportunities)"
-    echo "  - tt-review-security (vulnerability detection)"
-    echo "  - tt-review-leyline (philosophy alignment - full codebase)"
-    echo ""
-    echo "Individual review commands:"
-    echo "  tt-review-bugs       - Critical bugs and correctness"
-    echo "  tt-review-quality    - General code quality"
-    echo "  tt-review-complexity - Simplification opportunities"
-    echo "  tt-review-security   - Security vulnerabilities"
-    echo "  tt-review-leyline    - Full codebase philosophy check"
-    echo "  tt-review-synthesis  - Combine multiple review outputs"
-    exit 1
-}
+# Zero-configuration code review - just works
+# Focuses on real issues, filters false positives
 
-# Parse arguments
-FULL_MODE=false
-DRY_RUN=false
+# Accept optional base branch argument, but no flags
 BASE_BRANCH=""
-
-while [[ $# -gt 0 ]]; do
-    case $1 in
-        -h|--help)
-            usage
-            ;;
-        --full)
-            FULL_MODE=true
-            shift
-            ;;
-        --dry-run)
-            DRY_RUN=true
-            shift
-            ;;
-        *)
-            BASE_BRANCH="$1"
-            shift
-            ;;
-    esac
-done
+if [[ $# -gt 0 ]]; then
+    if [[ "$1" == "-h" ]] || [[ "$1" == "--help" ]]; then
+        echo "Usage: $0 [base_branch]"
+        echo "  Runs comprehensive code review with automatic false positive filtering"
+        echo "  base_branch: Optional branch to compare against (default: auto-detected)"
+        exit 0
+    fi
+    BASE_BRANCH="$1"
+fi
 
 echo ""
 echo "🔍 Smart Code Review System"
 echo "=========================="
-
-# Determine which reviews to run
-if [ "$FULL_MODE" = true ]; then
-    echo "Mode: FULL (all 5 review types + synthesis)"
-    REVIEWS=("bugs" "quality" "complexity" "security" "leyline")
-else
-    echo "Mode: STANDARD (bugs + quality)"
-    REVIEWS=("bugs" "quality")
-fi
-
-if [ "$DRY_RUN" = true ]; then
-    echo "DRY RUN - Showing what would be executed:"
-    echo ""
-    for review in "${REVIEWS[@]}"; do
-        echo "Would run: tt-review-$review \"$BASE_BRANCH\""
-    done
-    if [ ${#REVIEWS[@]} -gt 1 ]; then
-        echo "Would run: tt-review-synthesis"
-    fi
-    exit 0
-fi
-
+echo "Running essential reviews with false positive filtering..."
 echo ""
 
 # Track successful reviews
 SUCCESSFUL_REVIEWS=()
 FAILED_REVIEWS=()
 
-# Run each review
-for review in "${REVIEWS[@]}"; do
-    echo "▶️  Running $review review..."
+# Phase 1: Essential reviews (bugs and quality only)
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📋 Phase 1: Analyzing for critical issues..."
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo ""
+
+# Run bug review with real-time output
+echo "▶️  Checking for bugs and correctness issues..."
+if [ -t 1 ]; then
+    # Interactive: show output in real-time
+    tt-review-bugs "$BASE_BRANCH" 2>&1 | tee /dev/tty > /dev/null
+    if [ ${PIPESTATUS[0]} -eq 0 ]; then
+        SUCCESSFUL_REVIEWS+=("bugs")
+        echo "✅ Bug review completed"
+    else
+        FAILED_REVIEWS+=("bugs")
+        echo "❌ Bug review failed"
+    fi
+else
+    # Non-interactive: just capture output
+    if tt-review-bugs "$BASE_BRANCH" 2>&1; then
+        SUCCESSFUL_REVIEWS+=("bugs")
+        echo "✅ Bug review completed"
+    else
+        FAILED_REVIEWS+=("bugs")
+        echo "❌ Bug review failed"
+    fi
+fi
+echo ""
+
+# Run quality review with real-time output
+echo "▶️  Checking code quality and maintainability..."
+if [ -t 1 ]; then
+    # Interactive: show output in real-time
+    tt-review-quality "$BASE_BRANCH" 2>&1 | tee /dev/tty > /dev/null
+    if [ ${PIPESTATUS[0]} -eq 0 ]; then
+        SUCCESSFUL_REVIEWS+=("quality")
+        echo "✅ Quality review completed"
+    else
+        FAILED_REVIEWS+=("quality")
+        echo "❌ Quality review failed"
+    fi
+else
+    # Non-interactive: just capture output
+    if tt-review-quality "$BASE_BRANCH" 2>&1; then
+        SUCCESSFUL_REVIEWS+=("quality")
+        echo "✅ Quality review completed"
+    else
+        FAILED_REVIEWS+=("quality")
+        echo "❌ Quality review failed"
+    fi
+fi
+echo ""
+
+# Phase 2: Validation (only if we have successful reviews)
+if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 0 ]; then
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "✓ Phase 2: Validating findings to reduce false positives..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
     
-    if [ "$review" = "leyline" ]; then
-        # Leyline doesn't need base branch (full codebase review)
-        if tt-review-"$review"; then
-            SUCCESSFUL_REVIEWS+=("$review")
-            echo "✅ $review review completed"
+    if [ -t 1 ]; then
+        # Interactive: show output in real-time
+        tt-review-validate "$BASE_BRANCH" 2>&1 | tee /dev/tty > /dev/null
+        if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            SUCCESSFUL_REVIEWS+=("validate")
+            echo "✅ Validation completed"
         else
-            FAILED_REVIEWS+=("$review")
-            echo "❌ $review review failed"
+            # Validation failure is not critical - continue to synthesis
+            echo "⚠️  Validation had issues but continuing..."
         fi
     else
-        # Other reviews need base branch
-        if tt-review-"$review" "$BASE_BRANCH"; then
-            SUCCESSFUL_REVIEWS+=("$review")
-            echo "✅ $review review completed"
+        # Non-interactive: just capture output
+        if tt-review-validate "$BASE_BRANCH" 2>&1; then
+            SUCCESSFUL_REVIEWS+=("validate")
+            echo "✅ Validation completed"
         else
-            FAILED_REVIEWS+=("$review")
-            echo "❌ $review review failed"
+            # Validation failure is not critical - continue to synthesis
+            echo "⚠️  Validation had issues but continuing..."
         fi
     fi
     echo ""
-done
+fi
 
-# Run synthesis if we have multiple successful reviews
+# Phase 3: Synthesis (combine all reports)
 if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 1 ]; then
-    echo "🔀 Running synthesis on ${#SUCCESSFUL_REVIEWS[@]} review reports..."
-    if tt-review-synthesis; then
-        echo "✅ Synthesis completed"
-        SYNTHESIS_SUCCESS=true
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo "📊 Phase 3: Creating unified report..."
+    echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+    echo ""
+    
+    if [ -t 1 ]; then
+        # Interactive: show output in real-time
+        tt-review-synthesis 2>&1 | tee /dev/tty > /dev/null
+        if [ ${PIPESTATUS[0]} -eq 0 ]; then
+            echo "✅ Synthesis completed"
+            SYNTHESIS_SUCCESS=true
+        else
+            echo "❌ Synthesis failed"
+            SYNTHESIS_SUCCESS=false
+        fi
     else
-        echo "❌ Synthesis failed"
-        SYNTHESIS_SUCCESS=false
+        # Non-interactive: just capture output
+        if tt-review-synthesis 2>&1; then
+            echo "✅ Synthesis completed"
+            SYNTHESIS_SUCCESS=true
+        else
+            echo "❌ Synthesis failed"
+            SYNTHESIS_SUCCESS=false
+        fi
     fi
     echo ""
 fi
 
 # Summary
-echo "📊 Review Summary"
-echo "================"
-echo "Successful: ${#SUCCESSFUL_REVIEWS[@]} reviews"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+echo "📊 Review Complete"
+echo "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
+
+# List generated reports
+echo "Generated reports:"
 for review in "${SUCCESSFUL_REVIEWS[@]}"; do
     upper_review=$(echo "$review" | tr '[:lower:]' '[:upper:]')
-    echo "  ✅ CODE_REVIEW_${upper_review}.md"
+    if [ -f "CODE_REVIEW_${upper_review}.md" ]; then
+        echo "  ✓ CODE_REVIEW_${upper_review}.md"
+    fi
 done
 
-if [ ${#FAILED_REVIEWS[@]} -gt 0 ]; then
-    echo "Failed: ${#FAILED_REVIEWS[@]} reviews"
-    for review in "${FAILED_REVIEWS[@]}"; do
-        echo "  ❌ $review"
-    done
-fi
-
+# Show primary output
 if [ ${#SUCCESSFUL_REVIEWS[@]} -gt 1 ] && [ "$SYNTHESIS_SUCCESS" = true ]; then
     echo ""
-    echo "📋 Unified report: CODE_REVIEW_SYNTHESIS.md"
+    echo "📋 Main report: CODE_REVIEW_SYNTHESIS.md"
+    echo ""
+    echo "This report contains validated findings with reduced false positives."
+elif [ -f "CODE_REVIEW_VALIDATED.md" ]; then
+    echo ""
+    echo "📋 Main report: CODE_REVIEW_VALIDATED.md"
+else
+    echo ""
+    echo "Check individual report files for details."
 fi
 
 echo ""
 
 # Exit status
-if [ ${#FAILED_REVIEWS[@]} -eq 0 ] && { [ ${#SUCCESSFUL_REVIEWS[@]} -le 1 ] || [ "$SYNTHESIS_SUCCESS" = true ]; }; then
-    echo "✅ All reviews completed successfully!"
+if [ ${#FAILED_REVIEWS[@]} -eq 0 ]; then
+    echo "✅ Review completed successfully!"
     exit 0
+elif [ ${#SUCCESSFUL_REVIEWS[@]} -gt 0 ]; then
+    echo "⚠️  Review completed with some issues. Check reports for findings."
+    exit 1  # Changed from exit 0 - CI should fail when any reviews fail
 else
-    echo "⚠️  Some reviews failed. Check individual outputs for details."
+    echo "❌ Review failed. Please check the output above for errors."
     exit 1
 fi

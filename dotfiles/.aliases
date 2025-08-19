@@ -107,7 +107,7 @@ alias xit="exit"
 alias vimv="$HOME/Development/vimv"
 alias ts="todo-stats"
 alias python="python3"
-alias prd="pnpm run dev"
+alias prd="pnpm run dev:full"
 
 alias l="eza --long --all --git --icons --group-directories-first --color=never"
 alias ls="eza --icons --group-directories-first --color=never"
@@ -144,3 +144,10 @@ vrg() {
     echo "No files found containing: $@"
   fi
 }
+
+# Start9 Embassy aliases
+alias embassy='open http://192.168.1.78'
+alias embassy-chrome='open -a "Google Chrome" http://192.168.1.78'
+alias embassy-ssh='ssh start@192.168.1.78'
+alias embassy-check='ping -c 3 192.168.1.78'
+alias embassy-status='curl -I http://192.168.1.78 2>&1 | head -5'
