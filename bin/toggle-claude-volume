@@ -1,0 +1,115 @@
+#!/usr/bin/env python3
+import argparse
+import datetime as _dt
+import os
+import re
+import shutil
+import sys
+import tempfile
+from pathlib import Path
+from typing import List, Tuple, Match
+
+AFPLAY_VOL_PATTERN = re.compile(r"(afplay\b[^\n]*?\s-v\s*)([0-9]*\.?[0-9]+)")
+
+def read_text(path: Path) -> str:
+    return path.read_text(encoding="utf-8")
+
+def write_text_atomic(path: Path, data: str) -> None:
+    # Write atomically in the same directory to minimize risk of corruption.
+    tmp_fd, tmp_path = tempfile.mkstemp(dir=str(path.parent), prefix=path.name + ".tmp.")
+    try:
+        with os.fdopen(tmp_fd, "w", encoding="utf-8") as f:
+            f.write(data)
+        os.replace(tmp_path, path)
+    finally:
+        try:
+            if os.path.exists(tmp_path):
+                os.remove(tmp_path)
+        except Exception:
+            pass
+
+def backup_file(path: Path) -> Path:
+    ts = _dt.datetime.now().strftime("%Y%m%d-%H%M%S")
+    backup = path.with_suffix(path.suffix + f".bak.{ts}")
+    shutil.copy2(path, backup)
+    return backup
+
+def find_volumes(text: str) -> List[float]:
+    vols = []
+    for _, vol in AFPLAY_VOL_PATTERN.findall(text):
+        try:
+            vols.append(float(vol))
+        except ValueError:
+            pass
+    return vols
+
+def apply_volume(text: str, new_volume: float) -> Tuple[str, int]:
+    count = 0
+    def repl(m: Match) -> str:
+        nonlocal count
+        count += 1
+        prefix = m.group(1)
+        return f"{prefix}{new_volume:g}"
+    new_text = AFPLAY_VOL_PATTERN.sub(repl, text)
+    return new_text, count
+
+def parse_args(argv: list) -> argparse.Namespace:
+    p = argparse.ArgumentParser(description="Toggle or set afplay volumes in ~/.claude/settings.json")
+    p.add_argument("--file", dest="file", default=str(Path.home() / ".claude" / "settings.json"), help="Path to settings.json (default: ~/.claude/settings.json)")
+    mode = p.add_mutually_exclusive_group()
+    mode.add_argument("--mute", action="store_true", help="Set volume to 0 for all afplay commands")
+    mode.add_argument("--unmute", action="store_true", help="Set volume to 0.6 for all afplay commands")
+    mode.add_argument("--volume", type=float, help="Explicit volume to set (overrides toggle logic)")
+    p.add_argument("--dry-run", action="store_true", help="Show what would change without writing")
+    p.add_argument("--backup", action="store_true", help="Create a timestamped backup before writing (off by default)")
+    return p.parse_args(argv)
+
+def main(argv: list) -> int:
+    args = parse_args(argv)
+    path = Path(os.path.expanduser(args.file))
+
+    if not path.exists():
+        print(f"Error: settings file not found: {path}", file=sys.stderr)
+        return 2
+
+    original = read_text(path)
+    vols = find_volumes(original)
+
+    if not vols:
+        print("No afplay -v occurrences found; nothing to do.")
+        return 0
+
+    # Decide target volume
+    if args.volume is not None:
+        target = max(0.0, args.volume)
+    elif args.mute:
+        target = 0.0
+    elif args.unmute:
+        target = 0.6
+    else:
+        # Toggle: if any non-zero, mute; otherwise set to 0.6
+        target = 0.0 if any(v > 0.0 for v in vols) else 0.6
+
+    updated, changed = apply_volume(original, target)
+
+    if changed == 0:
+        print("Nothing changed (no matching patterns)")
+        return 0
+
+    print(f"Found {len(vols)} afplay volume(s): {', '.join(f'{v:g}' for v in vols)}")
+    print(f"Setting all to {target:g} ({'mute' if target == 0 else 'unmute'})")
+
+    if args.dry_run:
+        print("--dry-run specified; not writing changes.")
+        return 0
+
+    backup_msg = ""
+    if args.backup:
+        backup = backup_file(path)
+        backup_msg = f" Backup: {backup}"
+    write_text_atomic(path, updated)
+    print(f"Updated {path}.{backup_msg}")
+    return 0
+
+if __name__ == "__main__":
+    raise SystemExit(main(sys.argv[1:]))

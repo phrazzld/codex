@@ -103,11 +103,13 @@ alias sz="exec zsh"
 alias v=nvim
 alias vz="nvim ~/.zshrc"
 alias vn="nvim ~/.config/nvim/init.lua"
+alias nvim-clean-shada='rm -f ~/.local/state/nvim/shada/main.shada.tmp.*'
 alias xit="exit"
 alias vimv="$HOME/Development/vimv"
 alias ts="todo-stats"
 alias python="python3"
-alias prd="pnpm run dev:full"
+alias prd="pnpm run dev"
+alias prdf="pnpm run dev:full"
 
 alias l="eza --long --all --git --icons --group-directories-first --color=never"
 alias ls="eza --icons --group-directories-first --color=never"
