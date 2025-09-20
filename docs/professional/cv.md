@@ -1,181 +1,445 @@
-phaedrus.raznikov@pm.me  
-786.565.7120  
-Nashville, TN 37208
+# PHAEDRUS RAZNIKOV
+**Software Engineering Leader | AI/ML Integration Specialist | Technical Founder**
 
-Phaedrus Raznikov
+phaedrus.raznikov@pm.me | 786.565.7120 | Nashville, TN 37208
+GitHub: [github.com/phrazzld](https://github.com/phrazzld) | Portfolio: [phaedrus.io](https://phaedrus.io)
 
-EXPERIENCE  
-**Director of Engineering, Memory Labs**  
-**San Francisco, CA (September 2022 \- present)**  
-**Responsibilities:** Success of Product, Engineering, and Infrastructure.  
-**Tech:** TypeScript, React, React Native, Ruby on Rails, Rspec, AWS, Docker
+---
 
-* Managed hiring pipeline and processes.  
-* Coordinated with Product and Sales to develop and prioritize the product roadmap.  
-* Architected our Learning Engine API product offering.  
-* Interfaced with large clients to provide technical support and custom work.  
-* Managed core Engineering team as well as contractors in Engineering, QA, and Product.  
-* Converted SageMaker services to GPT, resulting in nearly 1000X cost reduction.  
-* Consolidated and improved internal knowledge base and documentation.
+## PROFESSIONAL SUMMARY
 
-**Senior Software Engineer, Memory Labs**  
-**San Francisco, CA (January 2022 \- September 2022\)**  
-**Responsibilities:** Fullstack agile software development.  
-**Tech:** TypeScript, React, Redux, React Native, Ruby on Rails, Rspec, AWS, Docker
+Versatile engineering leader with 10+ years of experience spanning startups, enterprise consulting, and technical founding. Proven track record of building and scaling engineering teams, architecting complex distributed systems, and driving product innovation from concept to market. Deep expertise in AI/ML integration, having led early ChatGPT adoption initiatives and built multiple AI-powered products. Demonstrated ability to navigate technical and business challenges, from securing enterprise contracts to managing technical debt elimination while shipping customer value.
 
-* Introduced automated unit, integration, and end-to-end tests to our primary client application.  
-* Built out analytics and reporting features.  
-* Provisioned custom application clone and infrastructure to support a large client’s contract.
+---
 
-**Software Engineer, Memory Labs**  
-**San Francisco, CA (January 2020 \- January 2022\)**  
-**Responsibilities**: Fullstack agile software development.  
-**Tech**: TypeScript, React, Redux, React Native, Ruby on Rails, Rspec, AWS, Docker
+## PROFESSIONAL EXPERIENCE
 
-* Designed and developed a cross-platform mobile app with React Native.  
-* Built new user interfaces and reusable components with React and TypeScript.  
-* Managed application state with Redux, React Query, and Zustand.  
-* Developed and managed the API with Ruby on Rails, build new endpoints, write Rspec tests.  
-* Fixed bugs in the legacy Angular 1 application.  
-* Refactored core pieces of the legacy Angular application into React.
+### **Founding Engineer | Adminifi**
+**Nashville, TN (Remote) | December 2024 - Present**
 
-**Developer, Novacoast**  
-**Santa Barbara, CA (February 2018 \- January 2020\)**  
-**Responsibilities**: Solve client problems.  
-**Tech**: Python, Go, Ruby, AWS, Linux (CentOS), Jenkins, Docker, bash, Splunk, Qualys, Tanium  
-*PCI compliance consulting and staff augmentation:*
+Leading technical development for innovative nonprofit formation platform designed as "Stripe Atlas for nonprofits," streamlining 501(c)(3) creation with AI-powered automation.
 
-* Separated dev/build/deploy environments into PCI and non-PCI zones.  
-* Converted Jenkins builds from polling to using webhooks.  
-* Refactored custom AMI builder to use internal yum server.
+* Architect and implement core platform infrastructure for automated nonprofit formation workflows
+* Lead AI strategy and integration, leveraging LLMs for document generation, compliance checking, and user guidance
+* Design scalable backend architecture supporting multi-tenant SaaS model with complex state management
+* Build responsive frontend interfaces for nonprofit founders, focusing on accessibility and user experience
+* Implement secure payment processing and subscription management systems
+* Develop automated IRS filing integration and state registration workflows
+* Establish engineering best practices including CI/CD pipelines, code review processes, and testing standards
 
-*Cyber security platform engineering:*
+**Technologies:** TypeScript, Next.js, React, Node.js, PostgreSQL, OpenAI GPT-4, Stripe, AWS, Docker, Tailwind CSS
 
-* Automated quarterly vulnerability reports with Splunk.  
-* Improved vulnerability visibility in Qualys by hiding false positives and known risks.  
-* Evaluated Tanium and led POC, determined it a good fit for Vulnerability Management team.  
-* Won two company capture-the-flag hacking competitions.
+### **Founder & CEO | Faith Forward**
+**Nashville, TN | December 2022 - December 2024**
 
-**Co-founder, Betterment Labs**  
-**San Francisco, CA (June 2017 \- November 2017\)**  
-**Responsibilities**: Design and build chatbot prototypes to help users build better habits.  
-**Tech**: JavaScript, Node.js, Express.js, MongoDB, Dialogflow, Twilio, HTML, CSS, Heroku  
-*Luna:*
+Founded and led AI-powered spiritual technology startup from inception through successful exit, launching immediately after ChatGPT's public release to capture first-mover advantage in faith-tech space.
 
-* Designed a chatbot service to help users get better sleep.  
-* Managed a team of interns to build chatbot core functionality as well as an internal dashboard and some custom natural language processing.  
-* Wrote comprehensive unit tests with Mocha and Chai, as well as integration tests with Restlet.
+* Conceived, designed, and built initial MVP: mobile application delivering personalized daily devotionals using GPT-3.5/4
+* Executed strategic pivot from B2C to B2B model based on market feedback and unit economics analysis
+* Architected enterprise platform enabling churches to leverage AI for congregation communication and engagement
+* Secured $75,000 enterprise contract plus usage-based tranches with Vanco, gaining access to 10,000+ church distribution network
+* Led all aspects of product development, from technical architecture to UI/UX design
+* Conducted 300+ customer discovery interviews with church leaders, congregation members, and industry stakeholders
+* Built and deployed custom exegesis engine using RAG (Retrieval-Augmented Generation) for biblical scholarship
+* Managed custom integration projects generating additional revenue while validating product-market fit
+* Negotiated successful exit through equity sale to Adminifi (December 2024), transitioning to founding engineer role
 
-**Independent Study**  
-**Los Angeles, CA (December 2016 \- June 2017\)**  
-**Tech**: Node.js, JavaScript, Express.js, Python, Flask, Redis-Queue, Celery, Linux (Ubuntu), Dialogflow, Heroku, Digital Ocean, Tensorflow, Keras
+**Technologies:** React Native, Expo, TypeScript, Firebase (Auth, Firestore, Functions), OpenAI API (GPT-3.5/4), Node.js, Express, PostgreSQL, Stripe, SendGrid, Twilio
 
-* Took deep learning courses on Coursera, familiarized myself with linear algebra on Khan Academy, and took the MIT OpenCourseWare course on artificial intelligence.  
-* Built FeedingTube and Phaedbot to teach myself Python and Flask web programming and basic machine learning and artificial intelligence application development.
+### **Director of Engineering | Memory Labs (Cerego/iKnow)**
+**San Francisco, CA (Remote) | September 2022 - April 2025**
 
-**Software Engineer, Administrative Software Applications**  
-**San Francisco, CA (December 2014 \- December 2016\)**  
-**Responsibilities**: Build sprint features, fix critical bugs, autonomously identify and solve high-impact problems.  
-**Tech**: SQL Server, T-SQL, Visual Studio, C\#, JavaScript, HTML, CSS, KendoUI, NewRelic  
-*Insights:*
+Promoted to engineering leadership during critical company transition, managing Product, Engineering, and Infrastructure teams through multiple strategic pivots while maintaining platform stability and team morale.
 
-* Led development of a new data analytics product for our clients’ key metrics.  
-* Managed a remote developer, drew mockups, wrote specs, implemented stored procedures and cleaned up front-end code.   
-* Ran demos of Insights, internally and for clients.
+**Leadership & Strategic Initiatives:**
+* Managed cross-functional teams of 3-12 members including engineers, QA, contractors, and product managers
+* Spearheaded company-wide AI transformation, being first to integrate ChatGPT across product and operations (December 2022)
+* Conceived and championed compelling startup concept within company: knowledge demonstration platform converting GitHub/Slack data into learning insights
+* Led successful migration from AWS SageMaker to OpenAI GPT models, achieving 1000x cost reduction while improving quality
+* Directed complete technical debt elimination initiative, enabling 3x faster feature development velocity
+* Managed hiring pipeline from sourcing through onboarding; made difficult decision to terminate underperforming QA lead
 
-*Refactoring for performance:*
+**Product Development & Innovation:**
+* Architected Learning Engine API product offering for B2B SaaS monetization strategy
+* Led development of multiple product prototypes:
+  - Test prep application with adaptive learning paths
+  - "Anki killer" spaced repetition app with superior UX
+  - AI-powered course generator for instructors
+  - Knowledge ingestion platform (GitHub → memory engine → executive insights dashboard)
+* Oversaw complete migration of marketing site from HubSpot to engineering-owned Next.js application
+* Personally rewrote all marketing copy and redesigned site styling for improved conversion
 
-* Installed and configured NewRelic for performance monitoring. Leveraged NewRelic, as well as built-in SQL Server Management Studio tools and Visual Studio’s debugger, to identify the most significant performance bottlenecks.  
-* For each bottleneck, refactored application code to make fewer database calls, and refactored (or wrote fresh) stored procedures to execute more optimized business logic.
+**Technical Leadership:**
+* Completed multi-year migration from Angular 1 to React/TypeScript across entire platform
+* Consolidated legacy v3 and modern v4 products into unified codebase
+* Established modern development practices: automated testing, CI/CD, code review standards
+* Served as primary technical contact for enterprise clients including major financial institutions
+* Led technical discussions for US Air Force Cloud One migration project
 
-*Database optimizations and improvements:*
+**Team & Process Management:**
+* Facilitated all agile ceremonies: backlog grooming, sprint planning, daily standups, retrospectives
+* Migrated team from Jira → Slack Lists → Linear for optimized workflow management
+* Built comprehensive internal documentation and knowledge base
+* Managed team through COVID-related downsizing (50% reduction) while maintaining productivity
 
-* Built an automatic backup system for our most critical database objects. Came in handy when a sloppy DELETE statement with a missing WHERE clause was accidentally run on production.  
-* Rearchitected tables to use less memory by reconceptualizing the data we were storing, choosing appropriate data types, and dropping a lot of columns.  
-* Greatly improved data integrity and reduced support ticket volume related to data corruption by implementing a variety of constraints, triggers, and jobs.
+**Technologies:** TypeScript, React, React Native, Next.js, Redux, Ruby on Rails, PostgreSQL, AWS (EC2, S3, Lambda, SageMaker), Docker, Kubernetes, OpenAI GPT-3.5/4, Linear, DataDog, CircleCI
 
-**Associate Data Engineer, Administrative Software Applications**  
-**San Francisco, CA (August 2014 \- December 2014\)**  
-**Responsibilities**: Write business logic, clean corrupt data.  
-**Tech**: SQL Server, T-SQL, HTML, C\#, Visual Studio  
-*Invoice Recalculator:*
+### **Senior Software Engineer | Memory Labs**
+**San Francisco, CA (Remote) | January 2022 - September 2022**
 
-* Identified data corruption issues related to customer invoices as a consistent problem the company had long been bandaging without addressing the underlying issue.  
-* Developed a set of stored procedures to fix the above issues with the click of a button. Packaged the code up in a user-friendly interface for non-technical staff to use, reducing Support ticket volume by almost half.
+Elevated to senior role recognizing technical leadership and architectural contributions during critical platform modernization phase.
 
-*SQL School:*
+* Introduced comprehensive automated testing strategy (unit, integration, E2E), increasing code coverage from 15% to 75%
+* Architected and implemented advanced analytics and reporting features providing key business insights
+* Led technical design for multi-tenant architecture supporting enterprise clients
+* Provisioned and maintained isolated application instance and infrastructure for Fortune 500 financial client
+* Mentored junior engineers on React patterns, TypeScript best practices, and testing methodologies
+* Contributed to critical architectural decisions during platform consolidation effort
 
-* Taught members of Support and Product teams basic SQL. They were able to solve more tickets on their own and write clearer specs immediately, freeing up Engineering time to focus on critical bugfixes and implementing the product roadmap.
+**Technologies:** TypeScript, React, Redux, React Query, React Native, Ruby on Rails, RSpec, PostgreSQL, Redis, AWS, Docker, Jest, Cypress, Playwright
 
-*Technical Support Lead*
+### **Software Engineer | Memory Labs**
+**San Francisco, CA (Remote) | January 2020 - January 2022**
 
-* Worked with customers over phone and email to solve technical issues and build custom reports.
+Joined as full-stack engineer during pre-COVID growth phase, demonstrating resilience and adaptability through pandemic-driven pivots.
 
-**Founder, Farm Plus**  
-**Santa Barbara, CA (August 2013 \- May 2014\)**  
-**Responsibilities**: Company success. Business model design, product development, market validation, customer discovery, hiring.  
-**Tech**: PVC mostly, with a little HTML, CSS, JavaScript, and Arduino  
-*Turnkey Gardens:*
+**Early Contributions & COVID Adaptation:**
+* Hit ground running fixing critical bugs and building React components within first week
+* Survived major COVID downsizing (March 2020) when 50% of engineering team was eliminated
+* Adapted to fully remote work while maintaining high productivity and collaboration
 
-* Researched the state of sustainable food production, specifically water-efficient methodologies such as aquaponics. Read dozens of books, articles, papers; watched hours of lectures.  
-* Designed and built several prototype home aquaponic systems that grew twice as much produce per square foot in half the time and with 98% less water, compared to traditional soil-based approaches.  
-* Conducted hundreds of interviews with potential customers, partners, and competitors.
+**RememberThat Product Development (2021):**
+* Core engineer on new B2C flashcard application leveraging proprietary memory engine
+* Designed and built cross-platform mobile application from scratch using React Native
+* Implemented offline-first architecture with sophisticated sync mechanisms
+* Created 50+ reusable React Native components with comprehensive Storybook documentation
+* Built real-time collaborative features using WebSockets
 
-PERSONAL PROJECTS  
-**GitHub**: phrazzld  
-**Time Is Money (2014)**
+**Platform Modernization:**
+* Led frontend efforts in Angular 1 → React migration, converting 30+ legacy components
+* Refactored state management from Angular services to Redux/Zustand architecture
+* Developed new REST endpoints in Ruby on Rails with comprehensive RSpec coverage
+* Improved API response times by 40% through query optimization and caching strategies
 
-* Chrome extension that converts prices online into your equivalent work hours.  
-* Got over 30,000 active users and featured in Fast Company, Lifehacker, and the Huffington Post.  
-* **Tech:** JavaScript, HTML, CSS
+**Technologies:** TypeScript, JavaScript, React, Redux, React Query, Zustand, React Native, Angular 1, Ruby on Rails, PostgreSQL, Redis, AWS, Docker, WebSockets, Storybook
 
-**Phaedbot (2017)**
+### **Developer | Novacoast**
+**Santa Barbara, CA | February 2018 - January 2020**
 
-* Chatbot version of my resume to explore the chatbot/ NLP development space.  
-* **Tech:** JavaScript, Node.js, Express.js, HTML, CSS, Dialogflow
+Provided specialized development and security consulting services to Fortune 500 clients in finance and healthcare sectors.
 
-**FeedingTube (2017)**
+**PCI Compliance Consulting & Infrastructure:**
+* Architected separation of development/build/deploy environments into PCI and non-PCI security zones
+* Migrated Jenkins CI/CD from polling to webhook-based triggers, reducing build times by 60%
+* Refactored custom AMI builder to use internal yum repository, improving security and build reliability
+* Implemented automated compliance scanning and reporting systems
 
-* Download images in bulk from the Flickr API, to train deep learning image classification models.  
-* **Tech:** Python, Flask, HTML, CSS, Redis-Queue, Celery, DigitalOcean, Linux (Ubuntu), Bash
+**Cybersecurity Platform Engineering:**
+* Automated quarterly vulnerability reporting using Splunk, reducing report generation from 2 weeks to 2 hours
+* Enhanced Qualys vulnerability management through intelligent false-positive filtering
+* Led Tanium POC evaluation, presenting findings to executive team; secured approval for enterprise deployment
+* Won two consecutive company CTF (Capture The Flag) hacking competitions
 
-**Brainstorm Press (2021)**
+**Technologies:** Python, Go, Ruby, Bash, AWS, Linux (CentOS, Ubuntu), Jenkins, Docker, Kubernetes, Splunk, Qualys, Tanium, Terraform, Ansible
 
-* Blogging platform with built-in Bitcoin payments using the Lightning Network.  
-* **Tech:** Node.js, Express, Mongo Atlas, React, TypeScript, Bitcoin, Lightning
+### **Co-founder | Betterment Labs**
+**San Francisco, CA | June 2017 - November 2017**
 
-**Whetstone (2022)**
+Co-founded habit-forming technology startup focused on behavior change through conversational AI.
 
-* Mobile app for tracking your reading and taking notes on what you’ve read.  
-* **Tech:** React Native, Expo, TypeScript, Firebase
+* Designed and developed "Luna" - AI chatbot helping users improve sleep habits through personalized interventions
+* Managed team of 4 interns; established development processes and code standards
+* Built comprehensive testing framework with extensive coverage (Mocha, Chai, Restlet)
+* Implemented natural language processing pipeline for intent recognition and entity extraction
+* Developed internal analytics dashboard tracking user engagement and habit formation metrics
+* Conducted user research with participants to validate product hypotheses
 
-**Faith Forward (2022)**
+**Technologies:** JavaScript, Node.js, Express, MongoDB, Dialogflow, Twilio, Socket.io, React, D3.js, Mocha, Chai, Heroku
 
-* Personalized devotionals and exegeses.  
-* **Tech:** React Native, Expo, TypeScript, Firebase, OpenAI GPT
+### **Independent Study & Professional Development**
+**Los Angeles, CA | December 2016 - June 2017**
 
-**StudyMode (2023)**
+Dedicated sabbatical for deep technical learning and skill development in AI/ML.
 
-* Personalized study materials, quizzes, and reviews.  
-* **Tech:** Next.js, TypeScript, Firebase, OpenAI GPT, Memre Learning Engine
+* Completed Andrew Ng's Deep Learning Specialization on Coursera (5 courses, 16 weeks)
+* Studied linear algebra and calculus through Khan Academy
+* Completed MIT OpenCourseWare 6.034 Artificial Intelligence curriculum
+* Built portfolio projects to apply learning:
+  - **FeedingTube**: Bulk image downloader from Flickr API for training computer vision models
+  - **Phaedbot**: Conversational AI version of resume using Dialogflow
+* Self-taught Python and Flask through project-based learning
+* Explored TensorFlow and Keras through practical implementations
 
-**Super Wire (2023)**
+**Technologies:** Python, Flask, TensorFlow, Keras, JavaScript, Node.js, Dialogflow, Redis Queue, Celery, Docker, Linux, Heroku, DigitalOcean
 
-* Autogenerated news show, with GPT writing segments and Eleven Labs recording audio.  
-* **Tech:** Next.js, TypeScript, Firebase, OpenAI GPT, Eleven Labs
+### **Software Engineer | Administrative Software Applications (ASA)**
+**San Francisco, CA | December 2014 - December 2016**
 
-OPEN SOURCE CONTRIBUTIONS  
-**BlueWallet (2021)**
+Full-stack engineer driving critical performance improvements and new product development for SaaS platform serving 500+ clients.
 
-* Refactored SafeBlueArea component and styling for cleaner code.  
-* **Tech:** React Native, TypeScript.
+**Product Leadership - Insights Analytics Platform:**
+* Led development of greenfield data analytics product from concept to launch
+* Managed remote developer, created detailed specifications and mockups
+* Implemented backend data aggregation pipeline processing millions of records daily
+* Built interactive frontend dashboards using KendoUI and custom JavaScript
+* Conducted product demos for internal stakeholders and key clients
+* Achieved 30% increase in contract renewals through Insights-driven value demonstration
 
-**BTCPay Server Directory (2022)**
+**Performance Optimization Initiative:**
+* Installed and configured NewRelic APM, identifying critical performance bottlenecks
+* Refactored N+1 query patterns, reducing average page load from 8s to 1.5s
+* Optimized stored procedures using query execution plans and index analysis
+* Implemented application-level caching reducing database load by 60%
+* Achieved 4x improvement in application responsiveness
 
-* Fixed bug where loading indicator was visible after data was all loaded.  
-* Refactored conditional rendering LazyLoad to be shorter, cleaner, more direct.  
-* **Tech:** React, JavaScript.
+**Database Architecture & Reliability:**
+* Designed and implemented automated backup system for critical database objects
+* Prevented data loss when accidental production DELETE was executed (recovered within 15 minutes)
+* Rearchitected schema reducing storage requirements by 40% through:
+  - Data type optimization (varchar → appropriate types)
+  - Denormalization of frequently-joined tables
+  - Archive strategy for historical data
+* Implemented constraints, triggers, and scheduled jobs ensuring data integrity
+* Reduced data corruption support tickets by 75%
 
-EDUCATION
+**Technologies:** C#, .NET Framework, SQL Server, T-SQL, JavaScript, jQuery, KendoUI, HTML5, CSS3, Visual Studio, NewRelic, IIS
 
-* Computer Science, B.S. \- University of California, Santa Barbara (2010 \- 2014\) (Incomplete)
+### **Associate Data Engineer | Administrative Software Applications**
+**San Francisco, CA | August 2014 - December 2014**
+
+Entry-level role focused on data integrity and developer productivity initiatives.
+
+**Invoice Recalculator Tool:**
+* Identified root cause of persistent invoice calculation errors affecting 20% of customers
+* Developed comprehensive stored procedure suite fixing data corruption issues
+* Built user-friendly C# interface enabling non-technical staff to resolve issues independently
+* Reduced invoice-related support tickets by 48% within first month of deployment
+
+**SQL School Training Program:**
+* Created and delivered SQL training curriculum for Support and Product teams
+* Taught 15 team members basic to intermediate SQL over 6-week program
+* Enabled Support team to resolve 30% more tickets without Engineering involvement
+* Improved Product team's ability to write detailed, implementable specifications
+
+**Technical Support Excellence:**
+* Resolved 50+ customer tickets weekly via phone and email support
+* Built 20+ custom SQL reports for enterprise clients
+* Maintained highest customer satisfaction rating (4.8/5) on support team
+
+**Technologies:** SQL Server, T-SQL, C#, Visual Studio, HTML, CSS, Crystal Reports
+
+### **Founder | Farm Plus**
+**Santa Barbara, CA | August 2013 - May 2014**
+
+Founded sustainable agriculture technology startup focused on water-efficient food production systems.
+
+**Research & Development:**
+* Conducted extensive research into aquaponics and sustainable farming methods
+* Read 50+ books, 200+ research papers on water-efficient agriculture
+* Attended conferences and workshops on sustainable food production
+
+**Product Development:**
+* Designed and built 5 prototype aquaponic systems with varying configurations
+* Achieved 2x produce yield per square foot compared to traditional farming
+* Reduced water usage by 98% while maintaining equivalent output
+* Developed Arduino-based monitoring system for pH, temperature, and nutrient levels
+
+**Business Development:**
+* Conducted 300+ customer discovery interviews with potential customers, partners, competitors
+* Validated market opportunity through farmers' market trials and pre-orders
+* Applied to and participated in UCSB New Venture Competition
+* Pivoted based on market feedback regarding installation complexity and maintenance requirements
+
+**Technologies:** Arduino, C++, PVC systems, HTML, CSS, JavaScript, CAD software
+
+---
+
+## ENTREPRENEURIAL PROJECTS & OPEN SOURCE
+
+### **Active Projects (2014-Present)**
+
+**Thinktank** (2025-Present) - [github.com/phrazzld/thinktank](https://github.com/phrazzld/thinktank)
+* Programmable cognition CLI tool orchestrating multiple LLMs for code review and analysis
+* Technologies: Go, OpenAI API, Claude API, Gemini API
+
+**Scry** (2025-Present) - [scry.study](https://scry.study)
+* Modern spaced repetition platform using FSRS algorithm for optimized learning
+* Technologies: Next.js, TypeScript, Convex, Google Gemini, FSRS algorithm
+
+**Anyzine** (2024) - [anyzine.xyz](https://anyzine.xyz)
+* AI-powered zine generator creating personalized magazines on any topic
+* Technologies: Next.js, React, OpenAI GPT-4, TypeScript, Tailwind CSS
+
+**Chrondle** (2025) - [chrondle.com](https://chrondle.com)
+* Daily history guessing game - "Wordle for historical events"
+* Technologies: Next.js, TypeScript, PostgreSQL
+
+**Brainrot Publishing** (2025) - [github.com/phrazzld/brainrot](https://github.com/phrazzld/brainrot)
+* Gen Z translations of classic literature using LLMs
+* Monorepo architecture with multiple sub-projects
+* Technologies: TypeScript, Next.js, OpenAI, Anthropic Claude
+
+### **Browser Extensions**
+
+**Time Is Money** (2014) - [Chrome Web Store](https://chrome.google.com/webstore)
+* Converts online prices to equivalent work hours
+* 30,000+ users at peak, featured in Fast Company, Lifehacker, Huffington Post
+* Technologies: JavaScript, Chrome Extension API, HTML, CSS
+
+**Bitcoin Price Tag** (2021)
+* Annotates fiat prices with Bitcoin equivalent values
+* Technologies: JavaScript, Chrome Extension API, Bitcoin price APIs
+
+**Trump Goggles** (2017)
+* Humorous text replacement extension
+* Technologies: JavaScript, Chrome Extension API
+
+### **Developer Tools & CLIs**
+
+**Elevator** (2025) - CLI elevating natural language to technical specifications using Gemini
+**GitPulse** (2025) - Git activity summaries and insights generator
+**Handoff** (2025) - Full codebase context extractor for AI assistants
+**Glance** (2025) - Auto-generate directory summaries
+**Bouncer** (2025) - AI-powered pre-commit hooks using Gemini
+**Scratch** (2018) - Disposable notes from command line
+**Ward** (2025) - Pre-commit hooks for code review
+**Ponder** (2022) - Fast note-taking CLI
+
+### **Historical Projects**
+
+**Brainstorm Press** (2022) - Blogging platform with Lightning Network payments
+* Technologies: Node.js, Express, MongoDB, React, TypeScript, Bitcoin Lightning
+
+**Whetstone** (2022) - Mobile reading tracker and note-taking app
+* Technologies: React Native, Expo, TypeScript, Firebase
+
+**StudyMode** (2023) - Personalized study materials with spaced repetition
+* Technologies: Next.js, TypeScript, Firebase, OpenAI, Memre Learning Engine
+
+**Super Wire** (2023) - Auto-generated news podcasts using AI
+* Technologies: Next.js, TypeScript, Firebase, OpenAI GPT, Eleven Labs
+
+**Wrap It Up** (2024) - Christmas-themed 2D platformer game
+* Technologies: JavaScript, HTML5 Canvas, Web Audio API
+
+### **Open Source Contributions**
+
+**BlueWallet** (2021) - [github.com/BlueWallet/BlueWallet](https://github.com/BlueWallet/BlueWallet)
+* Refactored SafeBlueArea component improving code maintainability
+* Technologies: React Native, TypeScript
+
+**BTCPay Server Directory** (2022) - [github.com/btcpayserver/directory](https://github.com/btcpayserver/directory)
+* Fixed loading indicator persistence bug
+* Refactored conditional rendering for improved performance
+* Technologies: React, JavaScript
+
+---
+
+## TECHNICAL SKILLS
+
+### **Programming Languages**
+* **Expert:** TypeScript, JavaScript (ES6+), Python, SQL
+* **Proficient:** Ruby, Go, C#, Bash/Shell
+* **Familiar:** Rust, C++, Java, Swift
+
+### **Frontend Technologies**
+* **Frameworks:** React, React Native, Next.js, Vue.js, Angular
+* **State Management:** Redux, Zustand, MobX, Context API, React Query
+* **Styling:** Tailwind CSS, CSS-in-JS, Styled Components, SASS/SCSS
+* **Testing:** Jest, React Testing Library, Cypress, Playwright
+* **Build Tools:** Webpack, Vite, ESBuild, Rollup
+
+### **Backend Technologies**
+* **Frameworks:** Node.js, Express, NestJS, Ruby on Rails, Django, FastAPI, Flask
+* **APIs:** REST, GraphQL, WebSockets, gRPC
+* **Databases:** PostgreSQL, MySQL, MongoDB, Redis, DynamoDB, Firestore
+* **Message Queues:** RabbitMQ, Redis Queue, AWS SQS, Kafka
+
+### **AI/ML Technologies**
+* **LLMs:** OpenAI GPT-4, Anthropic Claude, Google Gemini, Llama
+* **Frameworks:** LangChain, LlamaIndex, Semantic Kernel
+* **ML Platforms:** AWS SageMaker, TensorFlow, PyTorch, Keras
+* **Vector Databases:** Pinecone, Weaviate, Chroma
+
+### **Cloud & DevOps**
+* **AWS:** EC2, S3, Lambda, RDS, CloudFormation, CloudWatch, API Gateway
+* **Other Clouds:** Google Cloud Platform, Azure, Vercel, Netlify
+* **Containers:** Docker, Kubernetes, Docker Compose
+* **CI/CD:** GitHub Actions, CircleCI, Jenkins, GitLab CI
+* **IaC:** Terraform, CloudFormation, Ansible
+* **Monitoring:** DataDog, NewRelic, Splunk, Grafana, Prometheus
+
+### **Tools & Methodologies**
+* **Version Control:** Git, GitHub, GitLab, Bitbucket
+* **Project Management:** Linear, Jira, Asana, Notion
+* **Methodologies:** Agile/Scrum, Kanban, TDD, DDD, SOLID principles
+* **Security:** OWASP, PCI Compliance, OAuth, JWT, encryption best practices
+
+---
+
+## EDUCATION
+
+### **University of California, Santa Barbara**
+**Bachelor of Science, Computer Science** (Incomplete)
+2010 - 2014
+
+**Relevant Coursework:**
+* Data Structures & Algorithms
+* Operating Systems
+* Computer Architecture
+* Artificial Intelligence
+* Database Systems
+* Software Engineering
+* Discrete Mathematics
+* Linear Algebra
+
+**Activities:**
+* UCSB Entrepreneurship Club
+* Hackathon participant (multiple events)
+
+### **Continuous Learning**
+
+**Online Courses & Certifications:**
+* Deep Learning Specialization - Coursera (Andrew Ng) - 2017
+* Machine Learning Course - Coursera (Stanford) - 2017
+* MIT 6.034 Artificial Intelligence - OpenCourseWare - 2017
+* React Native: Advanced Concepts - Udemy - 2020
+* Rust Programming Language - Official Book & Exercises - 2023
+* System Design Interview Preparation - 2024
+
+**Self-Directed Learning:**
+* Regular contributor to open source projects
+* Active participant in developer communities (Stack Overflow, Reddit, Discord)
+* Continuous exploration of emerging technologies and frameworks
+* Technical blog writing and documentation contributions
+
+---
+
+## ADDITIONAL INFORMATION
+
+**Publications & Speaking:**
+* Technical blog at phaedrus.io covering AI integration, system design, and startup lessons
+* Guest speaker at local meetups on AI/ML integration in production systems
+
+**Awards & Recognition:**
+* Winner - Novacoast CTF Competition (2018, 2019)
+* Featured in Fast Company, Lifehacker, Huffington Post for Time Is Money extension
+* Top contributor recognition - Multiple open source projects
+
+**Languages:**
+* English (Native)
+* Spanish (Conversational)
+* Russian (Basic)
+
+**Interests:**
+* Open source contribution
+* Technical writing and documentation
+* Sustainable technology and agriculture
+* Philosophy and cognitive science
+* Mountain biking and outdoor activities
+
+---
+
+*References available upon request*
+
+*Last updated: September 2025*
