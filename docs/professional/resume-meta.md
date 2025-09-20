@@ -18,26 +18,26 @@ Product-focused engineer with deep expertise in React ecosystem and AI/ML integr
 - Launched AI-powered mobile app within days of ChatGPT release, capturing first-mover advantage in faith-tech market
 - Built React Native application from scratch, growing to 10,000+ potential users through enterprise distribution deal
 - Executed rapid pivot from B2C to B2B based on user data, securing $75K enterprise contract with usage-based pricing
-- Developed custom RAG system for content generation using Retrieval-Augmented Generation for biblical scholarship
+- Developed custom exegesis engine using advanced prompt engineering and Typesense vector database for semantic Bible search
 - Achieved successful exit through acquisition, validating product vision and technical execution
 
-**Director of Engineering | Memory Labs** | San Francisco, CA (Remote) | Sep 2022 - Apr 2025
+**Director of Engineering | Cerego** | San Francisco, CA (Remote) | Sep 2022 - Apr 2025
 - Led company-wide React migration and ChatGPT integration, being first in edtech space to ship AI features (Dec 2022)
 - Reduced infrastructure costs by 1000x migrating from SageMaker to GPT models while improving response quality
 - Shipped 4 product prototypes in parallel: test prep app, spaced repetition platform, course generator, and knowledge analytics tool
-- Managed cross-functional team of 12, eliminating technical debt to achieve 3x faster feature velocity
+- Managed cross-functional team of 8, eliminating technical debt and dramatically improving development velocity
 - Architected Learning Engine API for B2B SaaS monetization, designing RESTful interfaces for enterprise clients
 
-**Senior Software Engineer | Memory Labs** | San Francisco, CA (Remote) | Jan 2022 - Sep 2022
+**Senior Software Engineer | Cerego** | San Francisco, CA (Remote) | Jan 2022 - Sep 2022
 - Introduced automated testing framework increasing coverage from 15% to 75%, enabling confident rapid deployment
 - Built analytics dashboard in React providing real-time insights across web and mobile platforms
-- Designed multi-tenant architecture supporting Fortune 500 clients with isolated data and custom configurations
+- Worked with team to build bespoke AWS environment cloning our system for Fortune 500 client
 
-**Software Engineer | Memory Labs** | San Francisco, CA (Remote) | Jan 2020 - Jan 2022
+**Software Engineer | Cerego** | San Francisco, CA (Remote) | Jan 2020 - Jan 2022
 - Core engineer on React Native app serving millions of learning events daily, implementing offline-first sync architecture
 - Led Angular to React migration, converting 30+ components while maintaining backward compatibility
 - Built 50+ reusable React components with TypeScript, establishing patterns adopted across engineering team
-- Improved API performance by 40% through query optimization and Redis caching strategies
+- Improved API performance by 40% through query optimization and caching strategies
 
 **Developer | Novacoast** | Santa Barbara, CA | Feb 2018 - Jan 2020
 - Automated vulnerability reporting with Python/Splunk, reducing report generation from 2 weeks to 2 hours
@@ -49,8 +49,8 @@ Product-focused engineer with deep expertise in React ecosystem and AI/ML integr
 **Frontend:** React, React Native, Next.js, Redux, React Query, Tailwind CSS
 **Backend:** Node.js, Express, GraphQL, REST APIs, Ruby on Rails
 **AI/ML:** OpenAI GPT-4, LangChain, RAG, Vector Databases, Prompt Engineering
-**Infrastructure:** AWS, Docker, Kubernetes, PostgreSQL, MongoDB, Redis
-**Tools:** Git, Linear, Jest, Cypress, CircleCI, DataDog
+**Infrastructure:** AWS, Docker, MySQL, MongoDB
+**Tools:** Git, Linear, Jest, Cypress, Concourse, DataDog
 
 ## Projects
 

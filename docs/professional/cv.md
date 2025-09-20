@@ -39,25 +39,26 @@ Founded and led AI-powered spiritual technology startup from inception through s
 * Architected enterprise platform enabling churches to leverage AI for congregation communication and engagement
 * Secured $75,000 enterprise contract plus usage-based tranches with Vanco, gaining access to 10,000+ church distribution network
 * Led all aspects of product development, from technical architecture to UI/UX design
-* Conducted 300+ customer discovery interviews with church leaders, congregation members, and industry stakeholders
-* Built and deployed custom exegesis engine using RAG (Retrieval-Augmented Generation) for biblical scholarship
+* Conducted dozens of interviews with faith leaders and churchgoers, made dozens of cold calls to validate market opportunity
+* Built and deployed custom exegesis engine using advanced prompt engineering for biblical scholarship
+* Implemented Typesense vector database for semantic search of biblical texts, enabling contextual discovery
 * Managed custom integration projects generating additional revenue while validating product-market fit
 * Negotiated successful exit through equity sale to Adminifi (December 2024), transitioning to founding engineer role
 
-**Technologies:** React Native, Expo, TypeScript, Firebase (Auth, Firestore, Functions), OpenAI API (GPT-3.5/4), Node.js, Express, PostgreSQL, Stripe, SendGrid, Twilio
+**Technologies:** React Native, Expo, TypeScript, Firebase (Auth, Firestore, Functions), OpenAI API (GPT-3.5/4), Node.js, Express, Typesense
 
-### **Director of Engineering | Memory Labs (Cerego/iKnow)**
+### **Director of Engineering | Cerego**
 **San Francisco, CA (Remote) | September 2022 - April 2025**
 
 Promoted to engineering leadership during critical company transition, managing Product, Engineering, and Infrastructure teams through multiple strategic pivots while maintaining platform stability and team morale.
 
 **Leadership & Strategic Initiatives:**
-* Managed cross-functional teams of 3-12 members including engineers, QA, contractors, and product managers
+* Managed cross-functional teams of up to 8 members including engineers, QA, contractors, and product managers
 * Spearheaded company-wide AI transformation, being first to integrate ChatGPT across product and operations (December 2022)
 * Conceived and championed compelling startup concept within company: knowledge demonstration platform converting GitHub/Slack data into learning insights
 * Led successful migration from AWS SageMaker to OpenAI GPT models, achieving 1000x cost reduction while improving quality
-* Directed complete technical debt elimination initiative, enabling 3x faster feature development velocity
-* Managed hiring pipeline from sourcing through onboarding; made difficult decision to terminate underperforming QA lead
+* Directed complete technical debt elimination initiative, dramatically simplifying codebase architecture and improving development velocity
+* Managed hiring pipeline from sourcing through onboarding; made difficult personnel decisions including terminating underperforming QA lead and contractor engineer
 
 **Product Development & Innovation:**
 * Architected Learning Engine API product offering for B2B SaaS monetization strategy
@@ -82,23 +83,23 @@ Promoted to engineering leadership during critical company transition, managing 
 * Built comprehensive internal documentation and knowledge base
 * Managed team through COVID-related downsizing (50% reduction) while maintaining productivity
 
-**Technologies:** TypeScript, React, React Native, Next.js, Redux, Ruby on Rails, PostgreSQL, AWS (EC2, S3, Lambda, SageMaker), Docker, Kubernetes, OpenAI GPT-3.5/4, Linear, DataDog, CircleCI
+**Technologies:** TypeScript, React, React Native, Next.js, Redux, Ruby on Rails, MySQL (Aurora), AWS (EC2, S3, Lambda, SageMaker), Docker, OpenAI GPT-3.5/4, Linear, DataDog, Concourse
 
-### **Senior Software Engineer | Memory Labs**
+### **Senior Software Engineer | Cerego**
 **San Francisco, CA (Remote) | January 2022 - September 2022**
 
 Elevated to senior role recognizing technical leadership and architectural contributions during critical platform modernization phase.
 
 * Introduced comprehensive automated testing strategy (unit, integration, E2E), increasing code coverage from 15% to 75%
 * Architected and implemented advanced analytics and reporting features providing key business insights
-* Led technical design for multi-tenant architecture supporting enterprise clients
+* Worked with team to build bespoke AWS environment that cloned our system, a one-off solution for a particular enterprise client
 * Provisioned and maintained isolated application instance and infrastructure for Fortune 500 financial client
 * Mentored junior engineers on React patterns, TypeScript best practices, and testing methodologies
 * Contributed to critical architectural decisions during platform consolidation effort
 
-**Technologies:** TypeScript, React, Redux, React Query, React Native, Ruby on Rails, RSpec, PostgreSQL, Redis, AWS, Docker, Jest, Cypress, Playwright
+**Technologies:** TypeScript, React, Redux, React Query, React Native, Ruby on Rails, RSpec, MySQL (Aurora), AWS, Docker, Jest, Cypress
 
-### **Software Engineer | Memory Labs**
+### **Software Engineer | Cerego**
 **San Francisco, CA (Remote) | January 2020 - January 2022**
 
 Joined as full-stack engineer during pre-COVID growth phase, demonstrating resilience and adaptability through pandemic-driven pivots.
@@ -113,7 +114,7 @@ Joined as full-stack engineer during pre-COVID growth phase, demonstrating resil
 * Designed and built cross-platform mobile application from scratch using React Native
 * Implemented offline-first architecture with sophisticated sync mechanisms
 * Created 50+ reusable React Native components with comprehensive Storybook documentation
-* Built real-time collaborative features using WebSockets
+* Built collaborative features for multi-user learning experiences
 
 **Platform Modernization:**
 * Led frontend efforts in Angular 1 → React migration, converting 30+ legacy components
@@ -121,7 +122,7 @@ Joined as full-stack engineer during pre-COVID growth phase, demonstrating resil
 * Developed new REST endpoints in Ruby on Rails with comprehensive RSpec coverage
 * Improved API response times by 40% through query optimization and caching strategies
 
-**Technologies:** TypeScript, JavaScript, React, Redux, React Query, Zustand, React Native, Angular 1, Ruby on Rails, PostgreSQL, Redis, AWS, Docker, WebSockets, Storybook
+**Technologies:** TypeScript, JavaScript, React, Redux, React Query, Zustand, React Native, Angular 1, Ruby on Rails, MySQL (Aurora), AWS, Docker, Storybook
 
 ### **Developer | Novacoast**
 **Santa Barbara, CA | February 2018 - January 2020**
@@ -138,7 +139,7 @@ Provided specialized development and security consulting services to Fortune 500
 * Automated quarterly vulnerability reporting using Splunk, reducing report generation from 2 weeks to 2 hours
 * Enhanced Qualys vulnerability management through intelligent false-positive filtering
 * Led Tanium POC evaluation, presenting findings to executive team; secured approval for enterprise deployment
-* Won two consecutive company CTF (Capture The Flag) hacking competitions
+* Won two consecutive company CTF (Capture The Flag) hacking competitions (silver in one, bronze in another)
 
 **Technologies:** Python, Go, Ruby, Bash, AWS, Linux (CentOS, Ubuntu), Jenkins, Docker, Kubernetes, Splunk, Qualys, Tanium, Terraform, Ansible
 
@@ -148,7 +149,7 @@ Provided specialized development and security consulting services to Fortune 500
 Co-founded habit-forming technology startup focused on behavior change through conversational AI.
 
 * Designed and developed "Luna" - AI chatbot helping users improve sleep habits through personalized interventions
-* Managed team of 4 interns; established development processes and code standards
+* Managed two interns and worked closely with the founder; established development processes and code standards
 * Built comprehensive testing framework with extensive coverage (Mocha, Chai, Restlet)
 * Implemented natural language processing pipeline for intent recognition and entity extraction
 * Developed internal analytics dashboard tracking user engagement and habit formation metrics
@@ -383,16 +384,6 @@ Founded sustainable agriculture technology startup focused on water-efficient fo
 **Bachelor of Science, Computer Science** (Incomplete)
 2010 - 2014
 
-**Relevant Coursework:**
-* Data Structures & Algorithms
-* Operating Systems
-* Computer Architecture
-* Artificial Intelligence
-* Database Systems
-* Software Engineering
-* Discrete Mathematics
-* Linear Algebra
-
 **Activities:**
 * UCSB Entrepreneurship Club
 * Hackathon participant (multiple events)
@@ -411,15 +402,10 @@ Founded sustainable agriculture technology startup focused on water-efficient fo
 * Regular contributor to open source projects
 * Active participant in developer communities (Stack Overflow, Reddit, Discord)
 * Continuous exploration of emerging technologies and frameworks
-* Technical blog writing and documentation contributions
 
 ---
 
 ## ADDITIONAL INFORMATION
-
-**Publications & Speaking:**
-* Technical blog at phaedrus.io covering AI integration, system design, and startup lessons
-* Guest speaker at local meetups on AI/ML integration in production systems
 
 **Awards & Recognition:**
 * Winner - Novacoast CTF Competition (2018, 2019)
@@ -428,15 +414,6 @@ Founded sustainable agriculture technology startup focused on water-efficient fo
 
 **Languages:**
 * English (Native)
-* Spanish (Conversational)
-* Russian (Basic)
-
-**Interests:**
-* Open source contribution
-* Technical writing and documentation
-* Sustainable technology and agriculture
-* Philosophy and cognitive science
-* Mountain biking and outdoor activities
 
 ---
 
