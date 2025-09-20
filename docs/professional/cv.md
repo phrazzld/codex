@@ -352,13 +352,13 @@ Founded sustainable agriculture technology startup focused on water-efficient fo
 
 ### **Backend Technologies**
 * **Frameworks:** Node.js, Express, NestJS, Ruby on Rails, Django, FastAPI, Flask
-* **APIs:** REST, GraphQL, WebSockets, gRPC
+* **APIs:** REST, WebSockets, gRPC
 * **Databases:** PostgreSQL, MySQL, MongoDB, Redis, DynamoDB, Firestore
 * **Message Queues:** RabbitMQ, Redis Queue, AWS SQS, Kafka
 
 ### **AI/ML Technologies**
 * **LLMs:** OpenAI, Anthropic Claude, Google Gemini, Llama
-* **Frameworks:** LangChain, LlamaIndex, Semantic Kernel
+* **Frameworks:** LlamaIndex, Semantic Kernel
 * **ML Platforms:** AWS SageMaker, TensorFlow, PyTorch, Keras
 * **Vector Databases:** Pinecone, Weaviate, Chroma
 

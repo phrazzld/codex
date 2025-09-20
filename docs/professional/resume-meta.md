@@ -47,14 +47,16 @@ Product-focused engineer with deep expertise in React ecosystem and AI/ML integr
 
 **Languages:** TypeScript, JavaScript, Python, Ruby, SQL, Go
 **Frontend:** React, React Native, Next.js, Redux, React Query, Tailwind CSS
-**Backend:** Node.js, Express, GraphQL, REST APIs, Ruby on Rails
-**AI/ML:** OpenAI, LangChain, RAG, Vector Databases, Prompt Engineering
+**Backend:** Node.js, Express, REST APIs, Ruby on Rails
+**AI/ML:** OpenAI, Vector Databases, Prompt Engineering
 **Infrastructure:** AWS, Docker, MySQL, MongoDB
 **Tools:** Git, Linear, Jest, Cypress, Concourse, DataDog
 
 ## Projects
 
 **Time Is Money** - Chrome extension converting prices to work hours | 30,000+ users, featured in Fast Company
+**Chrondle** - Daily history guessing game (Wordle for historical events) | Next.js, TypeScript, PostgreSQL
+**Brainrot Publishing** - Gen Z translations of classic literature | TypeScript, Next.js, OpenAI
 **Scry** - Modern spaced repetition platform with FSRS algorithm | Next.js, TypeScript, Convex
 **Thinktank** - LLM orchestration CLI for code review | Go, OpenAI/Claude/Gemini APIs
 
