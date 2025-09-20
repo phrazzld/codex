@@ -9,7 +9,7 @@ Product-focused engineer with deep expertise in React ecosystem and AI/ML integr
 ## Experience
 
 **Founding Engineer | Adminifi** | Nashville, TN (Remote) | Dec 2024 - Present
-- Architecting AI-powered platform streamlining nonprofit formation, designing APIs and user-facing features for complex multi-step workflows
+- Architecting AI-powered platform streamlining nonprofit formation, designing APIs and user-facing features for complex workflows
 - Building full-stack product with React/Next.js frontend and Node.js backend, owning features from conception to deployment
 - Implementing LLM integration for intelligent document generation and user guidance, streamlining nonprofit formation process
 - Leading technical decisions with complete autonomy, shipping features weekly to validate product-market fit
@@ -48,7 +48,7 @@ Product-focused engineer with deep expertise in React ecosystem and AI/ML integr
 **Languages:** TypeScript, JavaScript, Python, Ruby, SQL, Go
 **Frontend:** React, React Native, Next.js, Redux, React Query, Tailwind CSS
 **Backend:** Node.js, Express, GraphQL, REST APIs, Ruby on Rails
-**AI/ML:** OpenAI GPT-4, LangChain, RAG, Vector Databases, Prompt Engineering
+**AI/ML:** OpenAI, LangChain, RAG, Vector Databases, Prompt Engineering
 **Infrastructure:** AWS, Docker, MySQL, MongoDB
 **Tools:** Git, Linear, Jest, Cypress, Concourse, DataDog
 

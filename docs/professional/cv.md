@@ -21,13 +21,13 @@ Leading technical development for innovative nonprofit formation platform design
 
 * Architect and implement core platform infrastructure for automated nonprofit formation workflows
 * Lead AI strategy and integration, leveraging LLMs for document generation, compliance checking, and user guidance
-* Design scalable backend architecture supporting multi-tenant SaaS model with complex state management
+* Design scalable backend architecture with complex state management for nonprofit formation workflows
 * Build responsive frontend interfaces for nonprofit founders, focusing on accessibility and user experience
-* Implement secure payment processing and subscription management systems
-* Develop automated IRS filing integration and state registration workflows
+* Implement subscription management systems
+* Design state registration workflows and prepare for future IRS filing integration
 * Establish engineering best practices including CI/CD pipelines, code review processes, and testing standards
 
-**Technologies:** TypeScript, Next.js, React, Node.js, PostgreSQL, OpenAI GPT-4, Stripe, AWS, Docker, Tailwind CSS
+**Technologies:** TypeScript, Next.js, React, Node.js, PostgreSQL, OpenAI, AWS, Docker, Tailwind CSS
 
 ### **Founder & CEO | Faith Forward**
 **Nashville, TN | December 2022 - December 2024**
@@ -45,7 +45,7 @@ Founded and led AI-powered spiritual technology startup from inception through s
 * Managed custom integration projects generating additional revenue while validating product-market fit
 * Negotiated successful exit through equity sale to Adminifi (December 2024), transitioning to founding engineer role
 
-**Technologies:** React Native, Expo, TypeScript, Firebase (Auth, Firestore, Functions), OpenAI API (GPT-3.5/4), Node.js, Express, Typesense
+**Technologies:** React Native, Expo, TypeScript, Firebase (Auth, Firestore, Functions), OpenAI API, Node.js, Express, Typesense
 
 ### **Director of Engineering | Cerego**
 **San Francisco, CA (Remote) | September 2022 - April 2025**
@@ -56,7 +56,7 @@ Promoted to engineering leadership during critical company transition, managing 
 * Managed cross-functional teams of up to 8 members including engineers, QA, contractors, and product managers
 * Spearheaded company-wide AI transformation, being first to integrate ChatGPT across product and operations (December 2022)
 * Conceived and championed compelling startup concept within company: knowledge demonstration platform converting GitHub/Slack data into learning insights
-* Led successful migration from AWS SageMaker to OpenAI GPT models, achieving 1000x cost reduction while improving quality
+* Led successful migration from AWS SageMaker to OpenAI models, achieving 1000x cost reduction while improving quality
 * Directed complete technical debt elimination initiative, dramatically simplifying codebase architecture and improving development velocity
 * Managed hiring pipeline from sourcing through onboarding; made difficult personnel decisions including terminating underperforming QA lead and contractor engineer
 
@@ -83,7 +83,7 @@ Promoted to engineering leadership during critical company transition, managing 
 * Built comprehensive internal documentation and knowledge base
 * Managed team through COVID-related downsizing (50% reduction) while maintaining productivity
 
-**Technologies:** TypeScript, React, React Native, Next.js, Redux, Ruby on Rails, MySQL (Aurora), AWS (EC2, S3, Lambda, SageMaker), Docker, OpenAI GPT-3.5/4, Linear, DataDog, Concourse
+**Technologies:** TypeScript, React, React Native, Next.js, Redux, Ruby on Rails, MySQL (Aurora), AWS (EC2, S3, Lambda, SageMaker), Docker, OpenAI, Linear, DataDog, Concourse
 
 ### **Senior Software Engineer | Cerego**
 **San Francisco, CA (Remote) | January 2022 - September 2022**
@@ -269,7 +269,7 @@ Founded sustainable agriculture technology startup focused on water-efficient fo
 
 **Anyzine** (2024) - [anyzine.xyz](https://anyzine.xyz)
 * AI-powered zine generator creating personalized magazines on any topic
-* Technologies: Next.js, React, OpenAI GPT-4, TypeScript, Tailwind CSS
+* Technologies: Next.js, React, OpenAI, TypeScript, Tailwind CSS
 
 **Chrondle** (2025) - [chrondle.com](https://chrondle.com)
 * Daily history guessing game - "Wordle for historical events"
@@ -318,7 +318,7 @@ Founded sustainable agriculture technology startup focused on water-efficient fo
 * Technologies: Next.js, TypeScript, Firebase, OpenAI, Memre Learning Engine
 
 **Super Wire** (2023) - Auto-generated news podcasts using AI
-* Technologies: Next.js, TypeScript, Firebase, OpenAI GPT, Eleven Labs
+* Technologies: Next.js, TypeScript, Firebase, OpenAI, Eleven Labs
 
 **Wrap It Up** (2024) - Christmas-themed 2D platformer game
 * Technologies: JavaScript, HTML5 Canvas, Web Audio API
@@ -357,7 +357,7 @@ Founded sustainable agriculture technology startup focused on water-efficient fo
 * **Message Queues:** RabbitMQ, Redis Queue, AWS SQS, Kafka
 
 ### **AI/ML Technologies**
-* **LLMs:** OpenAI GPT-4, Anthropic Claude, Google Gemini, Llama
+* **LLMs:** OpenAI, Anthropic Claude, Google Gemini, Llama
 * **Frameworks:** LangChain, LlamaIndex, Semantic Kernel
 * **ML Platforms:** AWS SageMaker, TensorFlow, PyTorch, Keras
 * **Vector Databases:** Pinecone, Weaviate, Chroma
