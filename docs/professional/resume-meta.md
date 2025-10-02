@@ -1,3 +1,15 @@
+---
+stylesheet:
+  - styles/base.css
+  - styles/resume.css
+body_class: resume
+pdf_options:
+  format: Letter
+  margin: 0.4in 0.65in
+  printBackground: true
+  displayHeaderFooter: false
+---
+
 # Phaedrus Raznikov
 
 phaedrus.raznikov@pm.me | 786.565.7120 | Nashville, TN | [github.com/phrazzld](https://github.com/phrazzld) | [phaedrus.io](https://phaedrus.io)
@@ -45,20 +57,25 @@ Product-focused engineer with deep expertise in React ecosystem and AI/ML integr
 
 ## Technical Skills
 
-**Languages:** TypeScript, JavaScript, Python, Ruby, SQL, Go
-**Frontend:** React, React Native, Next.js, Redux, React Query, Tailwind CSS
-**Backend:** Node.js, Express, REST APIs, Ruby on Rails
-**AI/ML:** OpenAI, Vector Databases, Prompt Engineering
-**Infrastructure:** AWS, Docker, MySQL, MongoDB
-**Tools:** Git, Linear, Jest, Cypress, Concourse, DataDog
+*   **Languages:** TypeScript, JavaScript, Python, Ruby, SQL, Go
+*   **Frontend:** React, React Native, Next.js, Redux, React Query, Tailwind CSS
+*   **Backend:** Node.js, Express, REST APIs, Ruby on Rails
+*   **AI/ML:** OpenAI, Vector Databases, Prompt Engineering
+*   **Infrastructure:** AWS, Docker, MySQL, MongoDB
+*   **Tools:** Git, Linear, Jest, Cypress, Concourse, DataDog
 
 ## Projects
 
-**Time Is Money** - Chrome extension converting prices to work hours | 30,000+ users, featured in Fast Company
-**Chrondle** - Daily history guessing game (Wordle for historical events) | Next.js, TypeScript, PostgreSQL
-**Brainrot Publishing** - Gen Z translations of classic literature | TypeScript, Next.js, OpenAI
-**Scry** - Modern spaced repetition platform with FSRS algorithm | Next.js, TypeScript, Convex
-**Thinktank** - LLM orchestration CLI for code review | Go, OpenAI/Claude/Gemini APIs
+*   **Time Is Money** - Chrome extension converting prices to work hours (30,000+ users, featured in Fast Company)
+    *Tech: JavaScript, Chrome Extension API, HTML, CSS*
+*   **Chrondle** - Daily history guessing game (Wordle for historical events)
+    *Tech: Next.js, TypeScript, PostgreSQL*
+*   **Brainrot Publishing** - Gen Z translations of classic literature
+    *Tech: TypeScript, Next.js, OpenAI*
+*   **Scry** - Modern spaced repetition platform with FSRS algorithm
+    *Tech: Next.js, TypeScript, Convex*
+*   **Thinktank** - LLM orchestration CLI for code review
+    *Tech: Go, OpenAI/Claude/Gemini APIs*
 
 ## Education
 

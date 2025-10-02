@@ -1,0 +1,170 @@
+/**
+ * Resume-specific styles
+ * Optimized for concise 1-2 page format
+ * Note: base.css is loaded first via front-matter
+ */
+
+/* Tighter spacing for resume format */
+body {
+  font-size: 10.5pt;
+  line-height: 1.4;
+  padding: 0.4in 0.65in;
+}
+
+/* Compact header */
+h1 {
+  font-size: 22pt;
+  margin-bottom: 0.15em;
+}
+
+/* Contact info styling */
+body > p:first-of-type {
+  font-size: 9.5pt;
+  color: var(--color-secondary);
+  margin-bottom: 0.75em;
+  text-align: left;
+}
+
+/* Section headers - more compact */
+h2 {
+  font-size: 13pt;
+  margin-top: 1.25em;
+  margin-bottom: 0.4em;
+  padding-bottom: 0.2em;
+}
+
+/* First section has less top margin */
+h2:first-of-type {
+  margin-top: 0.75em;
+}
+
+/* Job/position headers */
+h3 {
+  font-size: 11pt;
+  margin-top: 0.75em;
+  margin-bottom: 0.15em;
+}
+
+/* Company/date info */
+h4, em {
+  font-size: 10pt;
+  color: var(--color-secondary);
+  font-weight: 500;
+}
+
+/* Compact lists */
+ul {
+  margin-left: 1.25em;
+  margin-bottom: 0.5em;
+}
+
+li {
+  margin-bottom: 0.15em;
+}
+
+/* Skills section - bulleted list format */
+#skills + ul,
+#technical-skills + ul {
+  margin-left: 1.25em;
+  margin-bottom: 0.75em;
+}
+
+#skills + ul li,
+#technical-skills + ul li {
+  margin-bottom: 0.2em;
+  line-height: 1.5;
+}
+
+#skills + ul li strong,
+#technical-skills + ul li strong {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Project entries - compact but readable */
+#projects + ul li,
+#personal-projects + ul li {
+  margin-bottom: 0.6em;
+  page-break-inside: avoid;
+  break-inside: avoid;
+  line-height: 1.4;
+}
+
+#projects + ul li strong:first-child,
+#personal-projects + ul li strong:first-child {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Tech stack line in projects (italicized second line) */
+#projects + ul li em,
+#personal-projects + ul li em {
+  display: block;
+  font-size: 9.5pt;
+  color: var(--color-secondary);
+  margin-top: 0.15em;
+  margin-left: 0;
+  line-height: 1.3;
+}
+
+/* Summary section */
+#summary + p,
+#professional-summary + p {
+  margin-bottom: 1em;
+  line-height: 1.5;
+}
+
+/* Reduce spacing in experience section */
+#experience ul,
+#professional-experience ul {
+  margin-bottom: 0.5em;
+}
+
+/* Education section - make it compact */
+#education + ul,
+#education + p {
+  margin-bottom: 0.5em;
+}
+
+/* Ensure no orphan headers */
+h2, h3 {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+/* Keep job entries together */
+h3 + p,
+h3 + em,
+h3 + ul {
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+/* Tech stack in italics - more compact */
+em {
+  display: block;
+  margin-top: 0.25em;
+}
+
+/* Remove excess spacing from last elements */
+body > *:last-child {
+  margin-bottom: 0;
+}
+
+/* Links in resume should be subtle */
+a {
+  color: var(--color-primary);
+  text-decoration: none;
+  border-bottom: 1px solid var(--color-border);
+}
+
+a:hover {
+  border-bottom-color: var(--color-accent);
+}
+
+/* Print: ensure no URL suffixes for GitHub links */
+@media print {
+  a[href^="http"]:after {
+    content: none;
+  }
+}

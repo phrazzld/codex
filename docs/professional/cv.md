@@ -1,3 +1,15 @@
+---
+stylesheet:
+  - styles/base.css
+  - styles/cv.css
+body_class: cv
+pdf_options:
+  format: Letter
+  margin: 0.5in 0.75in
+  printBackground: true
+  displayHeaderFooter: false
+---
+
 # PHAEDRUS RAZNIKOV
 **Software Engineering Leader | AI/ML Integration Specialist | Technical Founder**
 
@@ -297,14 +309,14 @@ Founded sustainable agriculture technology startup focused on water-efficient fo
 
 ### **Developer Tools & CLIs**
 
-**Elevator** (2025) - CLI elevating natural language to technical specifications using Gemini
-**GitPulse** (2025) - Git activity summaries and insights generator
-**Handoff** (2025) - Full codebase context extractor for AI assistants
-**Glance** (2025) - Auto-generate directory summaries
-**Bouncer** (2025) - AI-powered pre-commit hooks using Gemini
-**Scratch** (2018) - Disposable notes from command line
-**Ward** (2025) - Pre-commit hooks for code review
-**Ponder** (2022) - Fast note-taking CLI
+* **Elevator** (2025) - CLI elevating natural language to technical specifications using Gemini
+* **GitPulse** (2025) - Git activity summaries and insights generator
+* **Handoff** (2025) - Full codebase context extractor for AI assistants
+* **Glance** (2025) - Auto-generate directory summaries
+* **Bouncer** (2025) - AI-powered pre-commit hooks using Gemini
+* **Scratch** (2018) - Disposable notes from command line
+* **Ward** (2025) - Pre-commit hooks for code review
+* **Ponder** (2022) - Fast note-taking CLI
 
 ### **Historical Projects**
 

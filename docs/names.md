@@ -1,18 +1,26 @@
 names
 
 - Aeneas
+- Agatha
 - Alexander
 - Alora
+- Amos
 - Ana
 - Anastasia
+- Augusta
+- Augustus
 - Avon
 - Balthazar
 - Basil
+- Beatrice
+- Beatrix
 - Cassandra
+- Clementine
 - Cressida
 - Daphne
 - Domenic
 - Edward
+- Elaine
 - Elizabeth
 - Emma
 - Esme
@@ -21,11 +29,15 @@ names
 - Guinevere
 - Helen
 - Helena
+- Isabella
+- Isabelle
 - John
 - Jude
 - Judith
+- Jules
 - Julia
 - Julian
+- Juniper
 - Leander
 - Logan
 - Louise
@@ -36,8 +48,10 @@ names
 - Maris
 - Mary
 - Monica
+- Nausicaa
 - Nicholas
 - Octavian
+- Octavius
 - Oona
 - Ophelia
 - Orpheus
@@ -46,6 +60,7 @@ names
 - Persephone
 - Philomena
 - Philomeen
+- Quinn
 - Raphael
 - Richard
 - Rita
@@ -54,11 +69,13 @@ names
 - Sarah
 - Satterfield
 - Theodore
+- Thorne
 - Valentine
 - Vercingetorix
 - Veronica
 - Victoria
 - Violet
 - Wednesday
+- Xanthippe
 - Zoe
 

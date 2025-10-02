@@ -1,50 +1,228 @@
 # Professional Documents
 
-This directory contains templates and resources for professional documentation in Markdown format.
+Professional resumes and CV in Markdown format with automated PDF generation.
 
 ## Contents
 
-- **[cv.md](cv.md)** - Curriculum Vitae template in Markdown format
-- **[resume.md](resume.md)** - Resume template in Markdown format
+- **[resume.md](resume.md)** - General-purpose software engineering resume
+- **[resume-meta.md](resume-meta.md)** - Meta/FAANG-tailored resume
+- **[cv.md](cv.md)** - Comprehensive curriculum vitae
+- **[styles/](styles/)** - CSS stylesheets for PDF generation
+  - `base.css` - Shared base styles
+  - `resume.css` - Compact resume styling
+  - `cv.css` - Detailed CV styling
 
-## Purpose
+## Quick Start
 
-These document templates provide standardized formats for professional presentation. They are designed to:
+### Generate PDFs
 
-1. Maintain consistent professional branding
-2. Follow best practices for professional document formatting
-3. Facilitate easy updates and version control
-4. Enable export to multiple formats for different submission requirements
+```bash
+# Generate all PDFs
+make all
 
-## Document Features
+# Generate individual PDFs
+make resume      # → resume.pdf
+make cv          # → cv.pdf
+make meta        # → resume-meta.pdf
 
-Both templates include:
+# Clean generated PDFs
+make clean
+```
 
-- Clean, professional formatting that translates well to different output formats
-- Structured sections that highlight relevant skills and experience
-- Markdown formatting that enables easy editing and maintenance
-- Consistent style that aligns with professional standards
+### Watch Mode
 
-## Usage
+Auto-regenerate PDFs when markdown files change:
 
-The templates can be used as starting points for creating professional documents:
+```bash
+make watch-resume  # Watch resume.md
+make watch-cv      # Watch cv.md
+make watch-meta    # Watch resume-meta.md
+```
 
-1. Copy the relevant template
-2. Customize with personal information and experience
-3. Maintain in version control for easy updates
-4. Convert to other formats as needed (PDF, HTML, DOCX)
+Press `Ctrl+C` to stop watching.
 
-## Conversion
+## Setup
 
-For converting these Markdown documents to other formats:
+### Prerequisites
 
-- **Pandoc**: `pandoc resume.md -o resume.pdf`
-- **Markdown PDF tools**: Various online tools or VS Code extensions
-- **Manual formatting**: Import into word processors for final adjustments
+```bash
+# Install md-to-pdf globally
+npm install -g md-to-pdf
 
-## Best Practices
+# Verify installation
+md-to-pdf --version
+```
 
-- Keep content concise and relevant
-- Update regularly with new skills and experience
-- Maintain separate versions for different types of applications
-- Use consistent formatting throughout the document
+### Manual PDF Generation
+
+```bash
+# From this directory
+md-to-pdf resume.md       # → resume.pdf
+md-to-pdf cv.md           # → cv.pdf
+md-to-pdf resume-meta.md  # → resume-meta.pdf
+```
+
+## Customization
+
+### Editing Content
+
+1. Edit the markdown files directly (`resume.md`, `cv.md`, `resume-meta.md`)
+2. Regenerate PDFs with `make all` or specific targets
+3. Review the generated PDFs
+
+### Styling
+
+CSS files in `styles/` control PDF appearance:
+
+- **base.css** - Typography, colors, spacing, print optimization
+- **resume.css** - Compact layout for 1-2 page resumes
+- **cv.css** - Spacious layout for comprehensive CVs
+
+To customize styling:
+
+1. Edit the CSS files
+2. Regenerate PDFs to see changes
+3. Use watch mode for live updates: `make watch-resume`
+
+### PDF Options
+
+Configure PDF generation in markdown front-matter:
+
+```yaml
+---
+stylesheet:
+  - styles/base.css
+  - styles/resume.css
+pdf_options:
+  format: Letter        # or A4
+  margin: 0.4in 0.65in  # top/bottom left/right
+  printBackground: true
+  displayHeaderFooter: false
+---
+```
+
+## Document Structure
+
+### resume.md & resume-meta.md
+- **Target length:** 1-2 pages
+- **Use case:** Job applications, recruiter submissions
+- **Style:** Compact, achievement-focused
+- **Sections:** Summary, Experience, Projects, Skills, Education
+
+### cv.md
+- **Target length:** 4-8 pages
+- **Use case:** Academic positions, comprehensive career overview
+- **Style:** Detailed, narrative-driven
+- **Sections:** Summary, Experience (detailed), Projects, Open Source, Skills, Education
+
+## Technology Stack
+
+- **md-to-pdf** - Markdown to PDF converter (Puppeteer-based)
+- **Puppeteer** - Headless Chrome for rendering
+- **CSS** - Styling and layout control
+- **Makefile** - Build automation
+
+## Why This Approach?
+
+### Advantages
+
+1. **Version Control** - Track changes to resumes with git
+2. **Single Source of Truth** - Maintain one markdown file, generate PDF when needed
+3. **Customizable** - Full control over styling with familiar CSS
+4. **Fast Iteration** - Watch mode for instant feedback
+5. **Professional Output** - High-quality PDFs via Chrome rendering
+6. **Web Developer Friendly** - Leverage existing HTML/CSS skills
+
+### Alternatives Considered
+
+- **Pandoc + LaTeX** - Excellent output but 4GB install, complex setup
+- **Pandoc + Typst** - Modern, fast, but requires learning new template language
+- **Online Services** - Convenient but no version control, less customization
+- **Word/Google Docs** - WYSIWYG but harder to version control
+
+## Tips & Best Practices
+
+### Content
+
+- Keep resumes to 1-2 pages (recruiters spend ~6 seconds per resume)
+- Use action verbs: "Built," "Led," "Architected," "Improved"
+- Quantify achievements: "Reduced costs by 1000x," "Led team of 8"
+- Tailor content for each position (maintain separate versions if needed)
+
+### Styling
+
+- Use system fonts for reliability across platforms
+- Optimize margins for printing (0.5in minimum)
+- Test print to PDF from browser for final quality check
+- Keep link colors professional (blue or black)
+
+### Workflow
+
+1. Edit markdown in your favorite editor (VS Code, Neovim, etc.)
+2. Use watch mode during editing: `make watch-resume`
+3. Review PDF frequently
+4. Commit markdown changes to git
+5. Generate final PDFs before sending: `make all`
+
+### Version Control
+
+```bash
+# Track content changes
+git add resume.md cv.md resume-meta.md
+
+# Track style changes
+git add styles/
+
+# Don't commit PDFs (regenerate as needed)
+echo "*.pdf" >> .gitignore
+```
+
+## Troubleshooting
+
+### "Could not load style" error
+
+Ensure stylesheets are listed as array in front-matter:
+
+```yaml
+stylesheet:
+  - styles/base.css
+  - styles/resume.css
+```
+
+Not: `stylesheet: styles/resume.css`
+
+### PDFs look different than expected
+
+1. Check CSS file paths in front-matter
+2. Verify no `@import` statements in CSS (use array in front-matter instead)
+3. Test with `--watch` mode to see live changes
+4. Clear Puppeteer cache: `rm -rf ~/.cache/puppeteer`
+
+### Puppeteer errors
+
+```bash
+# Reinstall md-to-pdf
+npm uninstall -g md-to-pdf
+npm install -g md-to-pdf
+
+# Or use npx (no global install)
+npx md-to-pdf resume.md
+```
+
+## Help
+
+```bash
+# Show all make targets
+make help
+
+# md-to-pdf options
+md-to-pdf --help
+```
+
+## License
+
+Personal professional documents - not for redistribution.
+
+---
+
+*Last updated: 2025-10-01*

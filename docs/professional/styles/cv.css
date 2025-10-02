@@ -1,0 +1,270 @@
+/**
+ * CV-specific styles
+ * Optimized for comprehensive multi-page format
+ * Note: base.css is loaded first via front-matter
+ */
+
+/* Standard spacing for CV format */
+body {
+  font-size: 11pt;
+  line-height: 1.5;
+  padding: 0.5in 0.75in;
+}
+
+/* Prominent header */
+h1 {
+  font-size: 26pt;
+  margin-bottom: 0.2em;
+  text-align: left;
+}
+
+/* Subtitle/title line */
+h1 + p strong {
+  font-size: 12pt;
+  color: var(--color-secondary);
+}
+
+/* Contact info - centered or left-aligned */
+body > p:first-of-type,
+h1 + p {
+  font-size: 10pt;
+  color: var(--color-secondary);
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+/* Horizontal rule after header */
+hr:first-of-type {
+  margin: 1em 0 1.5em 0;
+  border-top: 2px solid var(--color-border);
+}
+
+/* Section headers */
+h2 {
+  font-size: 14pt;
+  margin-top: 1.75em;
+  margin-bottom: 0.6em;
+  padding-bottom: 0.3em;
+}
+
+/* First section has less top margin */
+h2:first-of-type {
+  margin-top: 1em;
+}
+
+/* Subsection headers (job titles, projects) */
+h3 {
+  font-size: 12pt;
+  margin-top: 1.25em;
+  margin-bottom: 0.3em;
+}
+
+/* Sub-subsection headers */
+h4 {
+  font-size: 11pt;
+  margin-top: 0.75em;
+  margin-bottom: 0.25em;
+  font-weight: 600;
+}
+
+/* Job/position metadata */
+h3 + p strong,
+h3 + strong {
+  font-size: 10.5pt;
+  color: var(--color-secondary);
+}
+
+/* Lists - standard spacing */
+ul {
+  margin-left: 1.5em;
+  margin-bottom: 1em;
+}
+
+li {
+  margin-bottom: 0.35em;
+}
+
+/* Nested lists */
+ul ul {
+  margin-top: 0.35em;
+  margin-bottom: 0.5em;
+}
+
+/* Summary sections */
+#professional-summary + p,
+#summary + p {
+  margin-bottom: 1.25em;
+  font-size: 11pt;
+  line-height: 1.6;
+}
+
+/* Experience section - clear job boundaries */
+#professional-experience h3,
+#experience h3 {
+  margin-top: 1.5em;
+  padding-top: 0.75em;
+  border-top: 1px solid var(--color-border);
+}
+
+#professional-experience h3:first-of-type,
+#experience h3:first-of-type {
+  margin-top: 1em;
+  padding-top: 0;
+  border-top: none;
+}
+
+/* Technical skills - organized lists */
+#technical-skills ul,
+#skills ul {
+  margin-bottom: 0.75em;
+}
+
+#technical-skills li strong,
+#skills li strong {
+  color: var(--color-primary);
+}
+
+/* Education section */
+#education h3 {
+  margin-top: 1em;
+}
+
+/* Projects section - prominent entries */
+#entrepreneurial-projects h3,
+#entrepreneurial-projects-open-source h3,
+#personal-projects h3,
+#projects h3 {
+  font-size: 11.5pt;
+  color: var(--color-accent);
+  margin-top: 1em;
+}
+
+/* Project subsections (Active Projects, Browser Extensions, etc.) */
+#entrepreneurial-projects-open-source h4,
+#entrepreneurial-projects h4 {
+  font-size: 10.5pt;
+  color: var(--color-primary);
+  font-weight: 600;
+  margin-top: 1.25em;
+  margin-bottom: 0.5em;
+}
+
+/* Project list items */
+#entrepreneurial-projects-open-source ul li,
+#entrepreneurial-projects ul li,
+#personal-projects ul li,
+#projects ul li {
+  margin-bottom: 0.5em;
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Project names in bold */
+#entrepreneurial-projects-open-source ul li strong:first-child,
+#entrepreneurial-projects ul li strong:first-child,
+#personal-projects ul li strong:first-child,
+#projects ul li strong:first-child {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+
+/* Open source contributions */
+#open-source-contributions ul li {
+  margin-bottom: 0.5em;
+}
+
+/* Technology tags */
+em {
+  font-style: italic;
+  color: var(--color-secondary);
+  font-size: 10pt;
+}
+
+/* Ensure proper page breaks */
+h2 {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+h3 {
+  page-break-after: avoid;
+  break-after: avoid;
+}
+
+/* Keep related content together */
+h3 + p,
+h3 + ul,
+h4 + ul {
+  page-break-before: avoid;
+  break-before: avoid;
+}
+
+/* Avoid breaking lists mid-item */
+li {
+  page-break-inside: avoid;
+  break-inside: avoid;
+}
+
+/* Links - visible but professional */
+a {
+  color: var(--color-accent);
+  text-decoration: none;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+/* GitHub/portfolio links */
+a[href*="github.com"],
+a[href*="phaedrus.io"] {
+  font-weight: 500;
+}
+
+/* Print optimization */
+@media print {
+  /* Show URLs for important links */
+  a[href^="http"]:after {
+    content: " (" attr(href) ")";
+    font-size: 9pt;
+    color: var(--color-secondary);
+  }
+
+  /* But not for common domains in context */
+  h1 + p a[href^="http"]:after,
+  #contact a[href^="http"]:after {
+    content: none;
+  }
+}
+
+/* Footer/additional info sections */
+#additional-information ul,
+#awards ul,
+#languages ul {
+  list-style: none;
+  margin-left: 0;
+}
+
+#additional-information ul li,
+#awards ul li,
+#languages ul li {
+  padding-left: 1.25em;
+  position: relative;
+}
+
+#additional-information ul li::before,
+#awards ul li::before {
+  content: "▸";
+  position: absolute;
+  left: 0;
+  color: var(--color-accent);
+}
+
+/* Last updated / references */
+body > p:last-of-type em {
+  font-size: 9.5pt;
+  color: var(--color-secondary);
+  text-align: center;
+  display: block;
+  margin-top: 2em;
+}

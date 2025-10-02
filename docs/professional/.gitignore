@@ -1,0 +1,2 @@
+# Generated PDFs - regenerate with 'make all'
+*.pdf

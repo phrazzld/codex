@@ -1,4 +1,14 @@
-```markdown
+---
+stylesheet:
+  - styles/base.css
+  - styles/resume.css
+body_class: resume
+pdf_options:
+  format: Letter
+  margin: 0.4in 0.65in
+  printBackground: true
+  displayHeaderFooter: false
+---
 
 # Phaedrus Raznikov
 
