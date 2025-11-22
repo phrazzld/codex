@@ -186,9 +186,9 @@ config.keys = {
   { key = 'x', mods = 'LEADER', action = act.CloseCurrentPane({ confirm = true }) },
   { key = 'w', mods = 'LEADER', action = act.ShowTabNavigator },
 
-  -- Pane splits
-  { key = '"', mods = 'LEADER|SHIFT', action = act.SplitVertical({ domain = 'CurrentPaneDomain' }) },
-  { key = '%', mods = 'LEADER|SHIFT', action = act.SplitHorizontal({ domain = 'CurrentPaneDomain' }) },
+  -- Pane splits (visual mnemonics: | = vertical divider, - = horizontal divider)
+  { key = '|', mods = 'LEADER|SHIFT', action = act.SplitHorizontal({ domain = 'CurrentPaneDomain' }) },
+  { key = '-', mods = 'LEADER', action = act.SplitVertical({ domain = 'CurrentPaneDomain' }) },
 
   -- Pane navigation
   { key = 'h', mods = 'LEADER', action = act.ActivatePaneDirection('Left') },
