@@ -199,6 +199,9 @@ config.keys = {
   -- Pane zoom
   { key = 'z', mods = 'LEADER', action = act.TogglePaneZoomState },
 
+  -- Fullscreen
+  { key = 'Enter', mods = 'LEADER', action = act.ToggleFullScreen },
+
   -- Copy mode
   { key = '[', mods = 'LEADER', action = act.ActivateCopyMode },
 
