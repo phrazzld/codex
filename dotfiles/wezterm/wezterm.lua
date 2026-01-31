@@ -22,9 +22,12 @@ config.font_size = 14.0
 config.line_height = 1.3
 config.harfbuzz_features = { 'calt=1', 'clig=1', 'liga=1' }
 
--- Window aesthetics
-config.window_background_opacity = 0.95
-config.macos_window_background_blur = 30
+-- Window aesthetics with subtle gradient
+config.window_background_gradient = {
+  colors = { '#232136', '#2a273f' },
+  orientation = { Linear = { angle = -45.0 } },
+}
+config.macos_window_background_blur = 20
 
 -- Dim inactive panes for visual depth
 config.inactive_pane_hsb = {
@@ -54,11 +57,42 @@ config.cursor_blink_ease_out = 'EaseOut'
 
 config.default_prog = { '/bin/zsh', '-l' }
 config.audible_bell = 'Disabled'
-config.window_close_confirmation = 'NeverPrompt'
+config.window_close_confirmation = 'AlwaysPrompt'
+
+-- ====================
+-- UNIX DOMAINS (tmux-like persistence)
+-- ====================
+-- Separates GUI from server. Cmd+Q only kills GUI; server persists.
+-- Reopen WezTerm = instant reconnect to existing tabs.
+config.unix_domains = {
+  { name = 'unix' },
+}
+config.default_gui_startup_args = { 'connect', 'unix' }
 config.automatically_reload_config = true
 
 -- CRITICAL: Disable kitty keyboard protocol (causes input doubling on macOS)
 config.enable_kitty_keyboard = false
+
+-- ====================
+-- QUICK SELECT PATTERNS
+-- ====================
+config.quick_select_patterns = {
+  -- Git short hashes (7-40 hex chars)
+  '[0-9a-f]{7,40}',
+  -- File paths
+  '[.\\w/~-]+/[.\\w/-]+',
+}
+
+-- ====================
+-- HYPERLINK RULES
+-- ====================
+config.hyperlink_rules = wezterm.default_hyperlink_rules()
+
+-- GitHub user/repo → clickable link
+table.insert(config.hyperlink_rules, {
+  regex = [[["]?([\w\d]{1}[-\w\d]+)/([-\w\d\.]+)["]?]],
+  format = 'https://github.com/$1/$2',
+})
 
 -- ====================
 -- TAB BAR & WINDOW
@@ -143,7 +177,7 @@ wezterm.on('format-tab-title', function(tab, tabs, panes, config, hover, max_wid
   }
 end)
 
--- Gradient powerline status bar
+-- Powerline status bar with git branch and battery
 wezterm.on('update-right-status', function(window, pane)
   local workspace = window:active_workspace()
   local time = wezterm.strftime('%H:%M')
@@ -152,10 +186,34 @@ wezterm.on('update-right-status', function(window, pane)
   -- Build segments
   local segments = {}
 
+  -- Git branch (if in repo)
+  local success, stdout = wezterm.run_child_process({ 'git', 'branch', '--show-current' })
+  if success then
+    local branch = stdout:gsub('%s+', '')
+    if #branch > 0 then
+      table.insert(segments, {
+        text = ' ' .. wezterm.nerdfonts.dev_git_branch .. ' ' .. branch,
+        color = rose_pine.love
+      })
+    end
+  end
+
+  -- Workspace (if not default)
   if workspace ~= 'default' then
     table.insert(segments, { text = ' ' .. workspace, color = rose_pine.iris })
   end
 
+  -- Battery
+  for _, b in ipairs(wezterm.battery_info()) do
+    local charge = b.state_of_charge * 100
+    local icon = charge > 50 and wezterm.nerdfonts.md_battery or wezterm.nerdfonts.md_battery_low
+    table.insert(segments, {
+      text = ' ' .. icon .. ' ' .. string.format('%.0f%%', charge),
+      color = rose_pine.iris
+    })
+  end
+
+  -- Time and hostname
   table.insert(segments, { text = ' ' .. wezterm.nerdfonts.md_clock .. ' ' .. time, color = rose_pine.foam })
   table.insert(segments, { text = ' ' .. wezterm.nerdfonts.md_laptop .. ' ' .. hostname, color = rose_pine.gold })
 
@@ -170,6 +228,27 @@ wezterm.on('update-right-status', function(window, pane)
   end
 
   window:set_right_status(wezterm.format(elements))
+end)
+
+-- Window title with zoom indicator and tab count
+wezterm.on('format-window-title', function(tab, pane, tabs, panes, config)
+  local zoomed = tab.active_pane.is_zoomed and '[Z] ' or ''
+  local index = #tabs > 1 and string.format('[%d/%d] ', tab.tab_index + 1, #tabs) or ''
+  return zoomed .. index .. tab.active_pane.title
+end)
+
+-- Mode indicator in left status (shows RESIZE, COPY, etc.)
+wezterm.on('update-status', function(window, pane)
+  local name = window:active_key_table()
+  if name then
+    window:set_left_status(wezterm.format({
+      { Foreground = { Color = rose_pine.love } },
+      { Background = { Color = rose_pine.bg } },
+      { Text = ' [' .. name:upper() .. '] ' },
+    }))
+  else
+    window:set_left_status('')
+  end
 end)
 
 -- ====================
@@ -205,16 +284,51 @@ config.keys = {
   -- Copy mode
   { key = '[', mods = 'LEADER', action = act.ActivateCopyMode },
 
+  -- Quick Select (fuzzy capture URLs, paths, hashes)
+  { key = 'u', mods = 'LEADER', action = act.QuickSelect },
+
+  -- Workspace fuzzy switcher
+  { key = 's', mods = 'LEADER', action = act.ShowLauncherArgs({ flags = 'FUZZY|WORKSPACES' }) },
+
+  -- Pane resize mode (h/j/k/l to resize, Escape to exit)
+  { key = 'r', mods = 'LEADER', action = act.ActivateKeyTable({ name = 'resize_pane', one_shot = false }) },
+
+  -- Quit protection (Dvorak: Q adjacent to X)
+  { key = 'q', mods = 'CMD', action = act.Nop },
+  { key = 'q', mods = 'CMD|SHIFT', action = act.QuitApplication },
+
   -- macOS standard bindings
   { key = '=', mods = 'CMD', action = act.IncreaseFontSize },
   { key = '-', mods = 'CMD', action = act.DecreaseFontSize },
   { key = '0', mods = 'CMD', action = act.ResetFontSize },
   { key = 'K', mods = 'CMD', action = act.ClearScrollback('ScrollbackAndViewport') },
-  { key = 'c', mods = 'CMD', action = act.CopyTo('Clipboard') },
+
+  -- Smart Cmd+C: copy if selection, else send Ctrl+C
+  { key = 'c', mods = 'CMD', action = wezterm.action_callback(function(window, pane)
+    local has_selection = window:get_selection_text_for_pane(pane) ~= ''
+    if has_selection then
+      window:perform_action(act.CopyTo('Clipboard'), pane)
+    else
+      window:perform_action(act.SendKey({ key = 'c', mods = 'CTRL' }), pane)
+    end
+  end) },
+
   { key = 'v', mods = 'CMD', action = act.PasteFrom('Clipboard') },
   { key = 'n', mods = 'CMD', action = act.SpawnWindow },
   { key = 'w', mods = 'CMD', action = act.CloseCurrentPane({ confirm = true }) },
   { key = 'r', mods = 'CMD|SHIFT', action = act.ReloadConfiguration },
+}
+
+-- Key table for pane resizing
+config.key_tables = {
+  resize_pane = {
+    { key = 'h', action = act.AdjustPaneSize({ 'Left', 5 }) },
+    { key = 'j', action = act.AdjustPaneSize({ 'Down', 5 }) },
+    { key = 'k', action = act.AdjustPaneSize({ 'Up', 5 }) },
+    { key = 'l', action = act.AdjustPaneSize({ 'Right', 5 }) },
+    { key = 'Escape', action = 'PopKeyTable' },
+    { key = 'Enter', action = 'PopKeyTable' },
+  },
 }
 
 -- Tab switching with leader + number
