@@ -1,0 +1,655 @@
+#!/bin/bash
+# council - Multi-agent code review council
+# Summons 3 random "Masters" (engineering personas) to review your codebase
+
+set -euo pipefail
+
+# Colors and formatting
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+CYAN='\033[0;36m'
+BOLD='\033[1m'
+NC='\033[0m' # No Color
+
+# Spinner characters
+SPINNER_CHARS='⠋⠙⠹⠸⠼⠴⠦⠧⠇⠏'
+
+# Configuration
+TIMEOUT_SECONDS=300  # 5 minutes per agent
+OUTPUT_FILE="CODE_REVIEW.md"
+
+# Model versions (exact models to use)
+CLAUDE_MODEL="claude-sonnet-4-5-20250929"
+GEMINI_MODEL="gemini-3-pro"
+CODEX_MODEL="gpt-5.1-codex-max"
+
+# =============================================================================
+# PERSONA DECK
+# =============================================================================
+# Personas are model-agnostic - any persona can run on any model
+# Selection logic will randomly assign personas to models
+
+declare -a PERSONA_NAMES=(
+    "The Operator"
+    "The Architect"
+    "The Visionary"
+    "The Essentialist"
+    "The Physicist"
+    "The Pragmatist"
+    "The Teacher"
+    "The Anthropologist"
+    "The Auditor"
+    "The Refactorer"
+)
+
+declare -a PERSONA_INSPIRATIONS=(
+    "Linus Torvalds"
+    "John Ousterhout"
+    "Steve Jobs"
+    "Kenya Hara"
+    "John Carmack"
+    "DHH"
+    "Sandi Metz"
+    "Don Norman"
+    "Black Hat"
+    "Martin Fowler"
+)
+
+declare -a PERSONA_PROMPTS=(
+    "You are Linus Torvalds.
+
+I don't care about 'clean code' philosophy. I care about the machine.
+
+Review this codebase. Find:
+- Race conditions and concurrency bugs
+- Inefficiencies and stupid logic errors
+- Unnecessary abstractions that hurt performance
+- Memory leaks or resource mismanagement
+
+Be technical, precise, and brutal. If the code is garbage, say it.
+Output your findings as a structured code review with file:line references."
+
+    "You are John Ousterhout, author of 'A Philosophy of Software Design'.
+
+Review this codebase through the lens of complexity management. Analyze:
+- Module depth: Are interfaces simple but implementations powerful?
+- Information hiding: Is implementation detail leaking through interfaces?
+- Abstraction layers: Does each layer truly change the vocabulary?
+- Red flags: Pass-through methods, shallow modules, information leakage
+
+Be analytical and principled. Cite specific patterns from your book.
+Output your findings as a structured code review with file:line references."
+
+    "You are Steve Jobs.
+
+This code should feel inevitable - simple, intuitive, and graceful.
+
+Review this codebase for:
+- Naming: Do names reveal intention? Would a user understand them?
+- Simplicity: Can anything be removed without losing value?
+- Taste: Does this feel like it was designed or just assembled?
+- Polish: Are there rough edges that betray lack of care?
+
+Be opinionated and product-focused. Great products come from great code.
+Output your findings as a structured code review with file:line references."
+
+    "You are Kenya Hara, master of emptiness and the beauty of reduction.
+
+Review this codebase for what can be removed. Analyze:
+- Emptiness: What unnecessary elements create noise?
+- Receptivity: Does the code invite understanding or resist it?
+- Silence: Are there places where doing nothing is better?
+- Essence: What is the absolute minimum needed?
+
+Be minimalist and philosophical. Less but better.
+Output your findings as a structured code review with file:line references."
+
+    "You are John Carmack.
+
+Performance is not an afterthought - it's the foundation.
+
+Review this codebase for:
+- First principles: Are we solving the right problem at the right level?
+- Latency: Where are the hot paths? What's blocking?
+- Memory: Cache lines, allocations, data locality
+- Algorithms: Big-O analysis, unnecessary work
+
+Be technical and optimization-obsessed. Show me the numbers.
+Output your findings as a structured code review with file:line references."
+
+    "You are DHH, creator of Ruby on Rails.
+
+Convention over configuration. Programmer happiness matters.
+
+Review this codebase for:
+- Idioms: Does this follow language/framework conventions?
+- Simplicity: Are we overengineering? YAGNI violations?
+- Readability: Can a new developer understand this in 5 minutes?
+- Pragmatism: Does this solve real problems or imaginary ones?
+
+Be practical and pattern-focused. Perfect is the enemy of shipped.
+Output your findings as a structured code review with file:line references."
+
+    "You are Sandi Metz.
+
+Good code tells a story. Every class, every method should have one job.
+
+Review this codebase for:
+- Single Responsibility: Does each unit do exactly one thing?
+- Dependencies: Are dependencies explicit and minimal?
+- Coupling: Can pieces change independently?
+- Composition: Is behavior composed of small, reusable parts?
+
+Be educational and structured. Help developers learn from this review.
+Output your findings as a structured code review with file:line references."
+
+    "You are Don Norman, author of 'The Design of Everyday Things'.
+
+Code is used by humans - developers are users too.
+
+Review this codebase for:
+- Conceptual models: Does the API match mental models?
+- Affordances: Does the interface suggest how to use it?
+- Discoverability: Can developers find what they need?
+- Error handling: Do errors help users recover?
+
+Be user-empathetic and DX-focused. Developer experience is UX.
+Output your findings as a structured code review with file:line references."
+
+    "You are a security auditor with a black hat mindset.
+
+Trust nothing. Verify everything. Assume malicious input.
+
+Review this codebase for:
+- Input validation: Are all inputs sanitized?
+- Authentication/Authorization: Are there bypasses?
+- Race conditions: Can timing be exploited?
+- Secrets: Are credentials, keys, or tokens exposed?
+- Dependencies: Are there known vulnerabilities?
+
+Be paranoid and thorough. Find the vulnerabilities before attackers do.
+Output your findings as a structured code review with file:line references."
+
+    "You are Martin Fowler.
+
+Code smells are symptoms. Find the disease.
+
+Review this codebase for:
+- Long methods: Functions doing too much
+- Feature envy: Code that wants to be elsewhere
+- Data clumps: Parameters that travel together
+- Primitive obsession: Missing domain objects
+- Speculative generality: YAGNI violations
+
+Be systematic and improvement-focused. Suggest specific refactorings.
+Output your findings as a structured code review with file:line references."
+)
+
+# =============================================================================
+# UTILITY FUNCTIONS
+# =============================================================================
+
+usage() {
+    cat << EOF
+${BOLD}council${NC} - Multi-agent code review council
+
+${BOLD}USAGE${NC}
+    council [OPTIONS]
+
+${BOLD}OPTIONS${NC}
+    --dry-run    Show selected personas and commands without executing
+    --help       Show this help message
+
+${BOLD}DESCRIPTION${NC}
+    Summons 3 random engineering personas to review your codebase from
+    different philosophical perspectives. Each persona runs as an autonomous
+    coding agent that explores the codebase and generates a review.
+
+${BOLD}OUTPUT${NC}
+    CODE_REVIEW.md - Combined reviews from all summoned Masters
+
+${BOLD}PERSONAS${NC}
+    The Operator (Torvalds)    - Performance, efficiency, brutal honesty
+    The Architect (Ousterhout) - Complexity management, information hiding
+    The Visionary (Jobs)       - Simplicity, naming, taste
+    The Essentialist (Hara)    - Minimalism, emptiness, reduction
+    The Physicist (Carmack)    - First principles, optimization
+    The Pragmatist (DHH)       - Convention, idioms, pragmatism
+    The Teacher (Metz)         - Single responsibility, coupling
+    The Anthropologist (Norman)- DX, conceptual models, discoverability
+    The Auditor (Black Hat)    - Security, trust nothing
+    The Refactorer (Fowler)    - Code smells, refactoring patterns
+
+${BOLD}EXAMPLES${NC}
+    council              # Run review with 3 random Masters
+    council --dry-run    # Preview which Masters would be summoned
+EOF
+}
+
+log_info() {
+    echo -e "${BLUE}[INFO]${NC} $1"
+}
+
+log_success() {
+    echo -e "${GREEN}[OK]${NC} $1"
+}
+
+log_error() {
+    echo -e "${RED}[ERROR]${NC} $1" >&2
+}
+
+log_warn() {
+    echo -e "${YELLOW}[WARN]${NC} $1"
+}
+
+# =============================================================================
+# AGENT EXECUTION
+# =============================================================================
+
+# Filter CLI noise from output
+filter_output() {
+    local input_file="$1"
+    local output_file="$2"
+
+    # Remove known CLI noise patterns
+    grep -v "^YOLO mode is enabled" "$input_file" \
+        | grep -v "^Loaded cached credentials" \
+        | grep -v "^Attempt [0-9]* failed: You have exhausted" \
+        | grep -v "Retrying after.*ms\.\.\." \
+        > "$output_file" 2>/dev/null || cat "$input_file" > "$output_file"
+}
+
+run_claude() {
+    local prompt="$1"
+    local output_file="$2"
+    local error_file="$3"
+
+    local temp_out="${output_file}.raw"
+
+    claude -p "$prompt" \
+        --allowedTools "Read,Grep,Glob,Bash" \
+        --permission-mode acceptEdits \
+        > "$temp_out" 2> "$error_file"
+
+    local exit_code=$?
+
+    # Filter noise from output
+    filter_output "$temp_out" "$output_file"
+    rm -f "$temp_out"
+
+    return $exit_code
+}
+
+run_gemini() {
+    local prompt="$1"
+    local output_file="$2"
+    local error_file="$3"
+
+    local temp_out="${output_file}.raw"
+
+    # Use JSON output to get clean response
+    gemini "$prompt" --yolo --output-format json \
+        > "$temp_out" 2> "$error_file"
+
+    local exit_code=$?
+
+    if [[ $exit_code -eq 0 ]] && [[ -f "$temp_out" ]]; then
+        # Extract response from JSON (last line has the full response)
+        # Fall back to raw output if JSON parsing fails
+        if command -v jq &>/dev/null; then
+            jq -r '.response // .content // .' "$temp_out" > "$output_file" 2>/dev/null || \
+                filter_output "$temp_out" "$output_file"
+        else
+            filter_output "$temp_out" "$output_file"
+        fi
+    else
+        touch "$output_file"
+    fi
+
+    rm -f "$temp_out"
+    return $exit_code
+}
+
+run_codex() {
+    local prompt="$1"
+    local output_file="$2"
+    local error_file="$3"
+
+    # Use 'exec' subcommand for non-interactive automation
+    codex exec "$prompt" --full-auto \
+        > "$output_file" 2> "$error_file"
+
+    return $?
+}
+
+run_agent() {
+    local idx="$1"
+    local output_file="$2"
+    local error_file="$3"
+
+    local model="${PERSONA_MODELS[$idx]}"
+    local prompt="${PERSONA_PROMPTS[$idx]}"
+
+    case "$model" in
+        claude)
+            run_claude "$prompt" "$output_file" "$error_file"
+            ;;
+        gemini)
+            run_gemini "$prompt" "$output_file" "$error_file"
+            ;;
+        codex)
+            run_codex "$prompt" "$output_file" "$error_file"
+            ;;
+        *)
+            echo "Unknown model: $model" > "$error_file"
+            return 1
+            ;;
+    esac
+}
+
+# =============================================================================
+# MAIN LOGIC
+# =============================================================================
+
+main() {
+    local dry_run=false
+
+    # Parse arguments
+    while [[ $# -gt 0 ]]; do
+        case "$1" in
+            --dry-run)
+                dry_run=true
+                shift
+                ;;
+            --help|-h)
+                usage
+                exit 0
+                ;;
+            *)
+                log_error "Unknown option: $1"
+                usage
+                exit 1
+                ;;
+        esac
+    done
+
+    # Check dependencies
+    for cmd in claude gemini codex shuf; do
+        if ! command -v "$cmd" &> /dev/null; then
+            log_error "Required command not found: $cmd"
+            exit 1
+        fi
+    done
+
+    # Select 3 random personas
+    local num_personas=${#PERSONA_NAMES[@]}
+    local indices
+    indices=$(shuf -i 0-$((num_personas - 1)) -n 3)
+
+    declare -a selected_indices=()
+    for idx in $indices; do
+        selected_indices+=("$idx")
+    done
+
+    # Assign models - shuffle to randomize assignment, guarantee 1 of each
+    declare -a models=("$CLAUDE_MODEL" "$GEMINI_MODEL" "$CODEX_MODEL")
+    declare -a model_names=("claude" "gemini" "codex")
+
+    # Shuffle models using shuf
+    declare -a shuffled_models=()
+    declare -a shuffled_model_names=()
+    local model_order
+    model_order=$(shuf -i 0-2 -n 3 | tr '\n' ' ')
+
+    for i in $model_order; do
+        shuffled_models+=("${models[$i]}")
+        shuffled_model_names+=("${model_names[$i]}")
+    done
+
+    # Display selected Masters with their assigned models
+    echo -e "\n${BOLD}The Council has been summoned${NC}\n"
+    for i in "${!selected_indices[@]}"; do
+        local idx="${selected_indices[$i]}"
+        echo -e "  ${CYAN}${PERSONA_NAMES[$idx]}${NC} (${PERSONA_INSPIRATIONS[$idx]}) → ${shuffled_models[$i]}"
+    done
+    echo
+
+    # Dry run - show commands and exit
+    if [[ "$dry_run" == true ]]; then
+        log_info "Dry run mode - showing commands that would be executed:"
+        echo
+        for i in "${!selected_indices[@]}"; do
+            local idx="${selected_indices[$i]}"
+            local name="${PERSONA_NAMES[$idx]}"
+            local model="${shuffled_models[$i]}"
+            local model_type="${shuffled_model_names[$i]}"
+
+            echo -e "${BOLD}$name${NC} ($model):"
+            case "$model_type" in
+                claude)
+                    echo "  claude -p \"[prompt]\" --model $model --allowedTools \"Read,Grep,Glob,Bash\" --permission-mode acceptEdits"
+                    echo "  (Output filtered for CLI noise)"
+                    ;;
+                gemini)
+                    echo "  gemini \"[prompt]\" --model $model --yolo --output-format json"
+                    echo "  (JSON response extracted, rate limit messages filtered)"
+                    ;;
+                codex)
+                    echo "  codex exec \"[prompt]\" --model $model --full-auto"
+                    echo "  (Non-interactive exec mode)"
+                    ;;
+            esac
+            echo
+        done
+        exit 0
+    fi
+
+    # Create temp directory for outputs
+    local temp_dir
+    temp_dir=$(mktemp -d)
+    trap "rm -rf $temp_dir" EXIT
+
+    # Launch all agents in parallel
+    declare -a pids=()
+    declare -a output_files=()
+    declare -a error_files=()
+    declare -a start_times=()
+
+    log_info "Launching agents in parallel..."
+    echo
+
+    for i in "${!selected_indices[@]}"; do
+        local idx="${selected_indices[$i]}"
+        local name="${PERSONA_NAMES[$idx]}"
+        local model="${shuffled_models[$i]}"
+        local model_type="${shuffled_model_names[$i]}"
+        local prompt="${PERSONA_PROMPTS[$idx]}"
+        local output_file="$temp_dir/${i}_${name// /_}.md"
+        local error_file="$temp_dir/${i}_${name// /_}.err"
+
+        output_files+=("$output_file")
+        error_files+=("$error_file")
+        start_times+=($(date +%s))
+
+        # Run agent in background with timeout
+        # Note: Can't use declare -p with multi-line strings in subshells (word-splitting breaks it)
+        # So we invoke CLIs directly here instead of calling run_agent
+        (
+            local temp_out="${output_file}.raw"
+
+            case "$model_type" in
+                claude)
+                    timeout "$TIMEOUT_SECONDS" claude -p "$prompt" \
+                        --model "$model" \
+                        --allowedTools "Read,Grep,Glob,Bash" \
+                        --permission-mode acceptEdits \
+                        > "$temp_out" 2> "$error_file"
+
+                    if [[ $? -eq 0 ]]; then
+                        # Filter noise
+                        grep -v "^YOLO mode is enabled" "$temp_out" \
+                            | grep -v "^Loaded cached credentials" \
+                            | grep -v "^Attempt [0-9]* failed: You have exhausted" \
+                            | grep -v "Retrying after.*ms\.\.\." \
+                            > "$output_file" 2>/dev/null || cat "$temp_out" > "$output_file"
+                        rm -f "$temp_out"
+                    fi
+                    ;;
+                gemini)
+                    timeout "$TIMEOUT_SECONDS" gemini "$prompt" \
+                        --model "$model" \
+                        --yolo \
+                        --output-format json \
+                        > "$temp_out" 2> "$error_file"
+
+                    if [[ $? -eq 0 ]] && [[ -f "$temp_out" ]]; then
+                        # Extract response from JSON or filter noise
+                        if command -v jq &>/dev/null; then
+                            jq -r '.response // .content // .' "$temp_out" > "$output_file" 2>/dev/null || \
+                                grep -v "^YOLO mode is enabled" "$temp_out" \
+                                    | grep -v "^Loaded cached credentials" \
+                                    | grep -v "^Attempt [0-9]* failed" \
+                                    | grep -v "Retrying after.*ms" \
+                                    > "$output_file" 2>/dev/null || cat "$temp_out" > "$output_file"
+                        else
+                            grep -v "^YOLO mode is enabled" "$temp_out" \
+                                | grep -v "^Loaded cached credentials" \
+                                | grep -v "^Attempt [0-9]* failed" \
+                                | grep -v "Retrying after.*ms" \
+                                > "$output_file" 2>/dev/null || cat "$temp_out" > "$output_file"
+                        fi
+                        rm -f "$temp_out"
+                    else
+                        touch "$output_file"
+                    fi
+                    ;;
+                codex)
+                    timeout "$TIMEOUT_SECONDS" codex exec "$prompt" \
+                        --model "$model" \
+                        --full-auto \
+                        > "$output_file" 2> "$error_file"
+                    ;;
+            esac
+        ) &
+        pids+=($!)
+
+        echo -e "  ${CYAN}[*]${NC} ${name} started (PID: $!)"
+    done
+
+    echo
+    log_info "Waiting for agents to complete..."
+    echo
+
+    # Wait for all agents and track results
+    declare -a results=()
+    declare -a durations=()
+
+    for i in "${!pids[@]}"; do
+        local idx="${selected_indices[$i]}"
+        local name="${PERSONA_NAMES[$idx]}"
+        local start_time="${start_times[$i]}"
+
+        if wait "${pids[$i]}" 2>/dev/null; then
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            durations+=("$duration")
+            results+=("success")
+
+            local time_str
+            if [[ $duration -ge 60 ]]; then
+                time_str=$(printf "%dm%ds" $((duration / 60)) $((duration % 60)))
+            else
+                time_str="${duration}s"
+            fi
+
+            echo -e "  ${GREEN}[✓]${NC} ${name} completed (${time_str})"
+        else
+            local exit_code=$?
+            local end_time=$(date +%s)
+            local duration=$((end_time - start_time))
+            durations+=("$duration")
+            results+=("failed")
+
+            local time_str
+            if [[ $duration -ge 60 ]]; then
+                time_str=$(printf "%dm%ds" $((duration / 60)) $((duration % 60)))
+            else
+                time_str="${duration}s"
+            fi
+
+            # Try to determine failure reason
+            local reason="unknown"
+            if [[ $exit_code -eq 124 ]]; then
+                reason="timeout"
+            elif [[ -f "${error_files[$i]}" ]] && [[ -s "${error_files[$i]}" ]]; then
+                # Get first line of error file
+                reason=$(head -n 1 "${error_files[$i]}" | cut -c 1-50)
+            fi
+
+            echo -e "  ${RED}[✗]${NC} ${name} failed: ${reason} (${time_str})"
+        fi
+    done
+
+    echo
+
+    # Count successes
+    local success_count=0
+    for result in "${results[@]}"; do
+        [[ "$result" == "success" ]] && ((success_count++))
+    done
+
+    if [[ $success_count -eq 0 ]]; then
+        log_error "All agents failed. No review generated."
+        exit 1
+    fi
+
+    # Generate combined output
+    log_info "Generating $OUTPUT_FILE..."
+
+    # Build names list for header
+    local names_list=""
+    for idx in "${selected_indices[@]}"; do
+        names_list+="${PERSONA_NAMES[$idx]}, "
+    done
+    names_list="${names_list%, }"  # Remove trailing comma
+
+    {
+        echo "# Code Review Council"
+        echo
+        echo "**Masters Summoned**: ${names_list}"
+        echo "**Completed**: $success_count/3"
+        echo "**Generated**: $(date '+%Y-%m-%d %H:%M:%S')"
+        echo
+
+        for i in "${!selected_indices[@]}"; do
+            local idx="${selected_indices[$i]}"
+            local name="${PERSONA_NAMES[$idx]}"
+            local inspiration="${PERSONA_INSPIRATIONS[$idx]}"
+            local output_file="${output_files[$i]}"
+
+            echo "---"
+            echo
+            echo "## $name ($inspiration)"
+            echo
+
+            if [[ "${results[$i]}" == "success" ]] && [[ -f "$output_file" ]]; then
+                cat "$output_file"
+            else
+                echo "*This Master was unable to complete their review.*"
+            fi
+            echo
+        done
+
+        echo "---"
+        echo
+        echo "*Generated by council - Multi-Agent Code Review*"
+    } > "$OUTPUT_FILE"
+
+    echo
+    log_success "Review complete: $OUTPUT_FILE"
+    log_info "Completed $success_count/3 reviews"
+}
+
+main "$@"

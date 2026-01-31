@@ -1,0 +1,108 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+usage() {
+  cat <<'EOF'
+usage: image-shrink /path/to/dir
+
+Backs up images into __archive_originals_<timestamp>, then resizes + recompresses.
+
+Env:
+  MAX_EDGE=2048   Long edge cap (lower => fewer tokens)
+  QUALITY=82      Quality for lossy formats
+  FORMAT=webp     webp|avif|jpg|jpeg|keep
+  EFFORT=6        Encoder effort (vips webp/avif)
+EOF
+}
+
+target="${1:-}"
+if [ -z "$target" ] || [ ! -d "$target" ]; then
+  usage
+  exit 1
+fi
+
+max_edge="${MAX_EDGE:-2048}"
+quality="${QUALITY:-82}"
+format="${FORMAT:-webp}"
+effort="${EFFORT:-6}"
+
+case "$format" in webp|avif|jpg|jpeg|keep) ;; *)
+  echo "FORMAT must be webp|avif|jpg|jpeg|keep" >&2
+  exit 1
+esac
+
+tool=""
+if command -v vips >/dev/null 2>&1; then
+  tool="vips"
+elif command -v magick >/dev/null 2>&1; then
+  tool="magick"
+elif command -v convert >/dev/null 2>&1; then
+  tool="convert"
+elif command -v sips >/dev/null 2>&1; then
+  tool="sips"
+else
+  echo "Need vips or ImageMagick (preferred). sips fallback (jpeg only)." >&2
+  exit 1
+fi
+
+if [ "$tool" = "sips" ] && [ "$format" != "jpg" ] && [ "$format" != "jpeg" ] && [ "$format" != "keep" ]; then
+  echo "sips only supports jpeg output; set FORMAT=jpg or install vips." >&2
+  exit 1
+fi
+
+ts="$(date +"%Y%m%d_%H%M%S")"
+archive="$target/__archive_originals_$ts"
+mkdir -p "$archive"
+
+rsync -a --prune-empty-dirs \
+  --include '*/' \
+  --include '*.jpg' --include '*.jpeg' --include '*.png' --include '*.webp' \
+  --include '*.tif' --include '*.tiff' --include '*.heic' --include '*.avif' \
+  --exclude '*' \
+  "$target"/ "$archive"/
+
+find "$target" -type f \
+  \( -iname '*.jpg' -o -iname '*.jpeg' -o -iname '*.png' -o -iname '*.webp' -o -iname '*.tif' -o -iname '*.tiff' -o -iname '*.heic' -o -iname '*.avif' \) \
+  -not -path "*/__archive_originals_*/*" -print0 |
+while IFS= read -r -d '' file; do
+  ext="${file##*.}"
+  base="${file%.*}"
+
+  out_ext="$ext"
+  case "$format" in
+    keep) out_ext="$ext" ;;
+    jpg|jpeg) out_ext="jpg" ;;
+    *) out_ext="$format" ;;
+  esac
+
+  out="${base}.${out_ext}"
+  if [ "$format" != "keep" ] && [ "$out" != "$file" ] && [ -e "$out" ]; then
+    out="${base}-from-${ext}.${out_ext}"
+  fi
+  tmp="${out}.tmp"
+
+  case "$tool" in
+    vips)
+      vips thumbnail "$file" "$tmp" "$max_edge" \
+        --size down --strip --Q "$quality" --effort "$effort" --export-profile srgb
+      ;;
+    magick|convert)
+      "$tool" "$file" -auto-orient -strip -resize "${max_edge}x${max_edge}>" \
+        -quality "$quality" "$tmp"
+      ;;
+    sips)
+      out="${base}.jpg"
+      if [ "$format" != "keep" ] && [ -e "$out" ]; then
+        out="${base}-from-${ext}.jpg"
+      fi
+      tmp="${out}.tmp"
+      sips -Z "$max_edge" -s format jpeg -s formatOptions "$quality" \
+        "$file" --out "$tmp" >/dev/null
+      ;;
+  esac
+
+  mv "$tmp" "$out"
+  if [ "$out" != "$file" ]; then
+    rm -f "$file"
+  fi
+done

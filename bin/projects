@@ -1,0 +1,507 @@
+#!/usr/bin/env bash
+# projects - CLI for managing project registry
+
+set -euo pipefail
+
+PROJECTS_FILE="${HOME}/Development/codex/docs/projects.md"
+NAMES_FILE="${HOME}/Development/codex/docs/project-names.md"
+DEV_DIR="${HOME}/Development"
+
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[1;33m'
+BLUE='\033[0;34m'
+NC='\033[0m' # No Color
+
+usage() {
+  cat << EOF
+projects - Manage your project registry
+
+Usage:
+  projects                     Show all projects (interactive with fzf if available)
+  projects list [STATUS]       List projects, optionally filtered by status
+  projects active              Show only active projects
+  projects ideas               Show only ideas
+  projects paused              Show paused projects
+  projects sync                Scan repos and report discrepancies
+  projects sync --github       Sync statuses with GitHub (auto-update based on activity)
+  projects name <project>      Suggest available names for a project
+  projects stats               Show project statistics
+
+Status values: active, paused, archived, ideas
+
+Status rules (with --github):
+  💡 idea     = No GitHub repo
+  🔨 active   = Commit within 14 days
+  ⏸️ paused   = No commits in 14+ days
+  📦 archived = GitHub repo archived
+EOF
+  exit 0
+}
+
+# Extract project section from markdown
+get_section() {
+  local status="$1"
+  local next_section="$2"
+
+  if [ -z "$next_section" ]; then
+    # Extract from section to end of file
+    sed -n "/^## $status/,\$p" "$PROJECTS_FILE" | grep '^|' | grep -v 'Name' | grep -v -- '---'
+  else
+    # Extract from section to next section
+    sed -n "/^## $status/,/^## $next_section/p" "$PROJECTS_FILE" | grep '^|' | grep -v 'Name' | grep -v -- '---'
+  fi
+}
+
+# Format project line for display
+format_project() {
+  while IFS='|' read -r empty name desc github status tags rest; do
+    # Trim whitespace without xargs (to avoid quote issues)
+    name="${name## }"
+    name="${name%% }"
+    desc="${desc## }"
+    desc="${desc%% }"
+    github="${github## }"
+    github="${github%% }"
+    status="${status## }"
+    status="${status%% }"
+    printf "%-30s %s %s\n" "$name" "$status" "$desc"
+  done
+}
+
+# List projects by status
+list_projects() {
+  local filter="${1:-}"
+
+  case "$filter" in
+    active)
+      echo "🔨 Active Projects"
+      echo "=================="
+      get_section "Active Projects" "Paused Projects" | format_project
+      ;;
+    paused)
+      echo "⏸️  Paused Projects"
+      echo "=================="
+      get_section "Paused Projects" "Archived Projects" | format_project
+      ;;
+    archived)
+      echo "📦 Archived Projects"
+      echo "==================="
+      get_section "Archived Projects" "Ideas" | format_project
+      ;;
+    ideas)
+      echo "💡 Ideas"
+      echo "========"
+      get_section "Ideas" "Notes" | format_project
+      ;;
+    *)
+      echo "All Projects"
+      echo "============"
+      echo ""
+      list_projects active
+      echo ""
+      list_projects paused
+      echo ""
+      list_projects ideas
+      echo ""
+      list_projects archived
+      ;;
+  esac
+}
+
+# Interactive fuzzy search
+interactive() {
+  if ! command -v fzf &> /dev/null; then
+    echo "fzf not found, falling back to list view"
+    list_projects
+    return
+  fi
+
+  local selected
+  selected=$(grep "^| " "$PROJECTS_FILE" | grep -v "Status" | grep -v "^| ---" | \
+    format_project | \
+    fzf --ansi \
+        --header="Select a project (Ctrl-C to exit)" \
+        --preview="echo {1} | xargs -I {} grep {} $PROJECTS_FILE -A 1" \
+        --preview-window=right:50%:wrap)
+
+  if [ -n "$selected" ]; then
+    local project_name=$(echo "$selected" | awk '{print $1}')
+    echo ""
+    echo "Selected: $project_name"
+    grep "^| $project_name" "$PROJECTS_FILE" | format_project
+  fi
+}
+
+# Show statistics
+show_stats() {
+  local active=$(get_section "Active Projects" "Paused Projects" | wc -l | tr -d ' ')
+  local paused=$(get_section "Paused Projects" "Archived Projects" | wc -l | tr -d ' ')
+  local archived=$(get_section "Archived Projects" "Ideas" | wc -l | tr -d ' ')
+  local ideas=$(get_section "Ideas" "Notes" | wc -l | tr -d ' ')
+  local total=$((active + paused + archived + ideas))
+
+  cat << EOF
+Project Statistics
+==================
+
+Total Projects: $total
+
+🔨 Active:      $active
+⏸️  Paused:      $paused
+📦 Archived:    $archived
+💡 Ideas:       $ideas
+
+Status Distribution:
+  Active:   $(awk "BEGIN {printf \"%.1f%%\", ($active/$total)*100}")
+  Paused:   $(awk "BEGIN {printf \"%.1f%%\", ($paused/$total)*100}")
+  Archived: $(awk "BEGIN {printf \"%.1f%%\", ($archived/$total)*100}")
+  Ideas:    $(awk "BEGIN {printf \"%.1f%%\", ($ideas/$total)*100}")
+EOF
+}
+
+# Sync statuses with GitHub
+sync_github() {
+  # Check if gh CLI is installed
+  if ! command -v gh &> /dev/null; then
+    echo -e "${RED}Error: gh CLI not found. Install with: brew install gh${NC}"
+    exit 1
+  fi
+
+  # Check gh auth status
+  if ! gh auth status &> /dev/null; then
+    echo -e "${YELLOW}Not authenticated with GitHub. Run: gh auth login${NC}"
+    exit 1
+  fi
+
+  echo "Syncing project statuses with GitHub..."
+  echo ""
+
+  local updated=0
+  local active_count=0
+  local paused_count=0
+  local archived_count=0
+  local idea_count=0
+  local tmpfile=$(mktemp)
+
+  # Read projects.md line by line
+  local line_count=0
+  while IFS= read -r line; do
+    # Skip non-table lines
+    if [[ ! "$line" =~ ^\| ]] || [[ "$line" =~ Name.*Description ]] || [[ "$line" =~ ^[\|][-]+ ]]; then
+      echo "$line" >> "$tmpfile"
+      continue
+    fi
+
+    ((line_count++))
+
+    # Parse table row
+    IFS='|' read -r empty name desc github old_status tags rest <<< "$line"
+    # Trim whitespace without xargs (to avoid quote issues)
+    name="${name## }"
+    name="${name%% }"
+    desc="${desc## }"
+    desc="${desc%% }"
+    github="${github## }"
+    github="${github%% }"
+    old_status="${old_status## }"
+    old_status="${old_status%% }"
+    tags="${tags## }"
+    tags="${tags%% }"
+
+    # Show progress
+    echo -ne "\rProcessing $line_count: $name...                    "
+
+    # Compute new status
+    new_status="$old_status"
+
+    if [ "$github" = "-" ] || [ -z "$github" ]; then
+      # No GitHub repo = idea
+      new_status="💡"
+      ((idea_count++))
+    else
+      # Query GitHub for repo status and default branch
+      set +e  # Temporarily disable exit on error
+      repo_data=$(gh repo view "$github" --json isArchived,defaultBranchRef 2>&1)
+      gh_exit_code=$?
+      set -e  # Re-enable exit on error
+
+      if [ $gh_exit_code -ne 0 ]; then
+        # Repo doesn't exist or other error - keep old status
+        echo -ne "\r${YELLOW}Warning: Could not fetch data for $github (keeping status: $old_status)${NC}\n"
+        # Keep the existing status instead of erroring out
+        echo "| $name | $desc | $github | $old_status | $tags |" >> "$tmpfile"
+        continue
+      fi
+
+      is_archived=$(echo "$repo_data" | grep -o '"isArchived":[^,}]*' | cut -d':' -f2)
+      default_branch=$(echo "$repo_data" | grep -o '"name":"[^"]*"' | cut -d'"' -f4)
+
+      # Get last commit date on default branch (not all branches like pushedAt)
+      set +e
+      commit_data=$(gh api "repos/$github/commits?sha=$default_branch&per_page=1" 2>&1)
+      commit_exit_code=$?
+      set -e
+
+      if [ $commit_exit_code -ne 0 ]; then
+        # No commits or error - treat as paused
+        pushed_at=""
+      else
+        pushed_at=$(echo "$commit_data" | grep -o '"date":"[^"]*"' | head -1 | cut -d'"' -f4)
+      fi
+
+      if [ "$is_archived" = "true" ]; then
+        new_status="📦"
+        ((archived_count++))
+      else
+        # Calculate days since last commit
+        if [ -n "$pushed_at" ]; then
+          pushed_timestamp=$(date -j -f "%Y-%m-%dT%H:%M:%SZ" "$pushed_at" "+%s" 2>/dev/null || echo "0")
+          current_timestamp=$(date "+%s")
+          days_since=$((( current_timestamp - pushed_timestamp ) / 86400))
+
+          if [ $days_since -lt 14 ]; then
+            new_status="🔨"
+            ((active_count++))
+          else
+            new_status="⏸️"
+            ((paused_count++))
+          fi
+        else
+          new_status="⏸️"
+          ((paused_count++))
+        fi
+      fi
+    fi
+
+    # Write updated line
+    if [ "$new_status" != "$old_status" ]; then
+      echo -ne "\r${GREEN}Updated $name: $old_status → $new_status${NC}\n"
+      ((updated++))
+    fi
+
+    echo "| $name | $desc | $github | $new_status | $tags |" >> "$tmpfile"
+
+  done < "$PROJECTS_FILE"
+
+  echo -ne "\r                                                      \r"  # Clear progress line
+
+  # Now reorganize projects by status
+  local reorganized=$(mktemp)
+  local active_projects=$(mktemp)
+  local paused_projects=$(mktemp)
+  local archived_projects=$(mktemp)
+  local idea_projects=$(mktemp)
+
+  # Extract header content (everything before first ## section)
+  awk '/^## /{exit} {print}' "$tmpfile" >> "$reorganized"
+
+  # Sort projects into buckets by status
+  while IFS= read -r line; do
+    if [[ ! "$line" =~ ^\| ]] || [[ "$line" =~ Name.*Description ]] || [[ "$line" =~ ^[\|][-]+ ]]; then
+      continue
+    fi
+
+    if [[ "$line" =~ 🔨 ]]; then
+      echo "$line" >> "$active_projects"
+    elif [[ "$line" =~ ⏸️ ]]; then
+      echo "$line" >> "$paused_projects"
+    elif [[ "$line" =~ 📦 ]]; then
+      echo "$line" >> "$archived_projects"
+    elif [[ "$line" =~ 💡 ]]; then
+      echo "$line" >> "$idea_projects"
+    fi
+  done < "$tmpfile"
+
+  # Write reorganized sections
+  echo "" >> "$reorganized"
+  echo "## Active Projects (🔨)" >> "$reorganized"
+  echo "" >> "$reorganized"
+  echo "| Name | Description | GitHub | Status | Tags |" >> "$reorganized"
+  echo "|------|-------------|--------|--------|------|" >> "$reorganized"
+  if [ -s "$active_projects" ]; then
+    cat "$active_projects" >> "$reorganized"
+  fi
+
+  echo "" >> "$reorganized"
+  echo "## Paused Projects (⏸️)" >> "$reorganized"
+  echo "" >> "$reorganized"
+  echo "| Name | Description | GitHub | Status | Tags |" >> "$reorganized"
+  echo "|------|-------------|--------|--------|------|" >> "$reorganized"
+  if [ -s "$paused_projects" ]; then
+    cat "$paused_projects" >> "$reorganized"
+  fi
+
+  echo "" >> "$reorganized"
+  echo "## Archived Projects (📦)" >> "$reorganized"
+  echo "" >> "$reorganized"
+  echo "| Name | Description | GitHub | Status | Tags |" >> "$reorganized"
+  echo "|------|-------------|--------|--------|------|" >> "$reorganized"
+  if [ -s "$archived_projects" ]; then
+    cat "$archived_projects" >> "$reorganized"
+  fi
+
+  echo "" >> "$reorganized"
+  echo "## Ideas (💡)" >> "$reorganized"
+  echo "" >> "$reorganized"
+  echo "| Name | Description | GitHub | Status | Tags |" >> "$reorganized"
+  echo "|------|-------------|--------|--------|------|" >> "$reorganized"
+  if [ -s "$idea_projects" ]; then
+    cat "$idea_projects" >> "$reorganized"
+  fi
+
+  # Append footer (Notes section if it exists)
+  echo "" >> "$reorganized"
+  echo "---" >> "$reorganized"
+  echo "" >> "$reorganized"
+  echo "## Notes" >> "$reorganized"
+  echo "" >> "$reorganized"
+  echo "- **Last Synced:** $(date +%Y-%m-%d)" >> "$reorganized"
+  echo "- **Total Projects:** $((active_count + paused_count + archived_count + idea_count))" >> "$reorganized"
+
+  # Clean up temp files
+  rm -f "$tmpfile" "$active_projects" "$paused_projects" "$archived_projects" "$idea_projects"
+
+  # Replace original file with reorganized one
+  mv "$reorganized" "$PROJECTS_FILE"
+
+  echo ""
+  echo "Sync complete! Projects reorganized by status."
+  echo "  Updated: $updated projects"
+  echo "  Active (🔨): $active_count"
+  echo "  Paused (⏸️): $paused_count"
+  echo "  Archived (📦): $archived_count"
+  echo "  Ideas (💡): $idea_count"
+}
+
+# Sync repos with registry
+sync_projects() {
+  echo "Scanning $DEV_DIR for git repositories..."
+  echo ""
+
+  local missing_from_registry=()
+  local in_registry_no_repo=()
+
+  # Find repos not in registry
+  for dir in "$DEV_DIR"/*/; do
+    if [ -d "${dir}.git" ]; then
+      local repo=$(basename "$dir")
+      if ! grep -q "| $repo" "$PROJECTS_FILE" 2>/dev/null; then
+        missing_from_registry+=("$repo")
+      fi
+    fi
+  done
+
+  # Find registry entries without repos
+  while IFS='|' read -r empty name desc github status tags rest; do
+    # Trim whitespace
+    name="${name## }"
+    name="${name%% }"
+    github="${github## }"
+    github="${github%% }"
+    if [ -n "$github" ] && [ "$github" != "-" ]; then
+      # Extract repo name from phrazzld/repo format
+      repo=$(echo "$github" | sed 's|.*/||')
+      if [ ! -d "$DEV_DIR/$repo" ]; then
+        in_registry_no_repo+=("$name → $repo")
+      fi
+    fi
+  done < <(grep "^|" "$PROJECTS_FILE" | grep -v "Name" | grep -v -- "---")
+
+  # Report
+  if [ ${#missing_from_registry[@]} -gt 0 ]; then
+    echo -e "${YELLOW}Repos not in registry:${NC}"
+    printf '  - %s\n' "${missing_from_registry[@]}"
+    echo ""
+  fi
+
+  if [ ${#in_registry_no_repo[@]} -gt 0 ]; then
+    echo -e "${YELLOW}Registry entries without local repos:${NC}"
+    printf '  - %s\n' "${in_registry_no_repo[@]}"
+    echo ""
+  fi
+
+  if [ ${#missing_from_registry[@]} -eq 0 ] && [ ${#in_registry_no_repo[@]} -eq 0 ]; then
+    echo -e "${GREEN}✓ Everything in sync!${NC}"
+  fi
+}
+
+# Suggest available names
+suggest_names() {
+  local project="${1:-}"
+
+  if [ -z "$project" ]; then
+    echo "Usage: projects name <project>"
+    exit 1
+  fi
+
+  # Get already assigned names from projects.md
+  local assigned=$(grep "^| " "$PROJECTS_FILE" | grep -v "Status" | grep -v "^| ---" | \
+    awk -F'|' '{print $2}' | while read -r name; do
+      # Trim whitespace
+      name="${name## }"
+      name="${name%% }"
+      echo "$name"
+    done | sort -u)
+
+  # Get all available names
+  local available=$(grep "^- " "$NAMES_FILE" | sed 's/^- //' | sed 's/ ✓.*//' | sort)
+
+  echo "Available names for '$project':"
+  echo ""
+
+  # Show unassigned names
+  comm -23 <(echo "$available") <(echo "$assigned") | head -20
+
+  echo ""
+  local total=$(echo "$available" | wc -l | tr -d ' ')
+  echo "Showing first 20 available names. Total in names file: $total"
+}
+
+# Main command router
+main() {
+  case "${1:-}" in
+    -h|--help|help)
+      usage
+      ;;
+    list)
+      list_projects "${2:-}"
+      ;;
+    active)
+      list_projects active
+      ;;
+    paused)
+      list_projects paused
+      ;;
+    archived)
+      list_projects archived
+      ;;
+    ideas)
+      list_projects ideas
+      ;;
+    stats)
+      show_stats
+      ;;
+    sync)
+      if [ "${2:-}" = "--github" ]; then
+        sync_github
+      else
+        sync_projects
+      fi
+      ;;
+    name)
+      suggest_names "${2:-}"
+      ;;
+    "")
+      interactive
+      ;;
+    *)
+      echo "Unknown command: $1"
+      echo ""
+      usage
+      ;;
+  esac
+}
+
+main "$@"

@@ -29,6 +29,7 @@ Direct thinktank CLI automation using shared library (`tt-common.sh`):
 ## Other Utilities
 
 - `alacritty-theme` - Theme switching for Alacritty
+- `image-shrink` - Backup + resize/recompress images for LLM-friendly galleries
 - `toggle-theme`, `light-mode`, `dark-mode` - System theme control
 - `tmux-startup` - Development session startup
 - `adminifi` - Admin privilege escalation

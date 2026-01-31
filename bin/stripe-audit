@@ -1,0 +1,222 @@
+#!/usr/bin/env node
+/**
+ * stripe-audit - Audit Stripe resources across multiple apps in a shared account
+ *
+ * Usage:
+ *   stripe-audit              # Full audit (test mode)
+ *   stripe-audit --live       # Full audit (live mode)
+ *   stripe-audit --check      # Verify webhook/domain alignment
+ *   stripe-audit <app>        # Filter to specific app
+ */
+
+const { execSync } = require("child_process");
+
+// Known app -> domain mappings
+const APP_DOMAINS = {
+  chrondle: "chrondle.app",
+  volume: "volume.fitness",
+  bibliomnomnom: "bibliomnomnom.com",
+  caesar: "caesarinayear.com",
+  happybirthday: "happybirthday.place",
+  heartbeat: "heartbeat.engineering",
+  gitpulse: "gitpulse.app",
+  linejam: "linejam.app",
+  sploot: "sploot.app",
+  timeismoney: "timeismoney.works",
+  scry: "scry.study",
+  vibecheck: "vibecheck.design",
+};
+
+// Reverse mapping
+const DOMAIN_APPS = Object.fromEntries(
+  Object.entries(APP_DOMAINS).map(([app, domain]) => [domain, app])
+);
+
+// Colors
+const RED = "\x1b[31m";
+const GREEN = "\x1b[32m";
+const YELLOW = "\x1b[33m";
+const BLUE = "\x1b[34m";
+const CYAN = "\x1b[36m";
+const BOLD = "\x1b[1m";
+const NC = "\x1b[0m";
+
+// Parse args
+const args = process.argv.slice(2);
+const liveMode = args.includes("--live");
+const checkMode = args.includes("--check");
+const filterApp = args.find((a) => !a.startsWith("--"));
+const liveFlag = liveMode ? "--live" : "";
+
+function stripe(cmd) {
+  try {
+    const result = execSync(`stripe ${cmd} ${liveFlag}`, {
+      encoding: "utf-8",
+      stdio: ["pipe", "pipe", "pipe"],
+    });
+    return JSON.parse(result);
+  } catch (e) {
+    return { data: [] };
+  }
+}
+
+function extractAppFromName(name) {
+  const match = name?.match(/^([a-z]+)__/);
+  return match ? match[1] : "unknown";
+}
+
+function extractDomain(url) {
+  const match = url?.match(/https?:\/\/([^/]+)/);
+  return match ? match[1] : null;
+}
+
+// Fetch data
+console.log(`${BOLD}Misty Step Stripe Account (${liveMode ? "LIVE" : "TEST"} mode)${NC}`);
+console.log("========================================\n");
+
+const products = stripe("products list --limit 100");
+const prices = stripe("prices list --limit 100");
+const webhooks = stripe("webhook_endpoints list --limit 100");
+
+// Index webhooks by domain
+const webhooksByDomain = {};
+for (const wh of webhooks.data || []) {
+  const domain = extractDomain(wh.url);
+  if (domain) {
+    webhooksByDomain[domain] = wh;
+  }
+}
+
+// Group products by app
+const productsByApp = {};
+for (const p of products.data || []) {
+  const app = extractAppFromName(p.name);
+  if (!productsByApp[app]) productsByApp[app] = [];
+  productsByApp[app].push(p);
+}
+
+// Group prices by app
+const pricesByApp = {};
+for (const p of prices.data || []) {
+  const app = extractAppFromName(p.nickname);
+  if (!pricesByApp[app]) pricesByApp[app] = [];
+  pricesByApp[app].push(p);
+}
+
+// Check mode
+if (checkMode) {
+  console.log(`${BOLD}Webhook/Domain Alignment Check${NC}\n`);
+
+  let errors = 0;
+  for (const [app, domain] of Object.entries(APP_DOMAINS)) {
+    const wh = webhooksByDomain[domain];
+    if (wh) {
+      if (wh.status === "enabled") {
+        console.log(`${GREEN}✓${NC} ${app} (${domain}) - webhook configured`);
+      } else {
+        console.log(`${YELLOW}⚠${NC} ${app} (${domain}) - webhook ${wh.status}`);
+        errors++;
+      }
+    } else {
+      console.log(`${RED}✗${NC} ${app} (${domain}) - NO WEBHOOK`);
+      errors++;
+    }
+  }
+
+  // Check for orphan webhooks
+  console.log("");
+  for (const [domain, wh] of Object.entries(webhooksByDomain)) {
+    if (!DOMAIN_APPS[domain]) {
+      console.log(`${YELLOW}?${NC} Unknown domain: ${domain}`);
+      console.log(`  ${wh.url}`);
+    }
+  }
+
+  console.log("");
+  if (errors === 0) {
+    console.log(`${GREEN}All webhooks configured correctly${NC}`);
+    process.exit(0);
+  } else {
+    console.log(`${RED}${errors} issue(s) found${NC}`);
+    process.exit(1);
+  }
+}
+
+// Full audit mode
+const allApps = new Set([
+  ...Object.keys(productsByApp),
+  ...Object.keys(pricesByApp),
+  ...Object.keys(APP_DOMAINS),
+]);
+
+for (const app of [...allApps].sort()) {
+  if (filterApp && app !== filterApp) continue;
+
+  const domain = APP_DOMAINS[app];
+
+  console.log(`${CYAN}${BOLD}${app}${NC}`);
+  if (domain) console.log(`  ${BLUE}${domain}${NC}`);
+  console.log("");
+
+  // Products
+  const appProducts = productsByApp[app] || [];
+  if (appProducts.length > 0) {
+    console.log(`  ${BOLD}Products:${NC}`);
+    for (const p of appProducts) {
+      const icon = p.active ? "✓" : "○";
+      console.log(`    ${icon} ${p.name} (${p.id})`);
+    }
+    console.log("");
+  }
+
+  // Prices
+  const appPrices = pricesByApp[app] || [];
+  if (appPrices.length > 0) {
+    console.log(`  ${BOLD}Prices:${NC}`);
+    for (const p of appPrices) {
+      const icon = p.active ? "✓" : "○";
+      const amount = (p.unit_amount / 100).toFixed(2);
+      const interval = p.recurring?.interval || "one-time";
+      console.log(`    ${icon} $${amount}/${interval} - ${p.nickname || "(no name)"} (${p.id})`);
+    }
+    console.log("");
+  }
+
+  // Webhook
+  if (domain) {
+    console.log(`  ${BOLD}Webhook:${NC}`);
+    const wh = webhooksByDomain[domain];
+    if (wh) {
+      if (wh.status === "enabled") {
+        console.log(`    ${GREEN}✓${NC} ${wh.url}`);
+      } else {
+        console.log(`    ${YELLOW}⚠${NC} ${wh.url} (${wh.status})`);
+      }
+    } else {
+      console.log(`    ${RED}✗${NC} No webhook for ${domain}`);
+    }
+    console.log("");
+  }
+}
+
+// Show uncategorized
+if (!filterApp && (productsByApp.unknown?.length || pricesByApp.unknown?.length)) {
+  console.log(`${YELLOW}${BOLD}Uncategorized Resources${NC}`);
+  console.log(`${YELLOW}(Add app__ prefix to categorize)${NC}\n`);
+
+  if (productsByApp.unknown?.length) {
+    console.log(`  ${BOLD}Products:${NC}`);
+    for (const p of productsByApp.unknown) {
+      console.log(`    ${p.name} (${p.id})`);
+    }
+    console.log("");
+  }
+
+  if (pricesByApp.unknown?.length) {
+    console.log(`  ${BOLD}Prices:${NC}`);
+    for (const p of pricesByApp.unknown) {
+      const amount = (p.unit_amount / 100).toFixed(2);
+      console.log(`    $${amount} - ${p.nickname || "(no name)"} (${p.id})`);
+    }
+  }
+}
