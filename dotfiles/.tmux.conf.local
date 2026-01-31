@@ -143,9 +143,9 @@ tmux_conf_theme_focused_pane_bg="$tmux_conf_theme_colour_2"
 #   - fat
 tmux_conf_theme_pane_border_style=thin
 
-# pane borders colours - invisible/subtle
-tmux_conf_theme_pane_border="$tmux_conf_theme_colour_1"
-tmux_conf_theme_pane_active_border="$tmux_conf_theme_colour_1"
+# pane borders colours - light but clearly visible
+tmux_conf_theme_pane_border="#cfc3b2"
+tmux_conf_theme_pane_active_border="#b39d84"
 # disabled conditional pane border colors for cleaner look
 # %if #{>=:#{version},3.2}
 # tmux_conf_theme_pane_active_border="#{?pane_in_mode,$tmux_conf_theme_colour_9,#{?synchronize-panes,$tmux_conf_theme_colour_16,$tmux_conf_theme_colour_4}}"
@@ -270,7 +270,7 @@ tmux_conf_theme_right_separator_sub='\uE0B3'  #
 #     - #{username}
 #     - #{username_ssh}
 tmux_conf_theme_status_left="#[bg=default,fg=$tmux_conf_theme_colour_4]\uE0B6#[bg=$tmux_conf_theme_colour_4,fg=$tmux_conf_theme_colour_1] ◉ #S#{?#{hostname_ssh}, @ 🌐 #{hostname_ssh},} | ▶ #{b:pane_current_path} "
-tmux_conf_theme_status_right=" #(cd #{pane_current_path}; git branch --show-current 2>/dev/null | head -c 8 | sed 's/.*/ ⎇ &/') | ⚡ #{loadavg} | ⏰ %H:%M | ○ %d %b #[bg=default,fg=$tmux_conf_theme_colour_7]\uE0B4"
+tmux_conf_theme_status_right=" #(cd #{pane_current_path}; git branch --show-current 2>/dev/null | head -c 8 | sed 's/.*/ ⎇ &/') | CPU #{loadavg}#{?#{battery_percentage}, · ⚡ #{battery_percentage},} | ⏰ %H:%M | ○ %d %b #[bg=default,fg=$tmux_conf_theme_colour_7]\uE0B4"
 
 # status left style - clean powerline segments  
 tmux_conf_theme_status_left_fg="$tmux_conf_theme_colour_1,$tmux_conf_theme_colour_1"
@@ -351,8 +351,8 @@ tmux_conf_battery_vbar_palette="gradient"
 #tmux_conf_battery_vbar_palette="gradient(#00afff,#47a2ff,#7c91ff,#ac7afb,#d65be2,#e163df,#eb6cdd,#f475db,#ec9ff1,#eac3fe,#efe2ff,#ffffff)"
 
 # symbols used to indicate whether battery is charging or discharging
-tmux_conf_battery_status_charging="↑"       # U+2191
-tmux_conf_battery_status_discharging="↓"    # U+2193
+tmux_conf_battery_status_charging=""
+tmux_conf_battery_status_discharging=""
 #tmux_conf_battery_status_charging="🔌"     # U+1F50C
 #tmux_conf_battery_status_discharging="🔋"  # U+1F50B
 
@@ -455,9 +455,9 @@ set -g status-style "bg=$tmux_conf_theme_colour_1" #!important
 set -g window-status-activity-style "fg=$tmux_conf_theme_colour_5,bg=default,none" #!important
 
 # improved window layout to handle many windows cleanly
-# additional pane border settings for invisible borders
-set -g pane-border-style "fg=$tmux_conf_theme_colour_1" #!important
-set -g pane-active-border-style "fg=$tmux_conf_theme_colour_1" #!important
+# additional pane border settings for subtle borders
+set -g pane-border-style "fg=#cfc3b2" #!important
+set -g pane-active-border-style "fg=#b39d84" #!important
 
 
 # -- tpm -----------------------------------------------------------------------

@@ -34,7 +34,8 @@ dynamic_padding = true
 decorations = "full"
 
 # Background opacity
-opacity = 0.95
+# Changed from 0.95 to 1.0 to eliminate compositor overhead during rapid redraws
+opacity = 1.0
 
 # Startup Mode (changes require restart)
 # Values for `startup_mode`:
@@ -47,7 +48,8 @@ startup_mode = "Windowed"
 title = "Alacritty"
 
 # Allow terminal applications to change Alacritty's window title
-dynamic_title = true
+# Disabled to reduce redraw triggers during heavy output
+dynamic_title = false
 
 # Window class (Linux/BSD only)
 class = { instance = "Alacritty", general = "Alacritty" }
@@ -64,7 +66,8 @@ option_as_alt = "OnlyLeft"
 # Scrolling
 [scrolling]
 # Maximum number of lines in the scrollback buffer
-history = 10000
+# Reduced from 10000 to 5000 to minimize buffer redraw overhead
+history = 5000
 
 # Scrolling distance multiplier
 multiplier = 3
@@ -74,8 +77,9 @@ multiplier = 3
 
 # Bell
 [bell]
-animation = "EaseOutExpo"
-duration = 100
+# Disabled visual bell by setting duration to 0 (eliminates visual effect overhead)
+animation = "Linear"
+duration = 0
 color = "#e0af68"
 command = "None"
 

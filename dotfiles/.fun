@@ -153,3 +153,53 @@ gwtn() {
 # Convenience aliases
 alias font='switch_font'
 alias fonthelp='switch_font help'
+
+# --- JOURNAL MANAGEMENT ---
+# Quick access to daily journal entries in Obsidian vault (daybook)
+
+# Primary journal command - creates entry with frontmatter and timestamp
+p() {
+  local vault=~/Documents/daybook
+  local file=$vault/journal/$(date +%Y/%m/%d).md
+  mkdir -p "$(dirname "$file")"
+
+  # Create with frontmatter if new file
+  if [[ ! -f "$file" ]]; then
+    cat > "$file" << EOF
+---
+type: journal
+created: $(date -Iseconds)
+tags: [journal]
+---
+
+# $(date "+%B %d, %Y: %A")
+
+EOF
+  fi
+
+  # Append timestamp section
+  echo -e "\n## $(date +%H:%M:%S)\n" >> "$file"
+
+  # Open in nvim at end of file
+  nvim "+normal G" "$file"
+}
+
+# Open journal for specific date: jd 2024-01-15
+jd() {
+  local d="${1:-$(date +%Y-%m-%d)}"
+  local file=~/Documents/daybook/journal/${d:0:4}/${d:5:2}/${d:8:2}.md
+  mkdir -p "$(dirname "$file")"
+  nvim "$file"
+}
+
+# Open yesterday's journal
+jy() {
+  local d=$(date -v-1d +%Y-%m-%d)
+  jd "$d"
+}
+
+# List recent journal entries
+jl() {
+  local count="${1:-10}"
+  find ~/Documents/daybook/journal -name "*.md" -type f | sort -r | head -n "$count"
+}

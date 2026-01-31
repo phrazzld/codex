@@ -69,9 +69,7 @@ fi
 
 # --- ADDITIONAL PATH EXPORTS ---
 # Supplementary PATH additions (main PATH config in .env)
-export PATH="$HOME/.yarn/bin:$HOME/.config/yarn/global/node_modules/.bin:$PATH"
 export PATH="$HOME/bin:$PATH"
-export PATH="$HOME/.npm-global/bin:$PATH"
 
 # --- CLOUD SDK INTEGRATIONS ---
 # Google Cloud SDK
@@ -109,3 +107,17 @@ export CODEX_DIR="/Users/phaedrus/Development/codex"
 
 # opencode
 export PATH=/Users/phaedrus/.opencode/bin:$PATH
+
+
+# Added by Antigravity
+export PATH="/Users/phaedrus/.antigravity/antigravity/bin:$PATH"
+
+# --- PATH HYGIENE ---
+# Keep asdf shims first; keep npm-global later; de-dupe entries.
+typeset -U path
+path=(${path:#$HOME/.asdf/shims} ${path:#$HOME/.asdf/bin} ${path:#$HOME/.npm-global/bin})
+path=($HOME/.asdf/shims $HOME/.asdf/bin $path)
+if [[ -d $HOME/.npm-global/bin ]]; then
+  path=($path $HOME/.npm-global/bin)
+fi
+typeset -U path
