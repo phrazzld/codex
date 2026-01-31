@@ -1,13 +1,45 @@
 # PROJECT NAMES
 
-- sploot
+> Names available for new projects. ✓ indicates assigned.
+
+## Assigned Names
+
+- anyzine ✓ (on-demand zines)
+- bouncer ✓ (ai pre-commit hook)
+- brainrot publishing house ✓ (zoomer translations)
+- blueprint ✓ (archived)
+- chrondle ✓ (history guessing game)
+- gitpulse ✓ (git analytics)
+- glance ✓ (recursive project summarizer)
+- handoff ✓ (clipboard tool)
+- heartbeat ✓ (status page & healthcheck monitoring)
+- hmm ✓ (semantic question journal)
+- hyperbolic time chamber ✓ (workout tracker)
+- leyline ✓ (dev standards)
+- misty step ✓ (ai consulting)
+- noesis ✓ (active project)
+- pepper ✓ (archived)
+- ponder ✓ (note-taking cli)
+- scry ✓ (spaced repetition)
+- scratch ✓ (disposable notes)
+- sovereign-ai ✓ (enterprise private ai)
+- sploot ✓ (meme search)
+- superwire ✓ (podcast generator)
+- thinktank ✓ (multi-llm synthesis)
+- time is money ✓ (price-to-hours extension)
+- vanity ✓ (personal site)
+- volume ✓ (fitness tracking)
+- ward ✓ (pre-commit hooks)
+- whetstone ✓ (reading tracker)
+
+## Available Names
+
 - cloaca maxima
 - tidbit
 - shorthand
 - blurb
 - zipline
 - grimoire
-- heartbeat
 - meatspace
 - arcana
 - lifelink
@@ -30,38 +62,20 @@
 - weatherlight
 - deathtouch
 - hexproof
-- leyline
 - arcane
 - sunburst
-- misty step
 - necronomicon
 - rule 30
 - move 37
 - xxi
 - vi
 - <roman numerals>
-- scry
 - prime
 - pulse
-- gitpulse
-- whetstone
-- brainrot publishing house
-- time is money
 - switchboard
-- thinktank
 - architect
-- ward
-- bouncer
-- glance
-- handoff
-- anyzine
-- superwire
 - vibecheck
-- blueprint
 - keysmash
-- scratch
-- pepper
-- ponder
 - studymode
 - judith
 - crucible
@@ -90,7 +104,53 @@
 - netero
 - morpheus
 - babylon
-- hyperbolic time chamber
 - move 78
 - vhagar
-
+- mercury
+- hercules
+- hermes
+- odin
+- ariadne
+- diogenes
+- thoth
+- atlas
+- hephaestus
+- sidechannel
+- backprop
+- grayscale
+- afterimage
+- coldstart
+- nightshift
+- overclock
+- deepcut
+- redshift
+- blindspot
+- breadcrumb
+- semaphore
+- checkpoint
+- foresight
+- parallax
+- overmind
+- manaburn
+- color pie
+- mana curve
+- sideboard
+- thoughtseize
+- thoughtcrime
+- doomscroll
+- theseus
+- necessary evil
+- pax
+- pax vobiscum
+- oratio
+- cadence
+- rite
+- verbum
+- canon
+- undertone
+- overtone
+- hush
+- soundless
+- noiseless
+- hushmark
+- sound eraser
