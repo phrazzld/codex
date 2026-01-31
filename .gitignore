@@ -43,3 +43,4 @@ thinktank.log
 thinktank_*/
 CODE_REVIEW_*.md
 TODO.md
+.mcp.json

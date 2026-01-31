@@ -9,13 +9,15 @@ alias clear="clear && source ~/.zshrc && exec zsh"
 alias compress='tar czf'
 alias decompress='tar xzf'
 alias f='fzf --bind "enter:execute(nvim {})"'
-alias c='claude'
+alias c='claude --dangerously-skip-permissions'
 alias cw='clauditor --watch'
 alias e='node $DEVELOPMENT/elevator/dist/cli.js'
 alias cub='ccusage blocks --live'
+alias cx='codex --search --dangerously-bypass-approvals-and-sandbox'
+alias g='gemini'
+alias o='opencode'
 
 # Git aliases
-alias g='git'
 alias gs='git status --short'
 alias ga='git add'
 alias gc='git commit'
@@ -97,6 +99,19 @@ gstreak() {
   echo "────────────────────"
 }
 
+# Todo.txt (topydo) aliases
+alias t='topydo -t ~/Documents/daybook/todo.txt -d ~/Documents/daybook/done.txt'
+alias ta='t add'
+alias tl='t ls'
+alias td='t do'
+alias te='t edit'
+alias ttoday='t ls due:today'
+alias toverdue='t ls "due:<today"'
+alias thabits='t ls +habits'
+alias tnext='t ls -n 10'
+alias tstreak='~/Documents/daybook/scripts/habit-streak.sh'
+alias tstreaks='~/Documents/daybook/scripts/habit-streaks.sh'
+
 # General shortcuts
 alias s='speedtest'
 alias sz="exec zsh"
@@ -111,6 +126,10 @@ alias python="python3"
 alias prd="pnpm run dev"
 alias prdf="pnpm run dev:full"
 
+# Overmind - portfolio command center
+alias dash='cd ~/Development/overmind && pnpm dev'
+alias dash-html='cd ~/Development/overmind && pnpm dev -- --html && open ~/overmind.html'
+
 alias l="eza --long --all --git --icons --group-directories-first --color=never"
 alias ls="eza --icons --group-directories-first --color=never"
 alias ll="eza --long --git --icons --group-directories-first --color=never"
@@ -121,8 +140,8 @@ alias dark="kitty +kitten themes --reload-in=all Rosé Pine Moon"
 alias light="kitty +kitten themes --reload-in=all Rosé Pine Dawn"
 alias dev="$DEVELOPMENT/codex/bin/tmux-startup"
 alias nerdfetch="$DEVELOPMENT/nerdfetch"
-alias ponder="$DEVELOPMENT/ponder/target/release/ponder"
-alias p='$DEVELOPMENT/ponder/target/release/ponder'
+# p() function defined in ~/.fun (journal entry with frontmatter)
+# Legacy ponder tool available at: $DEVELOPMENT/ponder/target/release/ponder
 alias yt='yarn test'
 alias meme="$HOME/Development/random-meme.sh"
 alias vcc="v $HOME/Library/Application\ Support/Claude/claude_desktop_config.json"
@@ -146,6 +165,12 @@ vrg() {
     echo "No files found containing: $@"
   fi
 }
+
+# System health monitoring
+alias memhogs='ps aux -m | head -15'
+alias swapcheck='sysctl vm.swapusage'
+alias diskcheck='df -h /System/Volumes/Data'
+alias cache-clean='brew cleanup --prune=all && go clean -cache && pnpm store prune && pip cache purge'
 
 # Start9 Embassy aliases
 alias embassy='open http://192.168.1.78'
