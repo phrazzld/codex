@@ -29,8 +29,44 @@ alias gdn='git diff --name-only'
 alias gap='git add -p'
 alias gch='git checkout'
 alias gchb='gch -b'
-alias gil='git checkout main && git pull'
-alias gal='git checkout master && git pull'
+
+function _git_default_branch {
+  local ref branch
+  ref=$(git symbolic-ref --quiet --short refs/remotes/origin/HEAD 2>/dev/null || true)
+  if [[ -n "$ref" ]]; then
+    branch="${ref#origin/}"
+    if git show-ref --verify --quiet "refs/remotes/origin/${branch}"; then
+      echo "${branch}"
+      return 0
+    fi
+  fi
+
+  if git show-ref --verify --quiet refs/remotes/origin/master; then
+    echo "master"
+    return 0
+  fi
+  if git show-ref --verify --quiet refs/remotes/origin/main; then
+    echo "main"
+    return 0
+  fi
+
+  return 1
+}
+
+function gil {
+  gal "$@"
+}
+
+function gal {
+  local branch
+  branch=$(_git_default_branch) || {
+    echo "❌ Could not determine remote default branch (expected origin/HEAD, origin/master, or origin/main)."
+    return 1
+  }
+
+  git checkout "$branch" && git pull --ff-only origin "$branch"
+}
+
 alias gu='git config --local --list | grep "user"'
 alias gm='git status --porcelain | awk "{print \$2}" | xargs $EDITOR'
 alias resolve-conflicts="git diff --name-only | uniq | xargs nvim"
@@ -48,6 +84,60 @@ alias gbranch-age='echo "🕰️  Branch Age:"; echo "────────�
 alias gstash-list='echo "📦 Stash Overview:"; echo "────────────────────"; git stash list --pretty=format:"%gd: %s" | while read stash; do stash_id=$(echo $stash | cut -d: -f1); echo "$stash"; echo "   Files: $(git stash show $stash_id | wc -l | xargs)"; echo "   Changes: +$(git stash show $stash_id | awk "{sum+=\$1} END {print sum}") -$(git stash show $stash_id | awk "{sum+=\$2} END {print sum}")"; echo ""; done'
 alias gwte='echo "🌳 Git Worktrees:"; echo "────────────────────"; git worktree list | while read line; do dir=$(echo $line | awk "{print \$1}"); branch=$(echo $line | awk "{print \$3}" | tr -d "[]"); echo "📁 $(basename $dir) - 🌿 $branch"; echo "   $(cd $dir && git log -1 --pretty=format:"Last commit: %s (%cr)" HEAD)"; echo ""; done'
 # gwtn function available from .fun - creates worktree with new branch
+
+# --- WORKTREE QUICK JUMPS ---
+# Boris tip: za/zb/zc pattern for quick parallel Claude sessions
+alias wt='git worktree'
+alias wtlist='git worktree list'
+alias wtdel='git worktree remove'
+
+# Quick worktree jump - finds worktree by suffix (a, b, c, or any pattern)
+wj() {
+  local suffix="$1"
+  if [[ -z "$suffix" ]]; then
+    echo "Usage: wj <suffix>"
+    echo "Jumps to worktree matching suffix (e.g., wj a → *__a or *-a)"
+    gwte
+    return 1
+  fi
+  local worktrees=$(git worktree list --porcelain 2>/dev/null | grep "^worktree " | cut -d' ' -f2-)
+  local match=$(echo "$worktrees" | grep -E "[-_]${suffix}$|__${suffix}$" | head -1)
+  if [[ -n "$match" ]]; then
+    cd "$match" && echo "📁 $(basename $match)"
+  else
+    echo "❌ No worktree matching suffix '$suffix'"
+    gwte
+    return 1
+  fi
+}
+
+# Even quicker: za zb zc (Boris's exact pattern)
+za() { wj a; }
+zb() { wj b; }
+zc() { wj c; }
+
+# Initialize parallel worktrees for current repo
+wt-init() {
+  local base=$(git rev-parse --show-toplevel 2>/dev/null)
+  if [[ -z "$base" ]]; then
+    echo "❌ Not in a git repo"
+    return 1
+  fi
+  local repo=$(basename "$base")
+  echo "🌳 Creating worktrees for $repo..."
+  for suffix in a b c; do
+    local wt_dir="${base}/../${repo}__${suffix}"
+    if [[ -d "$wt_dir" ]]; then
+      echo "  ⏭️  ${repo}__${suffix} already exists"
+    else
+      git worktree add "$wt_dir" -b "wt-${suffix}" HEAD 2>/dev/null && \
+        echo "  ✅ ${repo}__${suffix}" || \
+        echo "  ❌ Failed to create ${repo}__${suffix}"
+    fi
+  done
+  echo ""
+  gwte
+}
 
 # Enhanced Git Functions
 # Git Branch Diff - show line difference stats between current branch and main/master
@@ -178,3 +268,6 @@ alias embassy-chrome='open -a "Google Chrome" http://192.168.1.78'
 alias embassy-ssh='ssh start@192.168.1.78'
 alias embassy-check='ping -c 3 192.168.1.78'
 alias embassy-status='curl -I http://192.168.1.78 2>&1 | head -5'
+
+# Phyrexia (Mac mini over Tailscale) - forwards GitHub SSH key
+alias phyrexia='ssh-add --apple-use-keychain ~/.ssh/github_phrazzld 2>/dev/null; ssh phyrexia'

@@ -203,3 +203,22 @@ jl() {
   local count="${1:-10}"
   find ~/Documents/daybook/journal -name "*.md" -type f | sort -r | head -n "$count"
 }
+
+# --- RALPH LOOP ---
+# Autonomous issue-to-merged-PR loop
+# Named after Ralph Wiggum: clueless yet relentlessly persistent
+
+ralph() {
+  if [ -z "$1" ]; then
+    echo "Usage: ralph <issue-number>"
+    echo ""
+    echo "Runs full autopilot flow (spec → arch → build → refactor → docs → PR)"
+    echo "Then monitors for CI failures and review feedback until merged."
+    echo ""
+    echo "Environment variables:"
+    echo "  RALPH_MAX_ITERATIONS  - Max loop iterations (default: 100)"
+    echo "  RALPH_CIRCUIT_BREAKER - No-progress loops before stopping (default: 5)"
+    return 1
+  fi
+  ~/bin/ralph "$@"
+}
