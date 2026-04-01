@@ -7,6 +7,7 @@
 - anyzine ✓ (on-demand zines)
 - bouncer ✓ (ai pre-commit hook)
 - brainrot publishing house ✓ (zoomer translations)
+- canary ✓ (agent-first observability — error ingestion, health checking, incident broadcasting)
 - blueprint ✓ (archived)
 - chrondle ✓ (history guessing game)
 - gitpulse ✓ (git analytics)

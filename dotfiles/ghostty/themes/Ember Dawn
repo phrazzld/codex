@@ -1,0 +1,25 @@
+# Ember Dawn — warm parchment light
+# Sun-warmed paper with ink and amber
+
+palette = 0=#2c2622
+palette = 1=#b04040
+palette = 2=#5a7a4c
+palette = 3=#a07a2a
+palette = 4=#4a6a8a
+palette = 5=#7a5a82
+palette = 6=#4a7a6a
+palette = 7=#d5cec4
+palette = 8=#5a5248
+palette = 9=#c25050
+palette = 10=#6a8a5c
+palette = 11=#b8923e
+palette = 12=#5a7ea0
+palette = 13=#8a6a92
+palette = 14=#5a8a7a
+palette = 15=#f4efe8
+background = #f4efe8
+foreground = #2c2622
+cursor-color = #c47a2a
+cursor-text = #f4efe8
+selection-background = #e4d4be
+selection-foreground = #2c2622

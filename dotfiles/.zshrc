@@ -121,3 +121,26 @@ if [[ -d $HOME/.npm-global/bin ]]; then
   path=($path $HOME/.npm-global/bin)
 fi
 typeset -U path
+
+# bun completions
+[ -s "/Users/phaedrus/.bun/_bun" ] && source "/Users/phaedrus/.bun/_bun"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+
+# bun
+export BUN_INSTALL="$HOME/.bun"
+export PATH="$BUN_INSTALL/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
+
+# direnv - auto-load .envrc per directory
+eval "$(direnv hook zsh)"
+
+# Pop kitty keyboard protocol if a TUI app left it enabled (Claude Code bug)
+__reset_kitty_keyboard_protocol() { printf '\e[<u' 2>/dev/null; }
+precmd_functions+=(__reset_kitty_keyboard_protocol)

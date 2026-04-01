@@ -222,3 +222,175 @@ ralph() {
   fi
   ~/bin/ralph "$@"
 }
+
+# --- ORCHESTRATOR ---
+# Autonomous issue-to-merge loop with sensible defaults
+orchestrate() {
+  ~/.claude/scripts/orchestrator.sh "${PWD}" \
+    --max-issues 5 \
+    --max-build-iter 15 \
+    --max-prfix-iter 10 \
+    --ci-sleep 300 \
+    "$@"
+}
+
+# flywheel — Go autopilot (successor to orchestrate)
+# Usage: flywheel [flags]          — run in current dir
+#        flywheel -t [flags]       — run in a new tmux session named 'flywheel'
+#        flywheel -t NAME [flags]  — run in tmux session NAME
+flywheel() {
+  local tmux_session=""
+  local dir="${PWD}"
+
+  # Parse -t [session-name]
+  if [[ "$1" == "-t" ]]; then
+    shift
+    if [[ -n "$1" && "$1" != --* ]]; then
+      tmux_session="$1"
+      shift
+    else
+      tmux_session="flywheel"
+    fi
+  fi
+
+  if [[ -n "$tmux_session" ]]; then
+    tmux new-session -d -s "$tmux_session" \
+      "flywheel run ${(q)dir} --max-issues 5 --max-build-iter 20 --max-prfix-iter 15 --ci-sleep 300 $*; exec zsh"
+    echo "flywheel running in tmux session '${tmux_session}'"
+    echo "  attach: tmux attach -t ${tmux_session}"
+  else
+    command flywheel run "$dir" \
+      --max-issues 5 \
+      --max-build-iter 20 \
+      --max-prfix-iter 15 \
+      --ci-sleep 300 \
+      "$@"
+  fi
+}
+
+# --- REMOTE SSH WITH IDENTITY FORWARDING ---
+# SSH to Phyrexia with full GitHub identity (phrazzld)
+# Agent forwarding handles git SSH ops; env vars handle gh CLI + commit author
+_ph_identity_ssh() {
+  local remote_cmd="${1:-exec zsh -l}"
+  local gh_token
+  local quoted_remote_cmd
+
+  gh_token=$(gh auth token 2>/dev/null) || { echo "gh auth failed"; return 1; }
+  quoted_remote_cmd=$(printf '%q' "$remote_cmd")
+  ssh-add --apple-use-keychain ~/.ssh/github_phrazzld >/dev/null 2>&1 || true
+
+  ssh -tt \
+    -o ConnectTimeout=10 \
+    -o ServerAliveInterval=30 \
+    -o ServerAliveCountMax=3 \
+    phyrexia "
+    export GH_TOKEN='${gh_token}'
+    export GIT_AUTHOR_NAME='phrazzld'
+    export GIT_AUTHOR_EMAIL='phrazzld@pm.me'
+    export GIT_COMMITTER_NAME='phrazzld'
+    export GIT_COMMITTER_EMAIL='phrazzld@pm.me'
+    export GIT_CONFIG_COUNT=1
+    export GIT_CONFIG_KEY_0='url.git@github.com:.insteadOf'
+    export GIT_CONFIG_VALUE_0='https://github.com/'
+    exec zsh -lc ${quoted_remote_cmd}
+  "
+}
+
+# --- CODEX NATIVE MULTI-AGENT REVIEW ---
+# Uses subagent injection: parent sees all child results in context
+
+cxreview() {
+  local target="${1:-$(git diff --name-only HEAD~1 | head -20 | tr '\n' ' ')}"
+  codex -q "
+    You are a tech lead orchestrating a code review.
+
+    Spawn these agents in parallel:
+    1. grug agent: review for complexity demons in: $target
+    2. carmack agent: review for shippability and YAGNI in: $target
+    3. ousterhout agent: review for module depth and information hiding in: $target
+
+    Wait for all results. Then synthesize:
+    - Deduplicate findings across reviewers
+    - Resolve conflicts (if reviewers disagree, explain your call)
+    - Prioritize: critical (block merge) > important (fix in PR) > suggestion
+    - Output: action plan with file:line references
+  "
+}
+
+cxreview-full() {
+  local target="${1:-$(git diff --name-only HEAD~1 | head -20 | tr '\n' ' ')}"
+  codex -q "
+    You are a tech lead orchestrating a comprehensive code review.
+
+    Spawn ALL these agents in parallel:
+    1. grug: complexity demons, premature abstraction
+    2. carmack: shippability, YAGNI, focus
+    3. ousterhout: module depth, information hiding
+    4. torvalds: correctness, clarity, pragmatic efficiency
+    5. beck: TDD discipline, test quality
+
+    Wait for all results. Synthesize into:
+    - Consensus findings (2+ reviewers agree)
+    - Conflicts resolved (with reasoning)
+    - Prioritized action plan: critical > important > suggestion
+    - Positive observations (what was done well)
+  "
+}
+
+ph() {
+  if [[ $# -eq 0 ]]; then
+    _ph_identity_ssh "exec zsh -l"
+    return
+  fi
+
+  _ph_identity_ssh "$*"
+}
+
+# Peek at Phyrexia factory session (no identity injection).
+# For authenticated work, use `ph` instead.
+phf() {
+  local action="${1:-attach}"
+
+  case "$action" in
+    attach|start|'')
+      ssh-add --apple-use-keychain ~/.ssh/github_phrazzld 2>/dev/null || true
+      ssh -tt \
+        -o ConnectTimeout=10 \
+        -o ServerAliveInterval=30 \
+        -o ServerAliveCountMax=3 \
+        phyrexia "
+        if command -v factory-tmux >/dev/null 2>&1; then
+          exec factory-tmux attach
+        elif command -v tmux >/dev/null 2>&1; then
+          exec tmux new-session -A -s factory
+        fi
+        echo 'tmux not found' >&2; exit 1
+      "
+      ;;
+    status)
+      ssh phyrexia "tmux list-sessions 2>/dev/null || echo 'No tmux sessions'"
+      ;;
+    kill)
+      ssh phyrexia "tmux kill-session -t factory 2>/dev/null; echo 'killed factory session'"
+      ;;
+    help|-h|--help)
+      cat <<'EOF'
+Usage: phf [command]
+
+Peek at Kaylee's factory session (no GitHub identity injected).
+For authenticated work, use: ph
+
+Commands:
+  attach   Attach to factory session (default)
+  status   Show tmux sessions on phyrexia
+  kill     Kill factory session
+  help     Show this help
+EOF
+      ;;
+    *)
+      echo "Unknown phf command: $action (try: phf help)"
+      return 1
+      ;;
+  esac
+}

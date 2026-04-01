@@ -1,0 +1,131 @@
+# ═══════════════════════════════════════════════
+#  G H O S T T Y
+#  rose pine · FiraCode ligatures · refined
+# ═══════════════════════════════════════════════
+
+# Theme — Rose Pine, auto light/dark
+theme = light:Rose Pine Dawn,dark:Rose Pine
+window-theme = system
+
+# ── macOS Chrome ──────────────────────────────
+macos-titlebar-style = tabs
+macos-option-as-alt = true
+macos-window-shadow = false
+window-step-resize = true
+window-save-state = always
+
+# ── Transparency & Blur ──────────────────────
+background-opacity = 0.92
+background-blur-radius = 24
+
+# ── Bloom Shader ────────────────────────────
+custom-shader = ~/.config/ghostty/shaders/bloom.glsl
+custom-shader-animation = false
+
+# ── Typography ────────────────────────────────
+# FiraCode: beautiful ligatures (=> != >= -> |>)
+# Retina weight: optimized for screen rendering
+font-family = FiraCode Nerd Font
+font-style = Retina
+font-style-bold = Bold
+font-style-italic = Medium
+font-style-bold-italic = SemiBold
+font-size = 15
+font-thicken = true
+font-feature = +zero
+font-feature = +cv02
+font-feature = +ss03
+font-feature = +ss05
+adjust-cell-height = 4
+adjust-underline-position = 2
+adjust-cursor-thickness = 2
+adjust-box-thickness = 1
+
+# ── Visual Polish ─────────────────────────────
+minimum-contrast = 1.1
+bold-is-bright = false
+
+# ── Window ────────────────────────────────────
+window-padding-x = 16
+window-padding-y = 14
+window-padding-balance = true
+window-padding-color = extend
+window-inherit-working-directory = true
+window-inherit-font-size = true
+window-new-tab-position = current
+resize-overlay = after-first
+resize-overlay-position = bottom-right
+resize-overlay-duration = 500ms
+macos-non-native-fullscreen = visible-menu
+
+# ── Splits ────────────────────────────────────
+unfocused-split-opacity = 0.7
+focus-follows-mouse = true
+split-divider-color = #26233a
+
+# ── Cursor & Mouse ───────────────────────────
+cursor-style = bar
+cursor-style-blink = false
+cursor-opacity = 0.9
+mouse-hide-while-typing = true
+cursor-click-to-move = true
+
+# ── Shell Integration ─────────────────────────
+shell-integration-features = cursor,sudo,title,ssh-terminfo,ssh-env
+
+# ── Clipboard ─────────────────────────────────
+clipboard-read = allow
+clipboard-trim-trailing-spaces = true
+copy-on-select = clipboard
+
+# ── Quick Terminal (dropdown) ─────────────────
+keybind = global:ctrl+grave_accent=toggle_quick_terminal
+quick-terminal-position = top
+quick-terminal-screen = main
+quick-terminal-animation-duration = 0.12
+quick-terminal-size = 40%
+
+# ── Dock Icon (Rose Pine) ─────────────────────
+macos-icon = custom-style
+macos-icon-frame = aluminum
+macos-icon-ghost-color = #e0def4
+macos-icon-screen-color = #191724,#eb6f92
+
+# ═══════════════════════════════════════════════
+#  K E Y B I N D S
+# ═══════════════════════════════════════════════
+
+keybind = shift+enter=text:\n
+
+# Vim-style pane navigation (Ctrl+Shift)
+keybind = ctrl+shift+h=goto_split:left
+keybind = ctrl+shift+j=goto_split:bottom
+keybind = ctrl+shift+k=goto_split:top
+keybind = ctrl+shift+l=goto_split:right
+
+# Pane resizing (Ctrl+Shift+Arrow)
+keybind = ctrl+shift+left=resize_split:left,10
+keybind = ctrl+shift+right=resize_split:right,10
+keybind = ctrl+shift+up=resize_split:up,10
+keybind = ctrl+shift+down=resize_split:down,10
+
+# Split management
+keybind = cmd+shift+equal=equalize_splits
+keybind = cmd+d=new_split:right
+keybind = cmd+shift+d=new_split:down
+keybind = cmd+shift+enter=toggle_split_zoom
+
+# Prompt navigation (shell integration)
+keybind = cmd+up=jump_to_prompt:-1
+keybind = cmd+down=jump_to_prompt:1
+
+# Smart copy (only fires when text is selected)
+keybind = performable:cmd+c=copy_to_clipboard
+
+# Scrollback
+keybind = cmd+shift+e=write_scrollback_file:open
+
+# ═══════════════════════════════════════════════
+#  N O T I F I C A T I O N S
+# ═══════════════════════════════════════════════
+app-notifications = clipboard-copy,config-reload

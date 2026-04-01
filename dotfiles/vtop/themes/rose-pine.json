@@ -1,0 +1,35 @@
+{
+  "name": "Rosé Pine",
+  "author": "phaedrus + pi",
+  "description": "Rosé Pine palette for vtop",
+  "title": {
+    "fg": "#c4a7e7"
+  },
+  "chart": {
+    "fg": "#9ccfd8",
+    "border": {
+      "type": "line",
+      "fg": "#524f67"
+    }
+  },
+  "table": {
+    "fg": "#e0def4",
+    "items": {
+      "selected": {
+        "bg": "#26233a",
+        "fg": "#f6c177"
+      },
+      "item": {
+        "bg": "#191724",
+        "fg": "#e0def4"
+      }
+    },
+    "border": {
+      "type": "line",
+      "fg": "#524f67"
+    }
+  },
+  "footer": {
+    "fg": "#908caa"
+  }
+}

@@ -1,0 +1,25 @@
+# Ember — warm dark luxury
+# Deep charcoal with amber/copper accents
+
+palette = 0=#1c1820
+palette = 1=#d46a6a
+palette = 2=#8aab7c
+palette = 3=#d4a54c
+palette = 4=#7a9ec2
+palette = 5=#b08cb8
+palette = 6=#7aab9c
+palette = 7=#c8c0b4
+palette = 8=#4a4458
+palette = 9=#e88888
+palette = 10=#a5c896
+palette = 11=#e8c36e
+palette = 12=#94b8d8
+palette = 13=#c8a8d0
+palette = 14=#96c8b8
+palette = 15=#e8e0d4
+background = #131119
+foreground = #d5cec4
+cursor-color = #e8a849
+cursor-text = #131119
+selection-background = #3d2e1f
+selection-foreground = #f0e4d4

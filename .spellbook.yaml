@@ -1,0 +1,8 @@
+# .spellbook.yaml
+# Sysadmin domain skills for machine management (macOS)
+# Global skills (13) + agents (4) are available via bootstrap.
+skills:
+  - sysadmin
+  - sysadmin-ops
+  - macos-network-diagnostics
+  - launchd-patterns

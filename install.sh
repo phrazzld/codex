@@ -24,8 +24,51 @@ ln -sf "$CONFIG_SUBDIR/.aliases" "$HOME/.aliases" && echo -e "${GREEN}✓ .alias
 ln -sf "$CONFIG_SUBDIR/.env" "$HOME/.env" && echo -e "${GREEN}✓ .env${RESET}" || echo -e "${RED}✗ .env${RESET}"
 ln -sf "$CONFIG_SUBDIR/.fun" "$HOME/.fun" && echo -e "${GREEN}✓ .fun${RESET}" || echo -e "${RED}✗ .fun${RESET}"
 
-# Create tmux configuration symlink
-ln -sf "$CONFIG_SUBDIR/.tmux.conf" "$HOME/.tmux.conf" && echo -e "${GREEN}✓ .tmux.conf${RESET}" || echo -e "${RED}✗ .tmux.conf${RESET}"
+# Install vtop themes
+echo -e "${YELLOW}Installing vtop themes...${RESET}"
+if command -v vtop &>/dev/null; then
+  VTOP_DIR=$(npm root -g)/vtop
+  if [ -d "$VTOP_DIR" ]; then
+    mkdir -p "$VTOP_DIR/themes"
+    for theme_file in "$CONFIG_SUBDIR/vtop/themes/"*.json; do
+      if [ -f "$theme_file" ]; then
+        theme_name=$(basename "$theme_file")
+        cp -f "$theme_file" "$VTOP_DIR/themes/$theme_name" && echo -e "${GREEN}✓ vtop theme: $theme_name${RESET}" || echo -e "${RED}✗ vtop theme: $theme_name${RESET}"
+      fi
+    done
+  else
+    echo -e "${YELLOW}vtop not found in npm global modules, skipping theme installation${RESET}"
+  fi
+else
+  echo -e "${YELLOW}vtop not installed, skipping theme installation${RESET}"
+fi
+
+# Create tmux local configuration symlink (Oh My Tmux theme)
+# Note: ~/.tmux.conf should point to the Oh My Tmux framework, not this dotfile.
+# Only .tmux.conf.local is managed here — it provides the Ember theme.
+ln -sf "$CONFIG_SUBDIR/.tmux.conf.local" "$HOME/.tmux.conf.local" && echo -e "${GREEN}✓ .tmux.conf.local${RESET}" || echo -e "${RED}✗ .tmux.conf.local${RESET}"
+
+# Setup Starship prompt configuration
+echo -e "${YELLOW}Setting up Starship prompt...${RESET}"
+mkdir -p "$HOME/.config"
+ln -sf "$CONFIG_SUBDIR/starship.toml" "$HOME/.config/starship.toml" && echo -e "${GREEN}✓ starship.toml${RESET}" || echo -e "${RED}✗ starship.toml${RESET}"
+
+# Setup Ghostty configuration
+echo -e "${YELLOW}Setting up Ghostty configuration...${RESET}"
+mkdir -p "$HOME/.config/ghostty/themes" "$HOME/.config/ghostty/shaders"
+ln -sf "$CONFIG_SUBDIR/ghostty/config" "$HOME/.config/ghostty/config" && echo -e "${GREEN}✓ ghostty config${RESET}" || echo -e "${RED}✗ ghostty config${RESET}"
+for shader_file in "$CONFIG_SUBDIR/ghostty/shaders/"*.glsl; do
+  if [ -f "$shader_file" ]; then
+    shader_name=$(basename "$shader_file")
+    ln -sf "$shader_file" "$HOME/.config/ghostty/shaders/$shader_name" && echo -e "${GREEN}✓ ghostty shader: $shader_name${RESET}" || echo -e "${RED}✗ ghostty shader: $shader_name${RESET}"
+  fi
+done
+for theme_file in "$CONFIG_SUBDIR/ghostty/themes/"*; do
+  if [ -f "$theme_file" ]; then
+    theme_name=$(basename "$theme_file")
+    ln -sf "$theme_file" "$HOME/.config/ghostty/themes/$theme_name" && echo -e "${GREEN}✓ ghostty theme: $theme_name${RESET}" || echo -e "${RED}✗ ghostty theme: $theme_name${RESET}"
+  fi
+done
 
 # Create Alacritty configuration directory and symlink
 echo -e "${YELLOW}Setting up Alacritty configuration...${RESET}"

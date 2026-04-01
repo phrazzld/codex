@@ -17,6 +17,10 @@ alias cx='codex --search --dangerously-bypass-approvals-and-sandbox'
 alias g='gemini'
 alias o='opencode'
 
+# Pi agents
+alias i='pictl'
+alias im='pictl meta'
+
 # Git aliases
 alias gs='git status --short'
 alias ga='git add'
@@ -64,7 +68,7 @@ function gal {
     return 1
   }
 
-  git checkout "$branch" && git pull --ff-only origin "$branch"
+  git fetch origin && git checkout "$branch" && git pull --ff-only origin "$branch"
 }
 
 alias gu='git config --local --list | grep "user"'
@@ -203,6 +207,7 @@ alias tstreak='~/Documents/daybook/scripts/habit-streak.sh'
 alias tstreaks='~/Documents/daybook/scripts/habit-streaks.sh'
 
 # General shortcuts
+alias vtop='vtop --theme rose-pine'
 alias s='speedtest'
 alias sz="exec zsh"
 alias v=nvim
@@ -214,6 +219,7 @@ alias vimv="$HOME/Development/vimv"
 alias ts="todo-stats"
 alias python="python3"
 alias prd="pnpm run dev"
+alias brd="bun run dev"
 alias prdf="pnpm run dev:full"
 
 # Overmind - portfolio command center
@@ -226,8 +232,8 @@ alias ll="eza --long --git --icons --group-directories-first --color=never"
 alias la="eza --long --all --git --icons --group-directories-first --color=never"
 alias lt="eza --tree --git --icons --group-directories-first --color=never"
 alias lta="eza --tree --all --git --icons --group-directories-first --color=never"
-alias dark="kitty +kitten themes --reload-in=all Rosé Pine Moon"
-alias light="kitty +kitten themes --reload-in=all Rosé Pine Dawn"
+alias dark="osascript -e 'tell app \"System Events\" to tell appearance preferences to set dark mode to true'"
+alias light="osascript -e 'tell app \"System Events\" to tell appearance preferences to set dark mode to false'"
 alias dev="$DEVELOPMENT/codex/bin/tmux-startup"
 alias nerdfetch="$DEVELOPMENT/nerdfetch"
 # p() function defined in ~/.fun (journal entry with frontmatter)
@@ -269,5 +275,44 @@ alias embassy-ssh='ssh start@192.168.1.78'
 alias embassy-check='ping -c 3 192.168.1.78'
 alias embassy-status='curl -I http://192.168.1.78 2>&1 | head -5'
 
+# --- TMUX SESSION MANAGEMENT ---
+alias rdev='tmux-remote'                    # start/attach remote dev session
+alias tma='tmux attach -t'                  # attach by name: tma dev
+alias tmd='tmux detach'                     # detach current session
+alias tms='tmux list-sessions'              # list sessions
+alias tmw='tmux list-windows'               # list windows in current session
+alias tmk='tmux kill-session -t'            # kill by name: tmk remote
+alias tmka='tmux kill-server'               # nuclear: kill all sessions
+alias tmn='tmux new-window -c "$(pwd)"'     # new window in cwd
+alias tmr='tmux rename-window'              # rename current window
+alias tmsw='tmux swap-window -t'            # swap window position
+alias tmsp='tmux split-window -h -c "$(pwd)"'  # vertical split in cwd
+alias tmvs='tmux split-window -v -c "$(pwd)"'  # horizontal split in cwd
+
+# Quick session switching (fzf-powered)
+tms-switch() {
+  local target
+  target=$(tmux list-sessions -F '#{session_name}' 2>/dev/null | fzf --prompt="session> ") || return
+  tmux switch-client -t "$target"
+}
+alias tmsf='tms-switch'
+
+# Quick window switching (fzf-powered)
+tmw-switch() {
+  local target
+  target=$(tmux list-windows -F '#{window_index}: #{window_name}' 2>/dev/null | fzf --prompt="window> " | cut -d: -f1) || return
+  tmux select-window -t "$target"
+}
+alias tmwf='tmw-switch'
+
+# Send command to a named window (useful for remote orchestration)
+# Usage: tm-send work "git pull && make test"
+tm-send() {
+  local window="${1:?window name required}"
+  local cmd="${2:?command required}"
+  tmux send-keys -t "$window" "$cmd" C-m
+}
+
 # Phyrexia (Mac mini over Tailscale) - forwards GitHub SSH key
 alias phyrexia='ssh-add --apple-use-keychain ~/.ssh/github_phrazzld 2>/dev/null; ssh phyrexia'
+alias pht='phf'
