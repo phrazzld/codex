@@ -1,0 +1,199 @@
+// Zellij — optimized for mobile (mosh + Blink + Tailscale) and desktop.
+// Priorities: session survival across disconnects, low UI overhead, big scrollback.
+
+// --- UI: keep the layout lean, but let the chrome breathe --------------------
+// Arrow separators render correctly here, so use the richer bar styling.
+simplified_ui false
+pane_frames false
+default_layout "compact"
+
+// --- Scrollback + session persistence ----------------------------------------
+// Agents (Claude Code, etc.) dump a lot; mobile networks drop.
+// session_serialization keeps panes+tabs+commands across zellij restarts.
+// viewport serialization + scrollback bytes keeps context after resurrection.
+scroll_buffer_size 100000
+session_serialization true
+pane_viewport_serialization true
+scrollback_lines_to_serialize 10000
+
+// --- Clipboard ---------------------------------------------------------------
+// Zellij runs on the Mac; pbcopy targets the Mac clipboard regardless of
+// which device is attached. Handy: copy on phone → paste on desktop later.
+copy_command "pbcopy"
+copy_clipboard "system"
+copy_on_select false
+
+// --- Touch / mouse -----------------------------------------------------------
+// Blink forwards taps as mouse events — click panes/tabs directly from phone.
+mouse_mode true
+
+// --- Safety ------------------------------------------------------------------
+// Terminal window close detaches the session instead of killing it.
+on_force_close "detach"
+
+// --- Startup -----------------------------------------------------------------
+show_startup_tips false
+show_release_notes false
+
+// --- Theme -------------------------------------------------------------------
+// Rose Pine main: soft contrast, dusty mauves, warm rose highlights.
+themes {
+    rose-pine {
+        text_unselected {
+            base 224 222 244
+            background 31 29 46
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        text_selected {
+            base 224 222 244
+            background 64 61 82
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        ribbon_selected {
+            base 25 23 36
+            background 235 188 186
+            emphasis_0 235 111 146
+            emphasis_1 246 193 119
+            emphasis_2 156 207 216
+            emphasis_3 196 167 231
+        }
+        ribbon_unselected {
+            base 224 222 244
+            background 64 61 82
+            emphasis_0 235 111 146
+            emphasis_1 144 140 170
+            emphasis_2 156 207 216
+            emphasis_3 196 167 231
+        }
+        table_title {
+            base 235 188 186
+            background 25 23 36
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        table_cell_selected {
+            base 224 222 244
+            background 64 61 82
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        table_cell_unselected {
+            base 224 222 244
+            background 25 23 36
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        list_selected {
+            base 224 222 244
+            background 64 61 82
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        list_unselected {
+            base 224 222 244
+            background 25 23 36
+            emphasis_0 246 193 119
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        frame_selected {
+            base 196 167 231
+            background 25 23 36
+            emphasis_0 235 188 186
+            emphasis_1 156 207 216
+            emphasis_2 246 193 119
+            emphasis_3 25 23 36
+        }
+        frame_highlight {
+            base 246 193 119
+            background 25 23 36
+            emphasis_0 235 188 186
+            emphasis_1 156 207 216
+            emphasis_2 49 116 143
+            emphasis_3 196 167 231
+        }
+        exit_code_success {
+            base 49 116 143
+            background 25 23 36
+            emphasis_0 156 207 216
+            emphasis_1 25 23 36
+            emphasis_2 196 167 231
+            emphasis_3 64 61 82
+        }
+        exit_code_error {
+            base 235 111 146
+            background 25 23 36
+            emphasis_0 246 193 119
+            emphasis_1 25 23 36
+            emphasis_2 25 23 36
+            emphasis_3 25 23 36
+        }
+        multiplayer_user_colors {
+            player_1 196 167 231
+            player_2 156 207 216
+            player_3 49 116 143
+            player_4 235 188 186
+            player_5 246 193 119
+            player_6 235 111 146
+            player_7 224 222 244
+            player_8 144 140 170
+            player_9 64 61 82
+            player_10 25 23 36
+        }
+    }
+}
+theme "rose-pine"
+
+// --- Keybinds ----------------------------------------------------------------
+// Single-chord session swaps that work from any mode (incl. inside an agent TUI).
+// `shared_except "locked"` = fires in every mode except Locked, so Zellij
+// intercepts the chord before the focused pane (e.g. Claude/Codex) sees it.
+keybinds {
+    shared_except "locked" {
+        bind "Alt p" { SwitchSession "personal"; }
+        bind "Alt w" { SwitchSession "work"; }
+        // Open the session-manager picker directly — skips Ctrl-o w mode dance.
+        bind "Alt o" {
+            LaunchOrFocusPlugin "zellij:session-manager" {
+                floating true
+                move_to_focused_tab true
+            };
+        }
+    }
+}
+
+// --- Plugins -----------------------------------------------------------------
+// Keep the compact footer, but let F1 reveal the full keybinding help overlay.
+plugins {
+    tab-bar location="zellij:tab-bar"
+    status-bar location="zellij:status-bar"
+    strider location="zellij:strider"
+    compact-bar location="zellij:compact-bar" {
+        tooltip "F1"
+    }
+    session-manager location="zellij:session-manager"
+    welcome-screen location="zellij:session-manager" {
+        welcome_screen true
+    }
+    filepicker location="zellij:strider" {
+        cwd "/"
+    }
+    configuration location="zellij:configuration"
+    plugin-manager location="zellij:plugin-manager"
+    about location="zellij:about"
+}
