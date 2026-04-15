@@ -1,48 +1,136 @@
-# Starship — lean, Rose Pine via terminal ANSI mapping
+# Starship — Rose Pine, nerd-font glyphs, two-line prompt
+# Design: minimalist left (context) + right-aligned meta (duration, clock)
+# Palette matches ~/.config/zellij/config.kdl and Ghostty theme.
+
+add_newline = true
+command_timeout = 2000
+palette = "rose-pine"
 
 format = """
+$custom\
 $directory\
 $git_branch\
 $git_state\
 $git_status\
+$fill\
 $cmd_duration\
+$time\
 $line_break\
 $python\
+$nodejs\
+$rust\
+$golang\
+$status\
 $character"""
 
-command_timeout = 2000
+[palettes.rose-pine]
+base    = "#191724"
+surface = "#1f1d2e"
+overlay = "#403d52"
+muted   = "#6e6a86"
+subtle  = "#908caa"
+text    = "#e0def4"
+love    = "#eb6f92"
+gold    = "#f6c177"
+rose    = "#ebbcba"
+pine    = "#31748f"
+foam    = "#9ccfd8"
+iris    = "#c4a7e7"
+
+[fill]
+symbol = " "
+style  = "overlay"
 
 [directory]
-style = "blue"
-
-[character]
-success_symbol = "[❯](purple)"
-error_symbol = "[❯](red)"
-vimcmd_symbol = "[❮](green)"
+style = "bold foam"
+truncation_length = 3
+truncation_symbol = "…/"
+truncate_to_repo = false
+home_symbol = "~"
+read_only = "  "
+read_only_style = "love"
+format = "[$path]($style)[$read_only]($read_only_style) "
 
 [git_branch]
-format = "[$branch]($style)"
-style = "bright-black"
+symbol = " "
+format = "[$symbol$branch]($style) "
+style  = "iris"
+truncation_length = 32
+truncation_symbol = "…"
 
 [git_status]
-format = "[[(*$conflicted$untracked$modified$staged$renamed$deleted)](218) ($ahead_behind$stashed)]($style)"
-style = "cyan"
-conflicted = "​"
-untracked = "​"
-modified = "​"
-staged = "​"
-renamed = "​"
-deleted = "​"
-stashed = "≡"
+format = "([$all_status$ahead_behind]($style))"
+style  = "gold"
+conflicted = "[!](love)"
+ahead      = "[⇡${count}](foam) "
+behind     = "[⇣${count}](rose) "
+diverged   = "[⇡${ahead_count}⇣${behind_count}](love) "
+untracked  = "[?](subtle)"
+modified   = "[*](gold)"
+staged     = "[+](pine)"
+renamed    = "[»](foam)"
+deleted    = "[✘](love)"
+stashed    = "[≡](iris) "
 
 [git_state]
-format = '\([$state( $progress_current/$progress_total)]($style)\) '
-style = "bright-black"
+format = '\[[$state( $progress_current/$progress_total)]($style)\] '
+style  = "love"
 
 [cmd_duration]
-format = "[$duration]($style) "
-style = "yellow"
+min_time = 2000
+format = "[  $duration]($style)"
+style  = "gold"
+
+[time]
+disabled = false
+format = " [ $time]($style) "
+time_format = "%H:%M"
+style = "muted"
+
+[character]
+success_symbol = "[❯](bold iris)"
+error_symbol   = "[❯](bold love)"
+vimcmd_symbol  = "[❮](bold foam)"
+
+[status]
+disabled = false
+format = "[$symbol$status]($style) "
+symbol = " "
+style  = "love"
+map_symbol = true
 
 [python]
-format = "[$virtualenv]($style) "
-style = "bright-black"
+symbol = " "
+format = "[$symbol$virtualenv ]($style)"
+style  = "gold"
+
+[nodejs]
+symbol = " "
+format = "[$symbol($version) ]($style)"
+style  = "foam"
+detect_files = ["package.json", ".nvmrc"]
+
+[rust]
+symbol = " "
+format = "[$symbol($version) ]($style)"
+style  = "rose"
+
+[golang]
+symbol = " "
+format = "[$symbol($version) ]($style)"
+style  = "foam"
+
+# Zellij session chip — shown only inside a session.
+[custom.zellij]
+command = 'printf "%s" "$ZELLIJ_SESSION_NAME"'
+when = 'test -n "$ZELLIJ_SESSION_NAME"'
+format = "[ $output ]($style)"
+style = "bg:overlay iris"
+description = "Zellij session name"
+shell = ["sh", "--noprofile", "--norc"]
+
+# SSH/mosh host chip — shown only when remote.
+[hostname]
+ssh_only = true
+format = "[ $hostname ](bg:overlay gold) "
+disabled = false

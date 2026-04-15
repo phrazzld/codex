@@ -276,7 +276,7 @@ alias embassy-check='ping -c 3 192.168.1.78'
 alias embassy-status='curl -I http://192.168.1.78 2>&1 | head -5'
 
 # --- TMUX SESSION MANAGEMENT ---
-alias rdev='tmux-remote'                    # start/attach remote dev session
+alias rdev='zellij-remote'                  # start/attach remote dev session (zellij; survives mosh/Blink drops)
 alias tma='tmux attach -t'                  # attach by name: tma dev
 alias tmd='tmux detach'                     # detach current session
 alias tms='tmux list-sessions'              # list sessions
