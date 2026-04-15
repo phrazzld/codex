@@ -165,8 +165,8 @@ theme "rose-pine"
 // intercepts the chord before the focused pane (e.g. Claude/Codex) sees it.
 keybinds {
     shared_except "locked" {
-        bind "Alt p" { SwitchSession "personal"; }
-        bind "Alt w" { SwitchSession "work"; }
+        bind "Alt p" { SwitchSession name="personal"; }
+        bind "Alt w" { SwitchSession name="work"; }
         // Open the session-manager picker directly — skips Ctrl-o w mode dance.
         bind "Alt o" {
             LaunchOrFocusPlugin "zellij:session-manager" {
