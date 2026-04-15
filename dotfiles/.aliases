@@ -313,6 +313,48 @@ tm-send() {
   tmux send-keys -t "$window" "$cmd" C-m
 }
 
+# --- ZELLIJ SESSION MANAGEMENT ---
+alias zls='zellij ls'                       # list sessions (live + exited)
+alias zlsn='zellij ls -sn'                  # names only, ANSI-stripped (pipe-friendly)
+alias zd='zellij action detach'             # detach without chord
+
+# Attach-or-create: session name defaults to cwd basename
+zat() { zellij attach -c "${1:-$(basename "$PWD")}"; }
+
+# Kill a session (keeps serialized state for later resurrection)
+zkill() { zellij kill-session "${1:?session name required}"; }
+
+# Delete a session (wipes serialized state — permanent)
+zrm() { zellij delete-session -f "${1:?session name required}"; }
+
+# Fuzzy swap: pick any session by name via fzf
+zsw() {
+  local target
+  target=$(zellij ls -sn 2>/dev/null | fzf --prompt="session> " --height=40% --reverse) || return
+  if [ -n "$ZELLIJ_SESSION_NAME" ]; then
+    zellij action switch-session "$target"
+  else
+    zellij attach -c "$target"
+  fi
+}
+
+# Alt-Tab between sessions: tracks last-used, toggles back and forth
+zt() {
+  local state="$HOME/.cache/zellij-last-session"
+  local current="$ZELLIJ_SESSION_NAME"
+  [ -z "$current" ] && { echo "not in a zellij session" >&2; return 1; }
+  mkdir -p "$(dirname "$state")"
+  local target
+  if [ -f "$state" ] && [ "$(cat "$state")" != "$current" ]; then
+    target=$(cat "$state")
+  else
+    target=$(zellij ls -sn 2>/dev/null | grep -v "^${current}\$" | head -1)
+  fi
+  [ -z "$target" ] && { echo "no other session" >&2; return 1; }
+  echo "$current" > "$state"
+  zellij action switch-session "$target"
+}
+
 # Phyrexia (Mac mini over Tailscale) - forwards GitHub SSH key
 alias phyrexia='ssh-add --apple-use-keychain ~/.ssh/github_phrazzld 2>/dev/null; ssh phyrexia'
 alias pht='phf'
